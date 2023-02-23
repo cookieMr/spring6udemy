@@ -35,7 +35,7 @@ jobs:
           at: .
       - run:
           name: Gradle - Run Tests
-          command: pwd && ls -l && ./gradlew test
+          command: ./gradlew test
           when: always
 
   sonar:
@@ -43,10 +43,10 @@ jobs:
       - image: cimg/openjdk:17.0.6
     steps:
       - checkout
-      - sonarcloud/scan
-
-orbs:
-  sonarcloud: sonarsource/sonarcloud@1.1.1
+      - run:
+          name: Gradle - SonarCloud
+          command: ./gradlew sonar
+          when: always
 
 workflows:
   version: 2
