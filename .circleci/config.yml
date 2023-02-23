@@ -1,0 +1,48 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: openjdk:17-jdk-slim
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - run:
+          name: Gradle - Clean Build
+          command: ./gradlew clean build --exclude-task test
+          when: always
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+  test:
+    docker:
+      - image: openjdk:17-jdk-slim
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Gradle - Run Tests
+          command: pwd && ls -l && ./gradlew test
+          when: always
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+    - build
+    - test:
+        requires:
+          - build
