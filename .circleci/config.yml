@@ -43,9 +43,10 @@ jobs:
       - image: openjdk:17-jdk-slim
     steps:
       - checkout
-      - run:
-          name: Analyze on SonarCloud
-          command: ./gradlew sonar
+      - sonarcloud/scan
+
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.1.1
 
 workflows:
   version: 2
