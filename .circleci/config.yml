@@ -40,7 +40,7 @@ jobs:
 
   sonar:
     docker:
-      - image: openjdk:17-jdk-slim
+      - image: cimg/openjdk:17.0.6
     steps:
       - checkout
       - sonarcloud/scan
