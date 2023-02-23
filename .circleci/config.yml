@@ -38,6 +38,15 @@ jobs:
           command: pwd && ls -l && ./gradlew test
           when: always
 
+  sonar:
+    docker:
+      - image: openjdk:17-jdk-slim
+    steps:
+      - checkout
+      - run:
+          name: Analyze on SonarCloud
+          command: gradle build sonar
+
 workflows:
   version: 2
   workflow:
@@ -46,3 +55,7 @@ workflows:
     - test:
         requires:
           - build
+    - sonar:
+        context: SonarCloud
+        requires:
+          - test
