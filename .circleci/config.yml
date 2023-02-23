@@ -35,7 +35,23 @@ jobs:
           at: .
       - run:
           name: Gradle - Run Tests
-          command: pwd && ls -l && ./gradlew test
+          command: ./gradlew test
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+
+  sonar:
+    docker:
+      - image: cimg/openjdk:17.0.6
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Gradle - SonarCloud
+          command: ./gradlew sonar
           when: always
 
 workflows:
@@ -46,3 +62,8 @@ workflows:
     - test:
         requires:
           - build
+    - sonar:
+        context: SonarCloud
+        requires:
+          - test
+
