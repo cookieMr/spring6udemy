@@ -45,7 +45,7 @@ jobs:
       - checkout
       - run:
           name: Analyze on SonarCloud
-          command: gradle build sonar
+          command: ./gradlew sonar
 
 workflows:
   version: 2
