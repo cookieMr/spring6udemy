@@ -5,15 +5,15 @@ import org.junit.jupiter.api.Test;
 
 import mr.cookie.spring6udemy.domain.Book;
 
-public class BookTest {
+class BookTest {
     
     @Test
     void BooksWithDifferentIdsAndTheSameTitleHaveDifferentHashCode() {
         var book1 = buildBook(111L);
         var book2 = buildBook(42L);
 
-        Assertions.assertThat(book1.hashCode())
-            .isNotEqualTo(book2.hashCode());
+        Assertions.assertThat(book1)
+            .doesNotHaveSameHashCodeAs(book2);
     }
 
     @Test
@@ -22,8 +22,8 @@ public class BookTest {
         var book2 = buildBook(111L);
         book2.setIsbn("1250899656");
 
-        Assertions.assertThat(book1.hashCode())
-            .isEqualTo(book2.hashCode());
+        Assertions.assertThat(book1)
+            .hasSameHashCodeAs(book2);
     }
 
     @Test
