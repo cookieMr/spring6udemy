@@ -2,6 +2,8 @@ package mr.cookie.spring6udemy.bootstrap;
 
 import java.util.Arrays;
 
+import mr.cookie.spring6udemy.domain.Publisher;
+import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +22,13 @@ public class BootstrapData implements CommandLineRunner {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
+    private final PublisherRepository publisherRepository;
 
     @PostConstruct
     private void printRepositoriesCounts() {
         log.info("Author table size: {}", this.authorRepository.count());
         log.info("Book table size: {}", this.bookRepository.count());
+        log.info("Publisher table size: {}", this.publisherRepository.count());
     }
 
     @Override
@@ -61,6 +65,15 @@ public class BootstrapData implements CommandLineRunner {
             savedSaBook1, savedSaBook2, savedSaBook3, savedSaBook4
         ));
         this.authorRepository.save(savedSandersonAuthor);
+
+        var dragonsteelPublisher = Publisher.builder()
+                .name("DragonSteel Books")
+                .address("POBox 698")
+                .state("UT")
+                .city("American Fork")
+                .zipCode("84003")
+                .build();
+        this.publisherRepository.save(dragonsteelPublisher);
 
         this.printRepositoriesCounts();
     }
