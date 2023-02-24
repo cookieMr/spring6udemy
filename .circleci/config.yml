@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: openjdk:17-jdk-slim
+      - image: cimg/openjdk:17.0.6
     steps:
       - checkout
       - restore_cache:
@@ -26,9 +26,10 @@ jobs:
           root: .
           paths:
             - build
+
   test:
     docker:
-      - image: openjdk:17-jdk-slim
+      - image: cimg/openjdk:17.0.6
     steps:
       - checkout
       - attach_workspace:
@@ -37,6 +38,14 @@ jobs:
           name: Gradle - Run Tests
           command: ./gradlew test
           when: always
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - persist_to_workspace:
           root: .
           paths:
