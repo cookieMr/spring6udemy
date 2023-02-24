@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,5 +41,8 @@ public class Book {
     )
     @Builder.Default
     private Set<Author> authors = new HashSet<>();
+
+    @ManyToOne
+    private Publisher publisher;
 
 }
