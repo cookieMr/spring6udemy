@@ -3,8 +3,10 @@ package mr.cookie.spring6udemy.units.bootstrap;
 import mr.cookie.spring6udemy.bootstrap.BootstrapData;
 import mr.cookie.spring6udemy.domain.Author;
 import mr.cookie.spring6udemy.domain.Book;
+import mr.cookie.spring6udemy.domain.Publisher;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.repositories.BookRepository;
+import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,9 @@ class BootstrapDataTest {
 
     @Mock
     private BookRepository bookRepository;
+
+    @Mock
+    private PublisherRepository publisherRepository;
 
     @InjectMocks
     private BootstrapData bootstrapData;
@@ -52,7 +57,9 @@ class BootstrapDataTest {
         verify(this.authorRepository).count();
         verify(this.bookRepository, times(4)).save(any(Book.class));
         verify(this.bookRepository).count();
-        verifyNoMoreInteractions(this.authorRepository, this.bookRepository);
+        verify(this.publisherRepository).save(any(Publisher.class));
+        verify(this.publisherRepository).count();
+        verifyNoMoreInteractions(this.authorRepository, this.bookRepository, this.publisherRepository);
     }
 
 }

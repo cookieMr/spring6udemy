@@ -8,7 +8,7 @@ import mr.cookie.spring6udemy.domain.Book;
 class BookTest {
 
     @Test
-    void BooksWithDifferentIdsAndTheSameTitleHaveDifferentHashCode() {
+    void booksWithDifferentIdsAndTheSameTitleHaveDifferentHashCode() {
         var book1 = buildBook(111L);
         var book2 = buildBook(42L);
 
