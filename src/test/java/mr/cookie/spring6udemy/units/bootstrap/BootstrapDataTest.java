@@ -21,6 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -63,15 +64,20 @@ class BootstrapDataTest {
 
         verify(this.authorRepository).save(any(Author.class));
         verify(this.authorRepository).count();
-        verify(this.bookRepository).saveAll(anyList());
+        verify(this.bookRepository, times(2)).saveAll(anyList());
         verify(this.bookRepository).count();
         verify(this.publisherRepository).save(any(Publisher.class));
         verify(this.publisherRepository).count();
         verifyNoMoreInteractions(this.authorRepository, this.bookRepository, this.publisherRepository);
 
-        assertThat(this.booksCaptor.getValue())
-                .isNotEmpty()
+        assertThat(this.booksCaptor.getAllValues())
+                .hasSize(2)
+                .allMatch(books -> books.size() == 4);
+        assertThat(this.booksCaptor.getAllValues().get(0))
                 .allMatch(book -> book.getPublisher().equals(savedPublisher));
+        assertThat(this.booksCaptor.getAllValues().get(1))
+                .allMatch(book -> book.getAuthors().size() == 1)
+                .allMatch(book -> book.getAuthors().contains(savedAuthor));
     }
 
 }
