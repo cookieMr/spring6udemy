@@ -38,14 +38,6 @@ jobs:
           name: Gradle - Run Tests
           command: ./gradlew test
           when: always
-      - save_cache:
-          paths:
-            - ~/.gradle/wrapper
-          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
-          key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - persist_to_workspace:
           root: .
           paths:
