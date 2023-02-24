@@ -39,7 +39,8 @@ class BookServiceImplTest {
     void shouldFindAllBooks() {
         var bookDto = BookDto.builder().id(ID).build();
 
-        when(this.bookRepository.findAll()).thenReturn(Collections.singletonList(bookDto));
+        when(this.bookRepository.findAll())
+                .thenReturn(Collections.singletonList(bookDto));
 
         var result = this.bookService.findAll();
 

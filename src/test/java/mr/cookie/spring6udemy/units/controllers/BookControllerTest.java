@@ -26,12 +26,12 @@ class BookControllerTest {
     private BookController bookController;
 
     @Test
-    void shoutGetBooks() {
+    void shoutGetAllBooks() {
         var book = Book.builder().id(3L).build();
 
         when(this.bookService.findAll()).thenReturn(Collections.singletonList(book));
 
-        var result = this.bookController.getBooks();
+        var result = this.bookController.getAllBooks();
 
         assertThat(result).containsOnly(book);
 
