@@ -52,7 +52,7 @@ class BootstrapDataTest {
         verify(this.authorRepository).count();
         verify(this.bookRepository, times(4)).save(any(Book.class));
         verify(this.bookRepository).count();
-        verifyNoMoreInteractions(this.authorRepository, bookRepository);
+        verifyNoMoreInteractions(this.authorRepository, this.bookRepository);
     }
 
 }
