@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import mr.cookie.spring6udemy.domain.Author;
 
 class AuthorTest {
-    
+
     @Test
     void authorsWithDifferentIdsAndTheSameNameHaveDifferentHashCode() {
         var author1 = buildAuthor(111L);
