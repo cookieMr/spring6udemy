@@ -45,7 +45,7 @@ class BootstrapDataTest {
     private ArgumentCaptor<List<Book>> booksCaptor;
 
     @Test
-    void run() {
+    void shouldInitEntities() {
         var savedPublisher = Publisher.builder().id(111L).build();
         var savedAuthor = Author.builder().id(42L).build();
         var savedBook1 = Book.builder().id(1L).build();
