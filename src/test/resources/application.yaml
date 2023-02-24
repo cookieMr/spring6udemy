@@ -2,10 +2,6 @@ spring:
   main:
     banner-mode: off
 
-  h2:
-    console:
-      enabled: true
-
 server:
   servlet:
     context-path: "/api"
