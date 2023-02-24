@@ -17,7 +17,6 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyIterable;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -50,7 +49,7 @@ class BookServiceImplTest {
 
         verify(this.bookRepository).findAll();
         verify(this.bookMapper).mapToModel(anyIterable());
-        verify(this.bookMapper).map(eq(bookDto));
+        verify(this.bookMapper).map(bookDto);
         verifyNoMoreInteractions(this.bookRepository, this.bookMapper);
     }
 
