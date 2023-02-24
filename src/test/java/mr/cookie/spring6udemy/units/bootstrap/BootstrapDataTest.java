@@ -9,12 +9,16 @@ import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
@@ -36,6 +40,9 @@ class BootstrapDataTest {
     @InjectMocks
     private BootstrapData bootstrapData;
 
+    @Captor
+    private ArgumentCaptor<List<Book>> booksCaptor;
+
     @Test
     void run() {
         var savedPublisher = Publisher.builder().id(111L).build();
@@ -47,7 +54,7 @@ class BootstrapDataTest {
 
         when(this.publisherRepository.save(any(Publisher.class)))
                 .thenReturn(savedPublisher);
-        when(this.bookRepository.saveAll(anyList()))
+        when(this.bookRepository.saveAll(this.booksCaptor.capture()))
                 .thenReturn(Arrays.asList(savedBook1, savedBook2, savedBook3, savedBook4));
         when(this.authorRepository.save(any(Author.class)))
                 .thenReturn(savedAuthor);
@@ -61,6 +68,10 @@ class BootstrapDataTest {
         verify(this.publisherRepository).save(any(Publisher.class));
         verify(this.publisherRepository).count();
         verifyNoMoreInteractions(this.authorRepository, this.bookRepository, this.publisherRepository);
+
+        assertThat(this.booksCaptor.getValue())
+                .isNotEmpty()
+                .allMatch(book -> book.getPublisher().equals(savedPublisher));
     }
 
 }
