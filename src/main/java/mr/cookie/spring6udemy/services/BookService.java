@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.services;
 
-import mr.cookie.spring6udemy.domain.Book;
+import mr.cookie.spring6udemy.model.model.Book;
 
 import java.util.List;
 

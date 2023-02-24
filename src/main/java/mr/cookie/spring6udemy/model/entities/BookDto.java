@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.domain;
+package mr.cookie.spring6udemy.model.entities;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,12 +18,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@Entity
+@Entity(name = "books")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class Book {
+public class BookDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,9 +40,9 @@ public class Book {
         inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     @Builder.Default
-    private Set<Author> authors = new HashSet<>();
+    private Set<AuthorDto> authors = new HashSet<>();
 
     @ManyToOne
-    private Publisher publisher;
+    private PublisherDto publisher;
 
 }
