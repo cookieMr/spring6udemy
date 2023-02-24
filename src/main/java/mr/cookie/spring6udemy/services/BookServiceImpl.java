@@ -1,9 +1,9 @@
 package mr.cookie.spring6udemy.services;
 
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.domain.Book;
+import mr.cookie.spring6udemy.model.mappers.BookMapper;
+import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
-import org.apache.commons.collections4.IterableUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +12,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
+    private final BookMapper bookMapper;
     private final BookRepository bookRepository;
 
     @Override
     public List<Book> findAll() {
-        return IterableUtils.toList(this.bookRepository.findAll());
+        return this.bookMapper.mapToModel(this.bookRepository.findAll());
     }
 
 }

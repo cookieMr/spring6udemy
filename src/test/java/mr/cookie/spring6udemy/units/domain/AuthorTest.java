@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import mr.cookie.spring6udemy.domain.Author;
+import mr.cookie.spring6udemy.model.entities.AuthorDto;
 
 class AuthorTest {
 
@@ -45,8 +45,8 @@ class AuthorTest {
             .isEqualTo(author2);
     }
 
-    private Author buildAuthor(long id) {
-        return Author.builder()
+    private AuthorDto buildAuthor(long id) {
+        return AuthorDto.builder()
             .id(id)
             .firstName("Brandon")
             .lastName("Sanderson")

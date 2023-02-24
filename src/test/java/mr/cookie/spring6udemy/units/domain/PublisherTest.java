@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.units.domain;
 
-import mr.cookie.spring6udemy.domain.Publisher;
+import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +44,8 @@ class PublisherTest {
                 .isEqualTo(publisher2);
     }
 
-    private Publisher buildPublisher(long id) {
-        return Publisher.builder()
+    private PublisherDto buildPublisher(long id) {
+        return PublisherDto.builder()
                 .id(id)
                 .name("DragonSteel Books")
                 .address("POBox 698")
