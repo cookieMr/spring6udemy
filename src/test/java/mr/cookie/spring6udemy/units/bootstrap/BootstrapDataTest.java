@@ -38,21 +38,21 @@ class BootstrapDataTest {
         var savedBook3 = Book.builder().id(3L).build();
         var savedBook4 = Book.builder().id(4L).build();
 
-        when(authorRepository.save(any(Author.class)))
+        when(this.authorRepository.save(any(Author.class)))
                 .thenReturn(savedAuthor);
-        when(bookRepository.save(any(Book.class)))
+        when(this.bookRepository.save(any(Book.class)))
                 .thenReturn(savedBook1, savedBook2, savedBook3, savedBook4);
 
-        bootstrapData.run();
+        this.bootstrapData.run();
 
         Assertions.assertThat(savedAuthor.getBooks())
                 .containsExactlyInAnyOrder(savedBook1, savedBook2, savedBook3, savedBook4);
 
-        verify(authorRepository, times(2)).save(any(Author.class));
-        verify(authorRepository).count();
-        verify(bookRepository, times(4)).save(any(Book.class));
-        verify(bookRepository).count();
-        verifyNoMoreInteractions(authorRepository, bookRepository);
+        verify(this.authorRepository, times(2)).save(any(Author.class));
+        verify(this.authorRepository).count();
+        verify(this.bookRepository, times(4)).save(any(Book.class));
+        verify(this.bookRepository).count();
+        verifyNoMoreInteractions(this.authorRepository, bookRepository);
     }
 
 }
