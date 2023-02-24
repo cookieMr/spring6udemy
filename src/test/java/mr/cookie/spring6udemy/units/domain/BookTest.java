@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import mr.cookie.spring6udemy.domain.Book;
 
 class BookTest {
-    
+
     @Test
     void BooksWithDifferentIdsAndTheSameTitleHaveDifferentHashCode() {
         var book1 = buildBook(111L);

@@ -1,6 +1,7 @@
 # Spring 6 App
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/cookieMr/spring6udemy/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/cookieMr/spring6udemy/tree/master)
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cookieMr_spring6udemy&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=cookieMr_spring6udemy)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=cookieMr_spring6udemy&metric=coverage)](https://sonarcloud.io/summary/new_code?id=cookieMr_spring6udemy)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=cookieMr_spring6udemy&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=cookieMr_spring6udemy)

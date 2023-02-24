@@ -1,6 +1,7 @@
 plugins {
 	id 'java'
 	id 'jacoco'
+	id 'checkstyle'
 	id 'org.springframework.boot' version '3.0.2'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'org.sonarqube' version '3.5.0.2730'
@@ -10,12 +11,15 @@ group = 'mr.cookie'
 version = '0.0.1'
 sourceCompatibility = '17'
 
+apply plugin: 'checkstyle'
+
 repositories {
 	mavenCentral()
 }
 
 ext {
 	assertjVersion = "3.24.2"
+	checkstyleVersion = "0.0.35"
 	lombokVersion = "1.18.26"
 }
 
@@ -28,6 +32,8 @@ dependencies {
 	compileOnly "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
+	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${checkstyleVersion}"
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation "org.assertj:assertj-core:${assertjVersion}"
 }
@@ -36,7 +42,6 @@ test {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
 }
-
 tasks.withType(Test) {
     testLogging {
         events "passed", "skipped", "failed"
@@ -50,15 +55,29 @@ jacocoTestReport {
         csv.required = true
     }
 }
-
 jacoco {
     toolVersion = "0.8.8"
 }
 
 sonarqube {
-  properties {
-    property "sonar.projectKey", "cookieMr_spring6udemy"
-    property "sonar.organization", "cookiemr-github"
-    property "sonar.host.url", "https://sonarcloud.io"
-  }
+	properties {
+		property "sonar.projectKey", "cookieMr_spring6udemy"
+		property "sonar.organization", "cookiemr-github"
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
+}
+
+tasks.withType(Checkstyle) {
+    exclude "**/generated/**"
+    exclude "**/sources/**"
+}
+checkstyle {
+    toolVersion '10.7.0'
+    configFile file("config/checkstyle/checkstyle.xml")
+}
+checkstyleMain {
+    source ='src/main/java'
+}
+checkstyleTest {
+    source ='src/test/java'
 }
