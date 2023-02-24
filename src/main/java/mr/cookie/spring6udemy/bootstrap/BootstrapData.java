@@ -36,7 +36,7 @@ public class BootstrapData implements CommandLineRunner {
     public void run(String... args) {
         var dragonsteelPublisher = Publisher.builder()
                 .name("DragonSteel Books")
-                .address("POBox 698")
+                .address("PO Box 698")
                 .state("UT")
                 .city("American Fork")
                 .zipCode("84003")
@@ -72,7 +72,10 @@ public class BootstrapData implements CommandLineRunner {
                 .lastName("Sanderson")
                 .build();
         bSandersonAuthor.getBooks().addAll(savedBooks);
-        this.authorRepository.save(bSandersonAuthor);
+        var savedSandersonAuthor = this.authorRepository.save(bSandersonAuthor);
+
+        savedBooks.forEach(book -> book.getAuthors().add(savedSandersonAuthor));
+        this.bookRepository.saveAll(savedBooks);
 
         this.printRepositoriesCounts();
     }

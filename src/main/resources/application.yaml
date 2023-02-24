@@ -1,3 +1,7 @@
 spring:
   main:
     banner-mode: off
+
+  h2:
+    console:
+      enabled: true
