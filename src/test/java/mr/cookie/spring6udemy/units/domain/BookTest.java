@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.units.domain;
 
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import mr.cookie.spring6udemy.model.entities.BookDto;
@@ -45,6 +46,7 @@ class BookTest {
             .isEqualTo(book2);
     }
 
+    @NotNull
     private BookDto buildBook(long id) {
         return BookDto.builder()
             .id(id)

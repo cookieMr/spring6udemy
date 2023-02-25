@@ -3,6 +3,7 @@ package mr.cookie.spring6udemy.units.controllers;
 import mr.cookie.spring6udemy.controllers.AuthorController;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.services.AuthorService;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +21,10 @@ import static org.mockito.Mockito.when;
 public class AuthorControllerTest {
 
     @Mock
+    @NotNull
     private AuthorService authorService;
 
+    @NotNull
     @InjectMocks
     private AuthorController authorController;
 

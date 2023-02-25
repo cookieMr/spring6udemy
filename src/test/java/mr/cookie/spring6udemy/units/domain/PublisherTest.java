@@ -2,6 +2,7 @@ package mr.cookie.spring6udemy.units.domain;
 
 import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 class PublisherTest {
@@ -44,6 +45,7 @@ class PublisherTest {
                 .isEqualTo(publisher2);
     }
 
+    @NotNull
     private PublisherDto buildPublisher(long id) {
         return PublisherDto.builder()
                 .id(id)

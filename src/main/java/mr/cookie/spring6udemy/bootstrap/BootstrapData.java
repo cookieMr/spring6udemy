@@ -5,6 +5,8 @@ import java.util.Arrays;
 import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.apache.commons.collections4.IterableUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +23,13 @@ import mr.cookie.spring6udemy.repositories.BookRepository;
 @RequiredArgsConstructor
 public class BootstrapData implements CommandLineRunner {
 
+    @NotNull
     private final AuthorRepository authorRepository;
+
+    @NotNull
     private final BookRepository bookRepository;
+
+    @NotNull
     private final PublisherRepository publisherRepository;
 
     @PostConstruct
@@ -33,7 +40,7 @@ public class BootstrapData implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void run(@Nullable String... args) {
         var dragonSteelPublisher = PublisherDto.builder()
                 .name("DragonSteel Books")
                 .address("PO Box 698")

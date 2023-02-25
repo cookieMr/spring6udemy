@@ -4,20 +4,31 @@ import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
+    @NotNull
     private final BookMapper bookMapper;
+
+    @NotNull
     private final BookRepository bookRepository;
 
+    @NotNull
     @Override
     public List<Book> findAll() {
-        return this.bookMapper.mapToModel(this.bookRepository.findAll());
+        return Optional.of(this.bookRepository)
+                .map(CrudRepository::findAll)
+                .map(this.bookMapper::mapToModel)
+                .orElse(Collections.emptyList());
     }
 
 }
