@@ -14,4 +14,7 @@ public interface PublisherService {
     @Nullable
     Publisher findById(@NotNull Long id);
 
+    @NotNull
+    Publisher create(@NotNull Publisher publisher);
+
 }

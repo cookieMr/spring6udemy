@@ -40,4 +40,14 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElse(null);
     }
 
+    @Override
+    public @NotNull Author create(@NotNull Author author) {
+        return Optional.of(author)
+                .map(this.authorMapper::map)
+                .map(this.authorRepository::save)
+                .map(this.authorMapper::map)
+                .orElseThrow();
+        // TODO: return conflict when publisher exists
+    }
+
 }
