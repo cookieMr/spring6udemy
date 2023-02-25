@@ -43,7 +43,9 @@ class AuthorControllerTest {
 
         var result = this.authorController.getAllAuthors();
 
-        assertThat(result).containsOnly(AUTHOR);
+        assertThat(result)
+                .isNotNull()
+                .containsOnly(AUTHOR);
 
         verify(this.authorService).findAll();
         verifyNoMoreInteractions(this.authorService);
@@ -62,7 +64,9 @@ class AuthorControllerTest {
 
         var result = this.authorController.getAuthorById(ID);
 
-        assertThat(result).isEqualTo(author);
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(author);
 
         verify(this.authorService).findById(ID);
         verifyNoMoreInteractions(this.authorService);

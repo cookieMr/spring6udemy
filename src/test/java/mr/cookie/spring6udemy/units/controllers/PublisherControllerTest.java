@@ -43,7 +43,9 @@ class PublisherControllerTest {
 
         var result = this.publisherController.getAllPublishers();
 
-        assertThat(result).containsOnly(PUBLISHER);
+        assertThat(result)
+                .isNotNull()
+                .containsOnly(PUBLISHER);
 
         verify(this.publisherService).findAll();
         verifyNoMoreInteractions(this.publisherService);
@@ -62,7 +64,9 @@ class PublisherControllerTest {
 
         var result = this.publisherController.getAuthorById(ID);
 
-        assertThat(result).isEqualTo(publisher);
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(publisher);
 
         verify(this.publisherService).findById(ID);
         verifyNoMoreInteractions(this.publisherService);

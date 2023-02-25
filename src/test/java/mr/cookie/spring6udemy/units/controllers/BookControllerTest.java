@@ -43,7 +43,9 @@ class BookControllerTest {
 
         var result = this.bookController.getAllBooks();
 
-        assertThat(result).containsOnly(BOOK);
+        assertThat(result)
+                .isNotNull()
+                .containsOnly(BOOK);
 
         verify(this.bookService).findAll();
         verifyNoMoreInteractions(this.bookService);
@@ -62,7 +64,9 @@ class BookControllerTest {
 
         var result = this.bookController.getAuthorById(ID);
 
-        assertThat(result).isEqualTo(book);
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(book);
 
         verify(this.bookService).findById(ID);
         verifyNoMoreInteractions(this.bookService);
