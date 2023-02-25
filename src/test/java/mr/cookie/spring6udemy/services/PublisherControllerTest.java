@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PublisherControllerTest {
+class PublisherControllerTest {
 
     @NotNull
     @Autowired

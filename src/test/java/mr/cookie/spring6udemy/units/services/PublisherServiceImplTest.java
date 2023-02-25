@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PublisherServiceImplTest {
+class PublisherServiceImplTest {
 
     private static final long ID = 5L;
 
