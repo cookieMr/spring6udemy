@@ -65,7 +65,6 @@ class BookControllerTest {
         var result = this.bookController.getAuthorById(ID);
 
         assertThat(result)
-                .isNotNull()
                 .isEqualTo(book);
 
         verify(this.bookService).findById(ID);

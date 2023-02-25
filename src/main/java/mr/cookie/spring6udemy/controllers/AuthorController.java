@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/author")
+@RequestMapping("author")
 @RequiredArgsConstructor
 public class AuthorController {
 
@@ -28,7 +28,7 @@ public class AuthorController {
     }
 
     @GetMapping(
-            path = "/{id}",
+            path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable

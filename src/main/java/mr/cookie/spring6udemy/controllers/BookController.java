@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping("book")
 @RequiredArgsConstructor
 public class BookController {
 
@@ -28,7 +28,7 @@ public class BookController {
     }
 
     @GetMapping(
-            path = "/{id}",
+            path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable

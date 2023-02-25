@@ -65,7 +65,6 @@ class PublisherControllerTest {
         var result = this.publisherController.getAuthorById(ID);
 
         assertThat(result)
-                .isNotNull()
                 .isEqualTo(publisher);
 
         verify(this.publisherService).findById(ID);
