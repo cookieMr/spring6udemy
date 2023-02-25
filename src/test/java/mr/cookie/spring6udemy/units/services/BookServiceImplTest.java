@@ -6,6 +6,7 @@ import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.services.BookServiceImpl;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,11 +28,14 @@ class BookServiceImplTest {
     private static final long ID = 1L;
 
     @Spy
+    @NotNull
     private BookMapper bookMapper = new BookMapperImpl();
 
     @Mock
+    @NotNull
     private BookRepository bookRepository;
 
+    @NotNull
     @InjectMocks
     private BookServiceImpl bookService;
 

@@ -23,6 +23,7 @@ ext {
 	assertjVersion = "3.24.2"
 	checkstyleVersion = "0.0.35"
 	lombokVersion = "1.18.26"
+	jetBrainsAnnotationVersion = "24.0.0"
 	mapStructVersion = "1.5.3.Final"
 }
 
@@ -30,6 +31,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation "org.apache.commons:commons-collections4:${apacheCollectionsVersion}"
+	implementation "org.jetbrains:annotations:${jetBrainsAnnotationVersion}"
 
 	runtimeOnly 'com.h2database:h2'
 

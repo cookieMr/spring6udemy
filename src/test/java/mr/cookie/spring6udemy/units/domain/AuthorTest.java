@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.units.domain;
 
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import mr.cookie.spring6udemy.model.entities.AuthorDto;
@@ -45,6 +46,7 @@ class AuthorTest {
             .isEqualTo(author2);
     }
 
+    @NotNull
     private AuthorDto buildAuthor(long id) {
         return AuthorDto.builder()
             .id(id)

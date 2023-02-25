@@ -6,6 +6,7 @@ import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.services.AuthorServiceImpl;
+    import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,11 +28,14 @@ class AuthorServiceImplTest {
     private static final long ID = 2L;
 
     @Spy
+    @NotNull
     private AuthorMapper authorMapper = new AuthorMapperImpl();
 
     @Mock
+    @NotNull
     private AuthorRepository authorRepository;
 
+    @NotNull
     @InjectMocks
     private AuthorServiceImpl authorService;
 

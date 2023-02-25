@@ -7,6 +7,7 @@ import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,18 +31,23 @@ import static org.mockito.Mockito.when;
 class BootstrapDataTest {
 
     @Mock
+    @NotNull
     private AuthorRepository authorRepository;
 
     @Mock
+    @NotNull
     private BookRepository bookRepository;
 
     @Mock
+    @NotNull
     private PublisherRepository publisherRepository;
 
+    @NotNull
     @InjectMocks
     private BootstrapData bootstrapData;
 
     @Captor
+    @NotNull
     private ArgumentCaptor<List<BookDto>> booksCaptor;
 
     @Test
