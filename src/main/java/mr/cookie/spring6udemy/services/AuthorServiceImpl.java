@@ -5,6 +5,7 @@ import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,14 @@ public class AuthorServiceImpl implements AuthorService {
                 .map(CrudRepository::findAll)
                 .map(this.authorMapper::mapToModel)
                 .orElse(Collections.emptyList());
+    }
+
+    @Nullable
+    @Override
+    public Author findById(@NotNull Long id) {
+        return this.authorRepository.findById(id)
+                .map(this.authorMapper::map)
+                .orElse(null);
     }
 
 }

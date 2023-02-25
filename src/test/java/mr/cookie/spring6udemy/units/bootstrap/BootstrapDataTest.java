@@ -77,11 +77,14 @@ class BootstrapDataTest {
         verifyNoMoreInteractions(this.authorRepository, this.bookRepository, this.publisherRepository);
 
         assertThat(this.booksCaptor.getAllValues())
+                .isNotNull()
                 .hasSize(2)
                 .allMatch(books -> books.size() == 4);
         assertThat(this.booksCaptor.getAllValues().get(0))
+                .isNotNull()
                 .allMatch(book -> book.getPublisher().equals(savedPublisher));
         assertThat(this.booksCaptor.getAllValues().get(1))
+                .isNotNull()
                 .allMatch(book -> book.getAuthors().size() == 1)
                 .allMatch(book -> book.getAuthors().contains(savedAuthor));
     }

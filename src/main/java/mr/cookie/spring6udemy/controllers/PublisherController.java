@@ -4,15 +4,17 @@ import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.model.Publisher;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/publishers")
+@RequestMapping("publisher")
 @RequiredArgsConstructor
 public class PublisherController {
 
@@ -23,6 +25,15 @@ public class PublisherController {
     @NotNull
     public List<Publisher> getAllPublishers() {
         return this.publisherService.findAll();
+    }
+
+    @GetMapping(
+            path = "{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Nullable
+    public Publisher getAuthorById(@PathVariable Long id) {
+        return this.publisherService.findById(id);
     }
 
 }
