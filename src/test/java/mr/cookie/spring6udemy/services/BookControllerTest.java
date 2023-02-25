@@ -24,7 +24,7 @@ class BookControllerTest {
 
     @Test
     void getAllBooks() throws Exception {
-        this.mockMvc.perform(get("/books"))
+        this.mockMvc.perform(get("/book"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));

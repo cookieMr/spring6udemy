@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthorControllerTest {
+class AuthorControllerTest {
 
     @NotNull
     @Autowired
@@ -24,7 +24,7 @@ public class AuthorControllerTest {
 
     @Test
     void getAllAuthors() throws Exception {
-        this.mockMvc.perform(get("/authors"))
+        this.mockMvc.perform(get("/author"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));

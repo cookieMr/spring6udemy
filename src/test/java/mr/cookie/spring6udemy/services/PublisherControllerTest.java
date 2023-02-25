@@ -24,7 +24,7 @@ class PublisherControllerTest {
 
     @Test
     void getAllPublishers() throws Exception {
-        this.mockMvc.perform(get("/publishers"))
+        this.mockMvc.perform(get("/publisher"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));

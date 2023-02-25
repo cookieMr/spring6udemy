@@ -5,6 +5,7 @@ import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,13 @@ public class BookServiceImpl implements BookService {
                 .map(CrudRepository::findAll)
                 .map(this.bookMapper::mapToModel)
                 .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public @Nullable Book findById(@NotNull Long id) {
+        return this.bookRepository.findById(id)
+                .map(this.bookMapper::map)
+                .orElse(null);
     }
 
 }
