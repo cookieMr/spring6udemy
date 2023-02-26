@@ -12,9 +12,12 @@ public interface PublisherService {
     List<Publisher> findAll();
 
     @Nullable
-    Publisher findById(@NotNull Long id);
+    Publisher findById(long id);
 
     @NotNull
     Publisher create(@NotNull Publisher publisher);
+
+    @NotNull
+    Publisher update(long id, @NotNull Publisher publisher);
 
 }

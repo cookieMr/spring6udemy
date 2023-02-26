@@ -12,9 +12,12 @@ public interface AuthorService {
     List<Author> findAll();
 
     @Nullable
-    Author findById(@NotNull Long id);
+    Author findById(long id);
 
     @NotNull
     Author create(@NotNull Author author);
+
+    @NotNull
+    Author update(long id, @NotNull Author author);
 
 }

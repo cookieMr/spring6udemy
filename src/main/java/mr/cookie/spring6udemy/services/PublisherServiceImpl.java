@@ -33,7 +33,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public @Nullable Publisher findById(@NotNull Long id) {
+    public @Nullable Publisher findById(long id) {
         return this.publisherRepository.findById(id)
                 .map(this.publisherMapper::map)
                 .orElse(null);
@@ -47,6 +47,23 @@ public class PublisherServiceImpl implements PublisherService {
                 .map(this.publisherMapper::map)
                 .orElseThrow();
         // TODO: return conflict when publisher exists
+    }
+
+    @Override
+    public @NotNull Publisher update(long id, @NotNull Publisher publisher) {
+        var existingDto = this.publisherRepository.findById(id)
+                .orElseThrow();
+
+        existingDto.setName(publisher.getName());
+        existingDto.setAddress(publisher.getAddress());
+        existingDto.setCity(publisher.getCity());
+        existingDto.setState(publisher.getState());
+        existingDto.setZipCode(publisher.getZipCode());
+
+        return Optional.of(existingDto)
+                .map(this.publisherRepository::save)
+                .map(this.publisherMapper::map)
+                .orElseThrow();
     }
 
 }
