@@ -3,6 +3,7 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -75,9 +76,12 @@ class AuthorControllerTest {
     @Disabled
     @Test
     void shouldReturn404WhenAuthorIsNotFound() throws Exception {
-        // TODO: error handling
-        this.mockMvc.perform(get("/author/{id}", Integer.MAX_VALUE))
-                .andExpect(status().isNotFound());
+        var authorId = Integer.MAX_VALUE;
+        var result = this.getAuthorByIdAndExpect404(authorId);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
     }
 
     @Test
@@ -168,6 +172,17 @@ class AuthorControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strAuthor, Author.class);
+    }
+
+    @SneakyThrows
+    @NotNull
+    private String getAuthorByIdAndExpect404(long authorId) {
+        return this.mockMvc.perform(get("/author/{id}", authorId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
     @SneakyThrows

@@ -3,7 +3,9 @@ package mr.cookie.spring6udemy.controllers;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +19,7 @@ public class ExceptionControllerAdvice {
     public ResponseEntity<String> handleNotFoundEntityException(@NotNull NotFoundEntityException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
                 .body(exception.getMessage());
     }
 

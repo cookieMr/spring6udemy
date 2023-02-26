@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.AuthorController;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.services.AuthorService;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -79,6 +80,21 @@ class AuthorControllerMockMvcTest {
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(AUTHOR);
+
+        verify(this.authorService).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
+    void shouldGet404WhenCannotFindAuthorById() {
+        given(this.authorService.findById(anyLong()))
+                .willThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+
+        var result = this.getAuthorByIdAndExpect404(AUTHOR_ID);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
 
         verify(this.authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
@@ -166,6 +182,17 @@ class AuthorControllerMockMvcTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strAuthor, Author.class);
+    }
+
+    @SneakyThrows
+    @NotNull
+    private String getAuthorByIdAndExpect404(long authorId) {
+        return this.mockMvc.perform(get("/author/{id}", authorId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
     @SneakyThrows
