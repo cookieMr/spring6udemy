@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -142,6 +143,15 @@ class PublisherServiceImplTest {
                 .returns(updatedPublisher.getState(), PublisherDto::getState)
                 .returns(updatedPublisher.getCity(), PublisherDto::getCity)
                 .returns(updatedPublisher.getZipCode(), PublisherDto::getZipCode);
+    }
+
+    @Test
+    void shouldDeleteExistingBook() {
+        this.publisherService.deleteById(PUBLISHER_ID);
+
+        verify(this.publisherRepository).deleteById(PUBLISHER_ID);
+        verifyNoMoreInteractions(this.publisherRepository);
+        verifyNoInteractions(this.publisherMapper);
     }
 
 }

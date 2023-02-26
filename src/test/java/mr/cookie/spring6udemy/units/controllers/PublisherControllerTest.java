@@ -63,7 +63,7 @@ class PublisherControllerTest {
     void shouldGetPublisherById(@Nullable Publisher publisher) {
         when(this.publisherService.findById(anyLong())).thenReturn(publisher);
 
-        var result = this.publisherController.getAuthorById(PUBLISHER_ID);
+        var result = this.publisherController.getPublisherById(PUBLISHER_ID);
 
         assertThat(result)
                 .isEqualTo(publisher);
@@ -97,6 +97,14 @@ class PublisherControllerTest {
                 .isSameAs(PUBLISHER);
 
         verify(this.publisherService).update(PUBLISHER_ID, PUBLISHER);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
+    @Test
+    void shouldDeleteExistingPublisher() {
+        this.publisherController.deletePublisher(PUBLISHER_ID);
+
+        verify(this.publisherService).deleteById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherService);
     }
 

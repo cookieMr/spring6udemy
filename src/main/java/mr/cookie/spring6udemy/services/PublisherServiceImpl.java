@@ -66,4 +66,9 @@ public class PublisherServiceImpl implements PublisherService {
                 .orElseThrow();
     }
 
+    @Override
+    public void deleteById(long id) {
+        this.publisherRepository.deleteById(id);
+    }
+
 }

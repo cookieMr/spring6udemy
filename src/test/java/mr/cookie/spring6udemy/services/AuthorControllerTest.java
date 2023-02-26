@@ -20,9 +20,11 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -108,6 +110,14 @@ class AuthorControllerTest {
                 .returns(author.getLastName(), Author::getLastName);
     }
 
+    @Test
+    void shouldDeleteExistingAuthor() {
+        var author = AUTHOR_SUPPLIER.get();
+
+        var authorId = this.createAuthor(author).getId();
+        this.deleteAuthorById(authorId);
+    }
+
     @SneakyThrows
     @NotNull
     private List<Author> getAllAuthors() {
@@ -180,6 +190,13 @@ class AuthorControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strAuthor, Author.class);
+    }
+
+    @SneakyThrows
+    private void deleteAuthorById(long authorId) {
+        this.mockMvc.perform(delete("/author/{id}", authorId))
+                .andExpect(status().isNoContent())
+                .andDo(print());
     }
 
 }

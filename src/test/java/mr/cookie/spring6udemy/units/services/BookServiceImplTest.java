@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -134,6 +135,15 @@ class BookServiceImplTest {
                 .returns(BOOK_ID, BookDto::getId)
                 .returns(updatedBook.getTitle(), BookDto::getTitle)
                 .returns(updatedBook.getIsbn(), BookDto::getIsbn);
+    }
+
+    @Test
+    void shouldDeleteExistingBook() {
+        this.bookService.deleteById(BOOK_ID);
+
+        verify(this.bookRepository).deleteById(BOOK_ID);
+        verifyNoMoreInteractions(this.bookRepository);
+        verifyNoInteractions(this.bookMapper);
     }
 
 }

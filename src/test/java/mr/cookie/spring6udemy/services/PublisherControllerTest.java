@@ -20,9 +20,11 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,7 +58,7 @@ class PublisherControllerTest {
         assertThat(publishers)
                 .isNotNull()
                 .isNotEmpty();
-        // TODO: should contain an author
+        // TODO: should contain a publisher
     }
 
     @Test
@@ -120,6 +122,14 @@ class PublisherControllerTest {
                 .returns(publisher.getZipCode(), Publisher::getZipCode);
     }
 
+    @Test
+    void shouldDeleteExistingAuthor() {
+        var publisher = PUBLISHER_SUPPLIER.get();
+
+        var publisherId = this.createPublisher(publisher).getId();
+        this.deletePublisherById(publisherId);
+    }
+
     @SneakyThrows
     @NotNull
     private List<Publisher> getAllPublishers() {
@@ -131,14 +141,14 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayAuthors = this.objectMapper.readValue(strPublishers, Publisher[].class);
-        return Arrays.asList(arrayAuthors);
+        var arrayPublishers = this.objectMapper.readValue(strPublishers, Publisher[].class);
+        return Arrays.asList(arrayPublishers);
     }
 
     @SneakyThrows
     @NotNull
     private Publisher createPublisher(@NotNull Publisher publisher) {
-        var strAuthor = this.mockMvc.perform(post("/publisher")
+        var strPublisher = this.mockMvc.perform(post("/publisher")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(publisher))
@@ -156,13 +166,13 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Publisher.class);
+        return this.objectMapper.readValue(strPublisher, Publisher.class);
     }
 
     @SneakyThrows
     @NotNull
     private Publisher getPublisherById(long publisherId) {
-        var strAuthor = this.mockMvc.perform(get("/publisher/{id}", publisherId))
+        var strPublisher = this.mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
@@ -172,7 +182,7 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Publisher.class);
+        return this.objectMapper.readValue(strPublisher, Publisher.class);
     }
 
     @SneakyThrows
@@ -198,6 +208,13 @@ class PublisherControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strPublisher, Publisher.class);
+    }
+
+    @SneakyThrows
+    private void deletePublisherById(long publisherId) {
+        this.mockMvc.perform(delete("/publisher/{id}", publisherId))
+                .andExpect(status().isNoContent())
+                .andDo(print());
     }
 
 }

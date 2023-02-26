@@ -20,4 +20,6 @@ public interface AuthorService {
     @NotNull
     Author update(long id, @NotNull Author author);
 
+    void deleteById(long id);
+
 }
