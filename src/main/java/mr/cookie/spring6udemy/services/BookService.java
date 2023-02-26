@@ -20,4 +20,6 @@ public interface BookService {
     @NotNull
     Book update(long id, @NotNull Book book);
 
+    void deleteById(long id);
+
 }

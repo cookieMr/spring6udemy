@@ -64,4 +64,9 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElseThrow();
     }
 
+    @Override
+    public void deleteById(long id) {
+        this.authorRepository.deleteById(id);
+    }
+
 }

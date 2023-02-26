@@ -63,4 +63,9 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow();
     }
 
+    @Override
+    public void deleteById(long id) {
+        this.bookRepository.deleteById(id);
+    }
+
 }

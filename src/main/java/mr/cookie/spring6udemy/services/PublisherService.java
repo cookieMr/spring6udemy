@@ -20,4 +20,6 @@ public interface PublisherService {
     @NotNull
     Publisher update(long id, @NotNull Publisher publisher);
 
+    void deleteById(long id);
+
 }
