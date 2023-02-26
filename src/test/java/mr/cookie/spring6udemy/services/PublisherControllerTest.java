@@ -116,7 +116,7 @@ class PublisherControllerTest {
 
     @SneakyThrows
     private Publisher createPublisher(Publisher publisher) {
-        var strAuthor = this.mockMvc.perform(post("/book")
+        var strAuthor = this.mockMvc.perform(post("/publisher")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(publisher))
                 )
