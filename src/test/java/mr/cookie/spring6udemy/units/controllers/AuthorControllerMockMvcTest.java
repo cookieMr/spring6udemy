@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.AuthorController;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.services.AuthorService;
+import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +127,7 @@ class AuthorControllerMockMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()", Is.is(1)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
