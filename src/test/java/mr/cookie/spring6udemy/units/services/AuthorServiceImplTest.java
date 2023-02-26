@@ -9,6 +9,8 @@ import mr.cookie.spring6udemy.services.AuthorServiceImpl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +33,7 @@ class AuthorServiceImplTest {
 
     private static final long AUTHOR_ID = 2L;
     private static final Author AUTHOR = Author.builder().id(AUTHOR_ID).build();
-    private static final AuthorDto AUTHOR_DTO = AuthorDto.builder().id(AUTHOR_ID).build();
+    private static final Supplier<AuthorDto> AUTHOR_DTO_SUPPLIER = () -> AuthorDto.builder().id(AUTHOR_ID).build();
 
     @Spy
     @NotNull
@@ -44,27 +47,34 @@ class AuthorServiceImplTest {
     @InjectMocks
     private AuthorServiceImpl authorService;
 
+    @Captor
+    private ArgumentCaptor<AuthorDto> authorDtoArgumentCaptor;
+
     @Test
     void shouldReturnAllAuthors() {
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+
         when(this.authorRepository.findAll())
-                .thenReturn(Collections.singletonList(AUTHOR_DTO));
+                .thenReturn(Collections.singletonList(authorDto));
 
         var result = this.authorService.findAll();
 
         assertThat(result)
                 .isNotNull()
-                .hasSize(1)
-                .containsOnly(Author.builder().id(AUTHOR_ID).build());
+                .isNotEmpty()
+                .contains(Author.builder().id(AUTHOR_ID).build());
 
         verify(this.authorRepository).findAll();
         verify(this.authorMapper).mapToModel(anyIterable());
-        verify(this.authorMapper).map(AUTHOR_DTO);
+        verify(this.authorMapper).map(authorDto);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 
     @Test
     void shouldReturnAuthorById() {
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO));
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorDto));
 
         var result = this.authorService.findById(AUTHOR_ID);
 
@@ -73,13 +83,15 @@ class AuthorServiceImplTest {
                 .returns(AUTHOR_ID, Author::getId);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
-        verify(this.authorMapper).map(AUTHOR_DTO);
+        verify(this.authorMapper).map(authorDto);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 
     @Test
     void shouldCreateNewAuthor() {
-        when(this.authorRepository.save(any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+
+        when(this.authorRepository.save(any(AuthorDto.class))).thenReturn(authorDto);
 
         var result = this.authorService.create(AUTHOR);
 
@@ -87,10 +99,41 @@ class AuthorServiceImplTest {
                 .isNotNull()
                 .returns(AUTHOR_ID, Author::getId);
 
-        verify(this.authorRepository).save(AUTHOR_DTO);
-        verify(this.authorMapper).map(AUTHOR_DTO);
+        verify(this.authorRepository).save(authorDto);
+        verify(this.authorMapper).map(authorDto);
         verify(this.authorMapper).map(AUTHOR);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+    }
+
+    @Test
+    void shouldUpdateExistingAuthor() {
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var updatedAuthor = Author.builder()
+                .firstName("Brandon")
+                .lastName("Sanderson")
+                .build();
+
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorDto));
+        when(this.authorRepository.save(any(AuthorDto.class))).thenReturn(authorDto);
+
+        var result = this.authorService.update(AUTHOR_ID, updatedAuthor);
+
+        assertThat(result)
+                .isNotNull()
+                .returns(AUTHOR_ID, Author::getId)
+                .returns(updatedAuthor.getFirstName(), Author::getFirstName)
+                .returns(updatedAuthor.getLastName(), Author::getLastName);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
+        verify(this.authorRepository).save(this.authorDtoArgumentCaptor.capture());
+        verify(this.authorMapper).map(authorDto);
+        verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+
+        assertThat(this.authorDtoArgumentCaptor.getValue())
+                .isNotNull()
+                .returns(AUTHOR_ID, AuthorDto::getId)
+                .returns(updatedAuthor.getFirstName(), AuthorDto::getFirstName)
+                .returns(updatedAuthor.getLastName(), AuthorDto::getLastName);
     }
 
 }
