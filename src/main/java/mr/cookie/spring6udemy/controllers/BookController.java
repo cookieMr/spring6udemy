@@ -38,7 +38,7 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Book getAuthorById(@PathVariable Long id) {
+    public Book getBookById(@PathVariable Long id) {
         return this.bookService.findById(id);
     }
 
@@ -65,7 +65,7 @@ public class BookController {
 
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAuthor(@PathVariable Long id) {
+    public void deleteBook(@PathVariable Long id) {
         this.bookService.deleteById(id);
     }
 

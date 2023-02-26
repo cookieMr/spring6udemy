@@ -63,7 +63,7 @@ class BookControllerTest {
     void shouldGetBookById(@Nullable Book book) {
         when(this.bookService.findById(anyLong())).thenReturn(book);
 
-        var result = this.bookController.getAuthorById(BOOK_ID);
+        var result = this.bookController.getBookById(BOOK_ID);
 
         assertThat(result)
                 .isEqualTo(book);
@@ -102,7 +102,7 @@ class BookControllerTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        this.bookController.deleteAuthor(BOOK_ID);
+        this.bookController.deleteBook(BOOK_ID);
 
         verify(this.bookService).deleteById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);

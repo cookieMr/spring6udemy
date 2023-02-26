@@ -38,7 +38,7 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Publisher getAuthorById(@PathVariable Long id) {
+    public Publisher getPublisherById(@PathVariable Long id) {
         return this.publisherService.findById(id);
     }
 
@@ -65,7 +65,7 @@ public class PublisherController {
 
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAuthor(@PathVariable Long id) {
+    public void deletePublisher(@PathVariable Long id) {
         this.publisherService.deleteById(id);
     }
 
