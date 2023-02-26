@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -134,6 +135,15 @@ class AuthorServiceImplTest {
                 .returns(AUTHOR_ID, AuthorDto::getId)
                 .returns(updatedAuthor.getFirstName(), AuthorDto::getFirstName)
                 .returns(updatedAuthor.getLastName(), AuthorDto::getLastName);
+    }
+
+    @Test
+    void shouldDeleteExistingAuthor() {
+        this.authorService.deleteById(AUTHOR_ID);
+
+        verify(this.authorRepository).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
     }
 
 }
