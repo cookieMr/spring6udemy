@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PublisherControllerTest {
 
-    private static final long ID = 4L;
-    private static final Publisher PUBLISHER = Publisher.builder().id(ID).build();
+    private static final long PUBLISHER_ID = 4L;
+    private static final Publisher PUBLISHER = Publisher.builder().id(PUBLISHER_ID).build();
 
     @Mock
     @NotNull
@@ -63,12 +63,12 @@ class PublisherControllerTest {
     void shouldGetPublisherById(@Nullable Publisher publisher) {
         when(this.publisherService.findById(anyLong())).thenReturn(publisher);
 
-        var result = this.publisherController.getAuthorById(ID);
+        var result = this.publisherController.getAuthorById(PUBLISHER_ID);
 
         assertThat(result)
                 .isEqualTo(publisher);
 
-        verify(this.publisherService).findById(ID);
+        verify(this.publisherService).findById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherService);
     }
 
@@ -83,6 +83,20 @@ class PublisherControllerTest {
                 .isSameAs(PUBLISHER);
 
         verify(this.publisherService).create(PUBLISHER);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
+    @Test
+    void shouldUpdateExistingPublisher() {
+        when(this.publisherService.update(anyLong(), any(Publisher.class))).thenReturn(PUBLISHER);
+
+        var result = this.publisherController.updateExistingPublisher(PUBLISHER_ID, PUBLISHER);
+
+        assertThat(result)
+                .isNotNull()
+                .isSameAs(PUBLISHER);
+
+        verify(this.publisherService).update(PUBLISHER_ID, PUBLISHER);
         verifyNoMoreInteractions(this.publisherService);
     }
 

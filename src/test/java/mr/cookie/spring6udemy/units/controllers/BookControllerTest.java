@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
 
-    private static final long ID = 3L;
-    private static final Book BOOK = Book.builder().id(ID).build();
+    private static final long BOOK_ID = 3L;
+    private static final Book BOOK = Book.builder().id(BOOK_ID).build();
 
     @Mock
     @NotNull
@@ -63,12 +63,12 @@ class BookControllerTest {
     void shouldGetBookById(@Nullable Book book) {
         when(this.bookService.findById(anyLong())).thenReturn(book);
 
-        var result = this.bookController.getAuthorById(ID);
+        var result = this.bookController.getAuthorById(BOOK_ID);
 
         assertThat(result)
                 .isEqualTo(book);
 
-        verify(this.bookService).findById(ID);
+        verify(this.bookService).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);
     }
 
@@ -83,6 +83,20 @@ class BookControllerTest {
                 .isSameAs(BOOK);
 
         verify(this.bookService).create(BOOK);
+        verifyNoMoreInteractions(this.bookService);
+    }
+
+    @Test
+    void shouldUpdateExistingAuthor() {
+        when(this.bookService.update(anyLong(), any(Book.class))).thenReturn(BOOK);
+
+        var result = this.bookController.updateExistingBook(BOOK_ID, BOOK);
+
+        assertThat(result)
+                .isNotNull()
+                .isSameAs(BOOK);
+
+        verify(this.bookService).update(BOOK_ID, BOOK);
         verifyNoMoreInteractions(this.bookService);
     }
 
