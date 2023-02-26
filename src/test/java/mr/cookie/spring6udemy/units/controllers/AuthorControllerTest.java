@@ -76,7 +76,7 @@ class AuthorControllerTest {
     void shouldCreateNewAuthor() {
         when(this.authorService.create(any(Author.class))).thenReturn(AUTHOR);
 
-        var result = this.authorController.createNewAuthor(AUTHOR);
+        var result = this.authorController.createAuthor(AUTHOR);
 
         assertThat(result)
                 .isNotNull()
@@ -90,7 +90,7 @@ class AuthorControllerTest {
     void shouldUpdateExistingAuthor() {
         when(this.authorService.update(anyLong(), any(Author.class))).thenReturn(AUTHOR);
 
-        var result = this.authorController.updateExistingAuthor(AUTHOR_ID, AUTHOR);
+        var result = this.authorController.updateAuthor(AUTHOR_ID, AUTHOR);
 
         assertThat(result)
                 .isNotNull()

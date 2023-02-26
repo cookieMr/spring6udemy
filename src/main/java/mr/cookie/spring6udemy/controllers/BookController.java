@@ -48,7 +48,7 @@ public class BookController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Book createNewBook(@RequestBody Book book) {
+    public Book createBook(@RequestBody Book book) {
         return this.bookService.create(book);
         // TODO: conflict status
     }
@@ -59,7 +59,7 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Book updateExistingBook(@PathVariable Long id, @RequestBody Book book) {
+    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
         return this.bookService.update(id, book);
     }
 

@@ -48,7 +48,7 @@ public class PublisherController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Publisher createNewPublisher(@RequestBody Publisher publisher) {
+    public Publisher createPublisher(@RequestBody Publisher publisher) {
         return this.publisherService.create(publisher);
         // TODO: conflict status
     }
@@ -59,7 +59,7 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Publisher updateExistingPublisher(@PathVariable Long id, @RequestBody Publisher publisher) {
+    public Publisher updatePublisher(@PathVariable Long id, @RequestBody Publisher publisher) {
         return this.publisherService.update(id, publisher);
     }
 

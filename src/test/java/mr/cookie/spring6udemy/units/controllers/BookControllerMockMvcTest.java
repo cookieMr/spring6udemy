@@ -1,25 +1,29 @@
-package mr.cookie.spring6udemy.services;
+package mr.cookie.spring6udemy.units.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import mr.cookie.spring6udemy.controllers.BookController;
 import mr.cookie.spring6udemy.model.model.Book;
-import org.hamcrest.core.Is;
+import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,12 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class BookControllerTest {
+@WebMvcTest(BookController.class)
+class BookControllerMockMvcTest {
 
     private static final long BOOK_ID = 1L;
-    private static final Supplier<Book> BOOK_SUPPLIER = () -> Book.builder()
+    private static final Book BOOK = Book.builder()
             .title("Warbreaker")
             .isbn("978-0765360038")
             .build();
@@ -48,74 +51,72 @@ class BookControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @NotNull
+    @MockBean
+    private BookService bookService;
+
     @Test
     void shouldGetAllBooks() {
+        given(this.bookService.findAll()).willReturn(Collections.singletonList(BOOK));
+
         var result = this.getAllBooks();
 
         assertThat(result)
                 .isNotNull()
-                .isNotEmpty();
-        // TODO: should contain a book
+                .containsOnly(BOOK);
+
+        verify(this.bookService).findAll();
+        verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
-    void shouldCreateAndThenGetBookById() {
-        var book = BOOK_SUPPLIER.get();
+    void shouldGetBookById() {
+        given(this.bookService.findById(anyLong())).willReturn(BOOK);
 
-        var bookId = this.createBook(book).getId();
-        var result = this.getBookById(bookId);
+        var result = this.getBookById(BOOK_ID);
 
         assertThat(result)
                 .isNotNull()
-                .returns(bookId, Book::getId)
-                .returns(book.getTitle(), Book::getTitle)
-                .returns(book.getIsbn(), Book::getIsbn);
-    }
+                .isEqualTo(BOOK);
 
-    @Disabled
-    @Test
-    void shouldReturn404WhenBookIsNotFound() throws Exception {
-        // TODO: error handling
-        this.mockMvc.perform(get("/book/%s".formatted(Integer.MAX_VALUE)))
-                .andExpect(status().isNotFound());
+        verify(this.bookService).findById(BOOK_ID);
+        verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
     void shouldCreateBook() {
-        var book = BOOK_SUPPLIER.get();
+        given(this.bookService.create(any(Book.class))).willReturn(BOOK);
 
-        var result = this.createBook(book);
+        var result = this.createBook(BOOK);
 
-        assertThat(result).isNotNull();
-        assertAll(
-                () -> assertThat(result)
-                        .returns(book.getTitle(), Book::getTitle)
-                        .returns(book.getIsbn(), Book::getIsbn),
-                () -> assertThat(result.getId())
-                        .isNotNull()
-                        .isPositive()
-        );
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(BOOK);
+
+        verify(this.bookService).create(BOOK);
+        verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
     void shouldUpdateBook() {
-        var book = BOOK_SUPPLIER.get();
+        given(this.bookService.update(anyLong(), any(Book.class))).willReturn(BOOK);
 
-        var result = this.updateBook(BOOK_ID, book);
+        var result = this.updateBook(BOOK_ID, BOOK);
 
-        assertThat(result).isNotNull();
         assertThat(result)
-                .returns(BOOK_ID, Book::getId)
-                .returns(book.getTitle(), Book::getTitle)
-                .returns(book.getIsbn(), Book::getIsbn);
+                .isNotNull()
+                .isEqualTo(BOOK);
+
+        verify(this.bookService).update(BOOK_ID, BOOK);
+        verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
-    void shouldDeleteExistingBook() {
-        var book = BOOK_SUPPLIER.get();
+    void shouldDeleteBook() {
+        this.deleteBookById(BOOK_ID);
 
-        var bookId = this.createBook(book).getId();
-        this.deleteBookById(bookId);
+        verify(this.bookService).deleteById(BOOK_ID);
+        verifyNoMoreInteractions(this.bookService);
     }
 
     @SneakyThrows
@@ -143,8 +144,6 @@ class BookControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.title").value(book.getTitle()))
                 .andExpect(jsonPath("$.isbn").value(book.getIsbn()))
                 .andReturn()
@@ -160,9 +159,6 @@ class BookControllerTest {
         var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id").value(bookId))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -180,9 +176,6 @@ class BookControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id", Is.is(bookId), Long.class))
                 .andExpect(jsonPath("$.title").value(book.getTitle()))
                 .andExpect(jsonPath("$.isbn").value(book.getIsbn()))
                 .andReturn()

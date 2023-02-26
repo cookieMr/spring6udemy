@@ -1,25 +1,29 @@
-package mr.cookie.spring6udemy.services;
+package mr.cookie.spring6udemy.units.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import mr.cookie.spring6udemy.controllers.PublisherController;
 import mr.cookie.spring6udemy.model.model.Publisher;
-import org.hamcrest.core.Is;
+import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,12 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class PublisherControllerTest {
+@WebMvcTest(PublisherController.class)
+class PublisherControllerMockMvcTest {
 
     private static final long PUBLISHER_ID = 1L;
-    private static final Supplier<Publisher> PUBLISHER_SUPPLIER = () -> Publisher.builder()
+    private static final Publisher PUBLISHER = Publisher.builder()
             .name("Penguin Random House")
             .address("Neumarkter Strasse 28")
             .state("Germany")
@@ -51,83 +54,72 @@ class PublisherControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @NotNull
+    @MockBean
+    private PublisherService publisherService;
+
     @Test
     void shouldGetAllPublishers() {
+        given(this.publisherService.findAll()).willReturn(Collections.singletonList(PUBLISHER));
+
         var result = this.getAllPublishers();
 
         assertThat(result)
                 .isNotNull()
-                .isNotEmpty();
-        // TODO: should contain a publisher
+                .containsOnly(PUBLISHER);
+
+        verify(this.publisherService).findAll();
+        verifyNoMoreInteractions(this.publisherService);
     }
 
     @Test
-    void shouldCreateAndThenGetPublisherById() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+    void shouldGetPublisherById() {
+        given(this.publisherService.findById(anyLong())).willReturn(PUBLISHER);
 
-        var publisherId = this.createPublisher(publisher).getId();
-        var result = this.getPublisherById(publisherId);
+        var result = this.getPublisherById(PUBLISHER_ID);
 
         assertThat(result)
                 .isNotNull()
-                .returns(publisherId, Publisher::getId)
-                .returns(publisher.getName(), Publisher::getName)
-                .returns(publisher.getAddress(), Publisher::getAddress)
-                .returns(publisher.getState(), Publisher::getState)
-                .returns(publisher.getCity(), Publisher::getCity)
-                .returns(publisher.getZipCode(), Publisher::getZipCode);
-    }
+                .isEqualTo(PUBLISHER);
 
-    @Disabled
-    @Test
-    void shouldReturn404WhenPublisherIsNotFound() throws Exception {
-        // TODO: error handling
-        this.mockMvc.perform(get("/publisher/%s".formatted(Integer.MAX_VALUE)))
-                .andExpect(status().isNotFound());
+        verify(this.publisherService).findById(PUBLISHER_ID);
+        verifyNoMoreInteractions(this.publisherService);
     }
 
     @Test
     void shouldCreatePublisher() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        given(this.publisherService.create(any(Publisher.class))).willReturn(PUBLISHER);
 
-        var result = this.createPublisher(publisher);
+        var result = this.createPublisher(PUBLISHER);
 
-        assertThat(result).isNotNull();
-        assertAll(
-                () -> assertThat(result)
-                        .returns(publisher.getName(), Publisher::getName)
-                        .returns(publisher.getAddress(), Publisher::getAddress)
-                        .returns(publisher.getState(), Publisher::getState)
-                        .returns(publisher.getCity(), Publisher::getCity)
-                        .returns(publisher.getZipCode(), Publisher::getZipCode),
-                () -> assertThat(result.getId())
-                        .isNotNull()
-                        .isPositive()
-        );
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(PUBLISHER);
+
+        verify(this.publisherService).create(PUBLISHER);
+        verifyNoMoreInteractions(this.publisherService);
     }
 
     @Test
     void shouldUpdatePublisher() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        given(this.publisherService.update(anyLong(), any(Publisher.class))).willReturn(PUBLISHER);
 
-        var result = this.updatePublisher(PUBLISHER_ID, publisher);
+        var result = this.updatePublisher(PUBLISHER_ID, PUBLISHER);
 
-        assertThat(result).isNotNull();
         assertThat(result)
-                .returns(PUBLISHER_ID, Publisher::getId)
-                .returns(publisher.getName(), Publisher::getName)
-                .returns(publisher.getAddress(), Publisher::getAddress)
-                .returns(publisher.getState(), Publisher::getState)
-                .returns(publisher.getCity(), Publisher::getCity)
-                .returns(publisher.getZipCode(), Publisher::getZipCode);
+                .isNotNull()
+                .isEqualTo(PUBLISHER);
+
+        verify(this.publisherService).update(PUBLISHER_ID, PUBLISHER);
+        verifyNoMoreInteractions(this.publisherService);
     }
 
     @Test
-    void shouldDeleteExistingPublisher() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+    void shouldDeletePublisher() {
+        this.deletePublisherById(PUBLISHER_ID);
 
-        var publisherId = this.createPublisher(publisher).getId();
-        this.deletePublisherById(publisherId);
+        verify(this.publisherService).deleteById(PUBLISHER_ID);
+        verifyNoMoreInteractions(this.publisherService);
     }
 
     @SneakyThrows
@@ -155,8 +147,6 @@ class PublisherControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name").value(publisher.getName()))
                 .andExpect(jsonPath("$.address").value(publisher.getAddress()))
                 .andExpect(jsonPath("$.state").value(publisher.getState()))
@@ -175,9 +165,6 @@ class PublisherControllerTest {
         var strPublisher = this.mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id").value(publisherId))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -195,9 +182,6 @@ class PublisherControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id", Is.is(publisherId), Long.class))
                 .andExpect(jsonPath("$.name").value(publisher.getName()))
                 .andExpect(jsonPath("$.address").value(publisher.getAddress()))
                 .andExpect(jsonPath("$.state").value(publisher.getState()))
