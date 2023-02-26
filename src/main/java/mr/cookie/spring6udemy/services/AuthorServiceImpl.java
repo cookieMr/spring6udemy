@@ -34,7 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Nullable
     @Override
-    public Author findById(@NotNull Long id) {
+    public Author findById(long id) {
         return this.authorRepository.findById(id)
                 .map(this.authorMapper::map)
                 .orElse(null);
@@ -48,6 +48,20 @@ public class AuthorServiceImpl implements AuthorService {
                 .map(this.authorMapper::map)
                 .orElseThrow();
         // TODO: return conflict when publisher exists
+    }
+
+    @Override
+    public @NotNull Author update(long id, @NotNull Author author) {
+        var existingDto = this.authorRepository.findById(id)
+                .orElseThrow();
+
+        existingDto.setFirstName(author.getFirstName());
+        existingDto.setLastName(author.getLastName());
+
+        return Optional.of(existingDto)
+                .map(this.authorRepository::save)
+                .map(this.authorMapper::map)
+                .orElseThrow();
     }
 
 }

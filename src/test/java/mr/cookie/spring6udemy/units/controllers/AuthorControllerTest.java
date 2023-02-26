@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuthorControllerTest {
 
-    private static final long ID = 7L;
-    private static final Author AUTHOR = Author.builder().id(ID).build();
+    private static final long AUTHOR_ID = 7L;
+    private static final Author AUTHOR = Author.builder().id(AUTHOR_ID).build();
 
     @Mock
     @NotNull
@@ -63,12 +63,12 @@ class AuthorControllerTest {
     void shouldGetAuthorById(@Nullable Author author) {
         when(this.authorService.findById(anyLong())).thenReturn(author);
 
-        var result = this.authorController.getAuthorById(ID);
+        var result = this.authorController.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
                 .isEqualTo(author);
 
-        verify(this.authorService).findById(ID);
+        verify(this.authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
     }
 
@@ -83,6 +83,20 @@ class AuthorControllerTest {
                 .isSameAs(AUTHOR);
 
         verify(this.authorService).create(AUTHOR);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
+    void shouldUpdateExistingAuthor() {
+        when(this.authorService.update(anyLong(), any(Author.class))).thenReturn(AUTHOR);
+
+        var result = this.authorController.updateExistingAuthor(AUTHOR_ID, AUTHOR);
+
+        assertThat(result)
+                .isNotNull()
+                .isSameAs(AUTHOR);
+
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
         verifyNoMoreInteractions(this.authorService);
     }
 

@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,7 +49,17 @@ public class BookController {
     @NotNull
     public Book createNewBook(@RequestBody Book book) {
         return this.bookService.create(book);
-        // TODO: 201 status & conflict status
+        // TODO: conflict status
+    }
+
+    @PutMapping(
+            path = "{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @NotNull
+    public Book updateExistingBook(@PathVariable Long id, @RequestBody Book book) {
+        return this.bookService.update(id, book);
     }
 
 }

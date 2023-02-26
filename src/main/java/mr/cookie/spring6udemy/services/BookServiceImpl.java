@@ -33,7 +33,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public @Nullable Book findById(@NotNull Long id) {
+    public @Nullable Book findById(long id) {
         return this.bookRepository.findById(id)
                 .map(this.bookMapper::map)
                 .orElse(null);
@@ -47,6 +47,20 @@ public class BookServiceImpl implements BookService {
                 .map(this.bookMapper::map)
                 .orElseThrow();
         // TODO: return conflict when publisher exists
+    }
+
+    @Override
+    public @NotNull Book update(long id, @NotNull Book book) {
+        var existingDto = this.bookRepository.findById(id)
+                .orElseThrow();
+
+        existingDto.setTitle(book.getTitle());
+        existingDto.setIsbn(book.getIsbn());
+
+        return Optional.of(existingDto)
+                .map(this.bookRepository::save)
+                .map(this.bookMapper::map)
+                .orElseThrow();
     }
 
 }

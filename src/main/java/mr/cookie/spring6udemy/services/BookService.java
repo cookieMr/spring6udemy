@@ -12,9 +12,12 @@ public interface BookService {
     List<Book> findAll();
 
     @Nullable
-    Book findById(@NotNull Long id);
+    Book findById(long id);
 
     @NotNull
     Book create(@NotNull Book book);
+
+    @NotNull
+    Book update(long id, @NotNull Book book);
 
 }

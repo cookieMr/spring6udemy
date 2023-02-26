@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,7 +49,17 @@ public class PublisherController {
     @NotNull
     public Publisher createNewPublisher(@RequestBody Publisher publisher) {
         return this.publisherService.create(publisher);
-        // TODO: 201 status & conflict status
+        // TODO: conflict status
+    }
+
+    @PutMapping(
+            path = "{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @NotNull
+    public Publisher updateExistingPublisher(@PathVariable Long id, @RequestBody Publisher publisher) {
+        return this.publisherService.update(id, publisher);
     }
 
 }
