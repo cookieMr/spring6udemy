@@ -87,7 +87,7 @@ class BookControllerTest {
     }
 
     @Test
-    void shouldUpdateExistingAuthor() {
+    void shouldUpdateExistingBook() {
         when(this.bookService.update(anyLong(), any(Book.class))).thenReturn(BOOK);
 
         var result = this.bookController.updateExistingBook(BOOK_ID, BOOK);
@@ -97,6 +97,14 @@ class BookControllerTest {
                 .isSameAs(BOOK);
 
         verify(this.bookService).update(BOOK_ID, BOOK);
+        verifyNoMoreInteractions(this.bookService);
+    }
+
+    @Test
+    void shouldDeleteExistingBook() {
+        this.bookController.deleteAuthor(BOOK_ID);
+
+        verify(this.bookService).deleteById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);
     }
 

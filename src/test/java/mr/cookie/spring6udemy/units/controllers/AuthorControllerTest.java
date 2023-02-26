@@ -100,4 +100,12 @@ class AuthorControllerTest {
         verifyNoMoreInteractions(this.authorService);
     }
 
+    @Test
+    void shouldDeleteExistingAuthor() {
+        this.authorController.deleteAuthor(AUTHOR_ID);
+
+        verify(this.authorService).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
 }

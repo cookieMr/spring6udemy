@@ -100,4 +100,12 @@ class PublisherControllerTest {
         verifyNoMoreInteractions(this.publisherService);
     }
 
+    @Test
+    void shouldDeleteExistingPublisher() {
+        this.publisherController.deleteAuthor(PUBLISHER_ID);
+
+        verify(this.publisherService).deleteById(PUBLISHER_ID);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
 }
