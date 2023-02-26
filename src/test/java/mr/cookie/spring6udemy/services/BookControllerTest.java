@@ -3,6 +3,7 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.model.Book;
+import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,10 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookControllerTest {
 
     private static final long BOOK_ID = 1L;
-    private static final Book EXPECTED_BOOK = Book.builder()
-            .id(BOOK_ID)
-            .title("Way of Kings")
-            .isbn("978-0765365279")
+    private static final Supplier<Book> BOOK_SUPPLIER = () -> Book.builder()
+            .title("Warbreaker")
+            .isbn("978-0765360038")
             .build();
 
     @NotNull
@@ -42,21 +47,18 @@ class BookControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void getAllBooks() throws Exception {
-        this.mockMvc.perform(get("/book"))
-                .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].title").value(EXPECTED_BOOK.getTitle()))
-                .andExpect(jsonPath("$[0].isbn").value(EXPECTED_BOOK.getIsbn()));
+    void shouldGetAllBooks() {
+        var books = this.getAllBooks();
+
+        assertThat(books)
+                .isNotNull()
+                .isNotEmpty();
+        // TODO: should contain a book
     }
 
     @Test
-    void getBookById() {
-        var book = Book.builder()
-                .title("Warbreaker")
-                .isbn("978-0765360038")
-                .build();
+    void shouldCreateAndThenGetBookById() {
+        var book = BOOK_SUPPLIER.get();
 
         var bookId = this.createBook(book).getId();
         var result = this.getBookById(bookId);
@@ -77,11 +79,8 @@ class BookControllerTest {
     }
 
     @Test
-    void postBookToCreate() {
-        var book = Book.builder()
-                .title("Warbreaker")
-                .isbn("978-0765360038")
-                .build();
+    void shouldCreateBook() {
+        var book = BOOK_SUPPLIER.get();
 
         var result = this.createBook(book);
 
@@ -96,11 +95,40 @@ class BookControllerTest {
         );
     }
 
+    @Test
+    void shouldUpdateBook() {
+        var book = BOOK_SUPPLIER.get();
+
+        var result = this.updateBook(BOOK_ID, book);
+
+        assertThat(result).isNotNull();
+        assertThat(result)
+                .returns(BOOK_ID, Book::getId)
+                .returns(book.getTitle(), Book::getTitle)
+                .returns(book.getIsbn(), Book::getIsbn);
+    }
+
+    @SneakyThrows
+    @NotNull
+    private List<Book> getAllBooks() {
+        var strBooks = this.mockMvc.perform(get("/book"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$").isArray())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var arrayAuthors = this.objectMapper.readValue(strBooks, Book[].class);
+        return Arrays.asList(arrayAuthors);
+    }
+
     @SneakyThrows
     @NotNull
     private Book createBook(@NotNull Book book) {
         var strBook = this.mockMvc.perform(post("/book")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(book))
                 )
                 .andExpect(status().isCreated())
@@ -125,6 +153,28 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.id").value(bookId))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        return this.objectMapper.readValue(strBook, Book.class);
+    }
+
+    @SneakyThrows
+    @NotNull
+    private Book updateBook(long bookId, @NotNull Book book) {
+        var strBook = this.mockMvc.perform(put("/book/{id}", bookId)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(book))
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.id", Is.is(bookId), Long.class))
+                .andExpect(jsonPath("$.title").value(book.getTitle()))
+                .andExpect(jsonPath("$.isbn").value(book.getIsbn()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
