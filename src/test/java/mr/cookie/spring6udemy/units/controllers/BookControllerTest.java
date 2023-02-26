@@ -76,7 +76,7 @@ class BookControllerTest {
     void shouldCreateNewBook() {
         when(this.bookService.create(any(Book.class))).thenReturn(BOOK);
 
-        var result = this.bookController.createNewBook(BOOK);
+        var result = this.bookController.createBook(BOOK);
 
         assertThat(result)
                 .isNotNull()
@@ -90,7 +90,7 @@ class BookControllerTest {
     void shouldUpdateExistingBook() {
         when(this.bookService.update(anyLong(), any(Book.class))).thenReturn(BOOK);
 
-        var result = this.bookController.updateExistingBook(BOOK_ID, BOOK);
+        var result = this.bookController.updateBook(BOOK_ID, BOOK);
 
         assertThat(result)
                 .isNotNull()

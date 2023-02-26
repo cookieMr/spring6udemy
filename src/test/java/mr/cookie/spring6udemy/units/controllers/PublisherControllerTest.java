@@ -76,7 +76,7 @@ class PublisherControllerTest {
     void shouldCreateNewPublisher() {
         when(this.publisherService.create(any(Publisher.class))).thenReturn(PUBLISHER);
 
-        var result = this.publisherController.createNewPublisher(PUBLISHER);
+        var result = this.publisherController.createPublisher(PUBLISHER);
 
         assertThat(result)
                 .isNotNull()
@@ -90,7 +90,7 @@ class PublisherControllerTest {
     void shouldUpdateExistingPublisher() {
         when(this.publisherService.update(anyLong(), any(Publisher.class))).thenReturn(PUBLISHER);
 
-        var result = this.publisherController.updateExistingPublisher(PUBLISHER_ID, PUBLISHER);
+        var result = this.publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER);
 
         assertThat(result)
                 .isNotNull()

@@ -1,25 +1,29 @@
-package mr.cookie.spring6udemy.services;
+package mr.cookie.spring6udemy.units.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import mr.cookie.spring6udemy.controllers.AuthorController;
 import mr.cookie.spring6udemy.model.model.Author;
-import org.hamcrest.core.Is;
+import mr.cookie.spring6udemy.services.AuthorService;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,12 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class AuthorControllerTest {
+@WebMvcTest(AuthorController.class)
+class AuthorControllerMockMvcTest {
 
     private static final long AUTHOR_ID = 1L;
-    private static final Supplier<Author> AUTHOR_SUPPLIER = () -> Author.builder()
+    private static final Author AUTHOR = Author.builder()
             .firstName("JRR")
             .lastName("Tolkien")
             .build();
@@ -48,74 +51,72 @@ class AuthorControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @NotNull
+    @MockBean
+    private AuthorService authorService;
+
     @Test
     void shouldGetAllAuthors() {
-        var result = this.getAllAuthors();
+        given(this.authorService.findAll()).willReturn(Collections.singletonList(AUTHOR));
 
-        assertThat(result)
+        var authors = this.getAllAuthors();
+
+        assertThat(authors)
                 .isNotNull()
-                .isNotEmpty();
-        // TODO: should contain an author
+                .containsOnly(AUTHOR);
+
+        verify(this.authorService).findAll();
+        verifyNoMoreInteractions(this.authorService);
     }
 
     @Test
-    void shouldCreateAndThenGetAuthorById() {
-        var author = AUTHOR_SUPPLIER.get();
+    void shouldGetAuthorById() {
+        given(this.authorService.findById(anyLong())).willReturn(AUTHOR);
 
-        var authorId = this.createAuthor(author).getId();
-        var result = this.getAuthorById(authorId);
+        var result = this.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
-                .returns(authorId, Author::getId)
-                .returns(author.getFirstName(), Author::getFirstName)
-                .returns(author.getLastName(), Author::getLastName);
-    }
+                .isEqualTo(AUTHOR);
 
-    @Disabled
-    @Test
-    void shouldReturn404WhenAuthorIsNotFound() throws Exception {
-        // TODO: error handling
-        this.mockMvc.perform(get("/author/{id}", Integer.MAX_VALUE))
-                .andExpect(status().isNotFound());
+        verify(this.authorService).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
     }
 
     @Test
     void shouldCreateAuthor() {
-        var author = AUTHOR_SUPPLIER.get();
+        given(this.authorService.create(any(Author.class))).willReturn(AUTHOR);
 
-        var result = this.createAuthor(author);
+        var result = this.createAuthor(AUTHOR);
 
-        assertThat(result).isNotNull();
-        assertAll(
-                () -> assertThat(result)
-                        .returns(author.getFirstName(), Author::getFirstName)
-                        .returns(author.getLastName(), Author::getLastName),
-                () -> assertThat(result.getId())
-                        .isNotNull()
-                        .isPositive()
-        );
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(AUTHOR);
+
+        verify(this.authorService).create(AUTHOR);
+        verifyNoMoreInteractions(this.authorService);
     }
 
     @Test
     void shouldUpdateAuthor() {
-        var author = AUTHOR_SUPPLIER.get();
+        given(this.authorService.update(anyLong(), any(Author.class))).willReturn(AUTHOR);
 
-        var result = this.updateAuthor(AUTHOR_ID, author);
+        var result = this.updateAuthor(AUTHOR_ID, AUTHOR);
 
-        assertThat(result).isNotNull();
         assertThat(result)
-                .returns(AUTHOR_ID, Author::getId)
-                .returns(author.getFirstName(), Author::getFirstName)
-                .returns(author.getLastName(), Author::getLastName);
+                .isNotNull()
+                .isEqualTo(AUTHOR);
+
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verifyNoMoreInteractions(this.authorService);
     }
 
     @Test
-    void shouldDeleteExistingAuthor() {
-        var author = AUTHOR_SUPPLIER.get();
+    void shouldDeleteAuthor() {
+        this.deleteAuthorById(AUTHOR_ID);
 
-        var authorId = this.createAuthor(author).getId();
-        this.deleteAuthorById(authorId);
+        verify(this.authorService).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
     }
 
     @SneakyThrows
@@ -143,8 +144,6 @@ class AuthorControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.firstName").value(author.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(author.getLastName()))
                 .andReturn()
@@ -160,9 +159,6 @@ class AuthorControllerTest {
         var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id").value(authorId))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -180,9 +176,6 @@ class AuthorControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id", Is.is(authorId), Long.class))
                 .andExpect(jsonPath("$.firstName").value(author.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(author.getLastName()))
                 .andReturn()

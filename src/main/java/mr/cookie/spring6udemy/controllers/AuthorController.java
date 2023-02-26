@@ -48,7 +48,7 @@ public class AuthorController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Author createNewAuthor(@RequestBody Author author) {
+    public Author createAuthor(@RequestBody Author author) {
         return this.authorService.create(author);
         // TODO: conflict status
     }
@@ -59,7 +59,7 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Author updateExistingAuthor(@PathVariable Long id, @RequestBody Author author) {
+    public Author updateAuthor(@PathVariable Long id, @RequestBody Author author) {
         return this.authorService.update(id, author);
     }
 
