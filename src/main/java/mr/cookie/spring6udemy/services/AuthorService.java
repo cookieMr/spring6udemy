@@ -14,4 +14,7 @@ public interface AuthorService {
     @Nullable
     Author findById(@NotNull Long id);
 
+    @NotNull
+    Author create(@NotNull Author author);
+
 }

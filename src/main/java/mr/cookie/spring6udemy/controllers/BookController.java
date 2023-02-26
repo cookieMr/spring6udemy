@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +36,16 @@ public class BookController {
     @Nullable
     public Book getAuthorById(@PathVariable Long id) {
         return this.bookService.findById(id);
+    }
+
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @NotNull
+    public Book createNewBook(@RequestBody Book book) {
+        return this.bookService.create(book);
+        // TODO: 201 status & conflict status
     }
 
 }

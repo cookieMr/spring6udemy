@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.when;
 class PublisherServiceImplTest {
 
     private static final long PUBLISHER_ID = 5L;
+    private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder().id(PUBLISHER_ID).build();
+    private static final Publisher PUBLISHER = Publisher.builder().id(PUBLISHER_ID).build();
 
     @Spy
     @NotNull
@@ -43,10 +46,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldFindAllPublishers() {
-        var publisherDto = PublisherDto.builder().id(PUBLISHER_ID).build();
-
-        when(this.publisherRepository.findAll())
-                .thenReturn(Collections.singletonList(publisherDto));
+        when(this.publisherRepository.findAll()).thenReturn(Collections.singletonList(PUBLISHER_DTO));
 
         var result = this.publisherService.findAll();
 
@@ -57,15 +57,13 @@ class PublisherServiceImplTest {
 
         verify(this.publisherRepository).findAll();
         verify(this.publisherMapper).mapToModel(anyIterable());
-        verify(this.publisherMapper).map(publisherDto);
+        verify(this.publisherMapper).map(PUBLISHER_DTO);
         verifyNoMoreInteractions(this.publisherRepository, this.publisherMapper);
     }
 
     @Test
     void shouldFindPublisherById() {
-        var publisherDto = PublisherDto.builder().id(PUBLISHER_ID).build();
-
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.of(publisherDto));
+        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.of(PUBLISHER_DTO));
 
         var result = this.publisherService.findById(PUBLISHER_ID);
 
@@ -74,7 +72,23 @@ class PublisherServiceImplTest {
                 .returns(PUBLISHER_ID, Publisher::getId);
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
-        verify(this.publisherMapper).map(publisherDto);
+        verify(this.publisherMapper).map(PUBLISHER_DTO);
+        verifyNoMoreInteractions(this.publisherRepository, this.publisherMapper);
+    }
+
+    @Test
+    void shouldCreateNewBook() {
+        when(this.publisherRepository.save(any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
+
+        var result = this.publisherService.create(PUBLISHER);
+
+        assertThat(result)
+                .isNotNull()
+                .returns(PUBLISHER_ID, Publisher::getId);
+
+        verify(this.publisherRepository).save(PUBLISHER_DTO);
+        verify(this.publisherMapper).map(PUBLISHER_DTO);
+        verify(this.publisherMapper).map(PUBLISHER);
         verifyNoMoreInteractions(this.publisherRepository, this.publisherMapper);
     }
 

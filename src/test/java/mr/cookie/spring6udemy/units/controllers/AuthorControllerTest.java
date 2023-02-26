@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -68,6 +69,20 @@ class AuthorControllerTest {
                 .isEqualTo(author);
 
         verify(this.authorService).findById(ID);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
+    void shouldCreateNewAuthor() {
+        when(this.authorService.create(any(Author.class))).thenReturn(AUTHOR);
+
+        var result = this.authorController.createNewAuthor(AUTHOR);
+
+        assertThat(result)
+                .isNotNull()
+                .isSameAs(AUTHOR);
+
+        verify(this.authorService).create(AUTHOR);
         verifyNoMoreInteractions(this.authorService);
     }
 

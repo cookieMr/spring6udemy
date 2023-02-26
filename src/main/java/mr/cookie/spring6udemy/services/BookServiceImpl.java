@@ -39,4 +39,14 @@ public class BookServiceImpl implements BookService {
                 .orElse(null);
     }
 
+    @Override
+    public @NotNull Book create(@NotNull Book book) {
+        return Optional.of(book)
+                .map(this.bookMapper::map)
+                .map(this.bookRepository::save)
+                .map(this.bookMapper::map)
+                .orElseThrow();
+        // TODO: return conflict when publisher exists
+    }
+
 }

@@ -14,4 +14,7 @@ public interface BookService {
     @Nullable
     Book findById(@NotNull Long id);
 
+    @NotNull
+    Book create(@NotNull Book book);
+
 }

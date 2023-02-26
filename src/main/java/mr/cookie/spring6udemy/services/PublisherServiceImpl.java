@@ -39,4 +39,14 @@ public class PublisherServiceImpl implements PublisherService {
                 .orElse(null);
     }
 
+    @Override
+    public @NotNull Publisher create(@NotNull Publisher publisher) {
+        return Optional.of(publisher)
+                .map(this.publisherMapper::map)
+                .map(this.publisherRepository::save)
+                .map(this.publisherMapper::map)
+                .orElseThrow();
+        // TODO: return conflict when publisher exists
+    }
+
 }
