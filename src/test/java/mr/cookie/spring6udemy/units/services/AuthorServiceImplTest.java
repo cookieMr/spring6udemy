@@ -6,6 +6,7 @@ import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.services.AuthorServiceImpl;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -86,6 +88,20 @@ class AuthorServiceImplTest {
         verify(this.authorRepository).findById(AUTHOR_ID);
         verify(this.authorMapper).map(authorDto);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotFindAuthorById() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.authorService.findById(AUTHOR_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
     }
 
     @Test

@@ -3,21 +3,18 @@ package mr.cookie.spring6udemy.units.controllers;
 import mr.cookie.spring6udemy.controllers.AuthorController;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.services.AuthorService;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -52,21 +49,29 @@ class AuthorControllerTest {
         verifyNoMoreInteractions(this.authorService);
     }
 
-    @NotNull
-    private static Stream<Author> authorStream() {
-        return Stream.of(AUTHOR);
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @MethodSource("authorStream")
-    void shouldGetAuthorById(@Nullable Author author) {
-        when(this.authorService.findById(anyLong())).thenReturn(author);
+    @Test
+    void shouldGetAuthorById() {
+        when(this.authorService.findById(anyLong())).thenReturn(AUTHOR);
 
         var result = this.authorController.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
-                .isEqualTo(author);
+                .isNotNull()
+                .isEqualTo(AUTHOR);
+
+        verify(this.authorService).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotFindAuthorById() {
+        when(this.authorService.findById(anyLong()))
+                .thenThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+
+        assertThatThrownBy(() -> this.authorController.getAuthorById(AUTHOR_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
 
         verify(this.authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);

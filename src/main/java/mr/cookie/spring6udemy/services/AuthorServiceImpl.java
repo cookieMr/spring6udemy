@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +32,12 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElse(Collections.emptyList());
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Author findById(long id) {
         return this.authorRepository.findById(id)
                 .map(this.authorMapper::map)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
     }
 
     @Override
