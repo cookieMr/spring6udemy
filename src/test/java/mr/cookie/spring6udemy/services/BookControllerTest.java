@@ -20,9 +20,11 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -108,6 +110,14 @@ class BookControllerTest {
                 .returns(book.getIsbn(), Book::getIsbn);
     }
 
+    @Test
+    void shouldDeleteExistingBook() {
+        var book = BOOK_SUPPLIER.get();
+
+        var bookId = this.createBook(book).getId();
+        this.deleteBookById(bookId);
+    }
+
     @SneakyThrows
     @NotNull
     private List<Book> getAllBooks() {
@@ -119,8 +129,8 @@ class BookControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayAuthors = this.objectMapper.readValue(strBooks, Book[].class);
-        return Arrays.asList(arrayAuthors);
+        var arrayBooks = this.objectMapper.readValue(strBooks, Book[].class);
+        return Arrays.asList(arrayBooks);
     }
 
     @SneakyThrows
@@ -180,6 +190,13 @@ class BookControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strBook, Book.class);
+    }
+
+    @SneakyThrows
+    private void deleteBookById(long bookId) {
+        this.mockMvc.perform(delete("/book/{id}", bookId))
+                .andExpect(status().isNoContent())
+                .andDo(print());
     }
 
 }
