@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.when;
 class AuthorServiceImplTest {
 
     private static final long AUTHOR_ID = 2L;
+    private static final Author AUTHOR = Author.builder().id(AUTHOR_ID).build();
+    private static final AuthorDto AUTHOR_DTO = AuthorDto.builder().id(AUTHOR_ID).build();
 
     @Spy
     @NotNull
@@ -43,10 +46,8 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldReturnAllAuthors() {
-        var authorDto = AuthorDto.builder().id(AUTHOR_ID).build();
-
         when(this.authorRepository.findAll())
-                .thenReturn(Collections.singletonList(authorDto));
+                .thenReturn(Collections.singletonList(AUTHOR_DTO));
 
         var result = this.authorService.findAll();
 
@@ -57,15 +58,13 @@ class AuthorServiceImplTest {
 
         verify(this.authorRepository).findAll();
         verify(this.authorMapper).mapToModel(anyIterable());
-        verify(this.authorMapper).map(authorDto);
+        verify(this.authorMapper).map(AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 
     @Test
     void shouldReturnAuthorById() {
-        var authorDto = AuthorDto.builder().id(AUTHOR_ID).build();
-
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorDto));
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO));
 
         var result = this.authorService.findById(AUTHOR_ID);
 
@@ -74,7 +73,23 @@ class AuthorServiceImplTest {
                 .returns(AUTHOR_ID, Author::getId);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
-        verify(this.authorMapper).map(authorDto);
+        verify(this.authorMapper).map(AUTHOR_DTO);
+        verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+    }
+
+    @Test
+    void shouldCreateNewAuthor() {
+        when(this.authorRepository.save(any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+
+        var result = this.authorService.create(AUTHOR);
+
+        assertThat(result)
+                .isNotNull()
+                .returns(AUTHOR_ID, Author::getId);
+
+        verify(this.authorRepository).save(AUTHOR_DTO);
+        verify(this.authorMapper).map(AUTHOR_DTO);
+        verify(this.authorMapper).map(AUTHOR);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -68,6 +69,20 @@ class PublisherControllerTest {
                 .isEqualTo(publisher);
 
         verify(this.publisherService).findById(ID);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
+    @Test
+    void shouldCreateNewPublisher() {
+        when(this.publisherService.create(any(Publisher.class))).thenReturn(PUBLISHER);
+
+        var result = this.publisherController.createNewPublisher(PUBLISHER);
+
+        assertThat(result)
+                .isNotNull()
+                .isSameAs(PUBLISHER);
+
+        verify(this.publisherService).create(PUBLISHER);
         verifyNoMoreInteractions(this.publisherService);
     }
 

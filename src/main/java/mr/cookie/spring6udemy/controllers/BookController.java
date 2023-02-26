@@ -45,6 +45,7 @@ public class BookController {
     @NotNull
     public Book createNewBook(@RequestBody Book book) {
         return this.bookService.create(book);
+        // TODO: 201 status & conflict status
     }
 
 }

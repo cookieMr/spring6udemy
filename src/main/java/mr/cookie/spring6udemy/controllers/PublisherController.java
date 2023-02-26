@@ -45,6 +45,7 @@ public class PublisherController {
     @NotNull
     public Publisher createNewPublisher(@RequestBody Publisher publisher) {
         return this.publisherService.create(publisher);
+        // TODO: 201 status & conflict status
     }
 
 }

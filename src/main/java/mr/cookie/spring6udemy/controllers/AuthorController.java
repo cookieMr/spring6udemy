@@ -45,6 +45,7 @@ public class AuthorController {
     @NotNull
     public Author createNewAuthor(@RequestBody Author author) {
         return this.authorService.create(author);
+        // TODO: 201 status & conflict status
     }
 
 }
