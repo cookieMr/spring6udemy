@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +75,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGetAuthorById() {
-        given(this.authorService.findById(anyLong())).willReturn(AUTHOR);
+        given(this.authorService.findById(anyLong())).willReturn(Optional.of(AUTHOR));
 
         var result = this.getAuthorById(AUTHOR_ID);
 

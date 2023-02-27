@@ -32,12 +32,10 @@ public class BookServiceImpl implements BookService {
                 .orElse(Collections.emptyList());
     }
 
-    @NotNull
     @Override
-    public Book findById(long id) {
+    public Optional<Book> findById(long id) {
         return this.bookRepository.findById(id)
-                .map(this.bookMapper::map)
-                .orElseThrow(() -> new NotFoundEntityException(id, Book.class));
+                .map(this.bookMapper::map);
     }
 
     @NotNull
@@ -55,7 +53,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book update(long id, @NotNull Book book) {
         var existingDto = this.bookRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(id, Book.class));
+                .orElseThrow(NotFoundEntityException::new);
 
         existingDto.setTitle(book.getTitle());
         existingDto.setIsbn(book.getIsbn());
