@@ -3,7 +3,6 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.model.Author;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -75,11 +74,7 @@ class AuthorControllerTest {
     @Test
     void shouldReturn404WhenAuthorIsNotFound() {
         var authorId = Integer.MAX_VALUE;
-        var result = this.getAuthorByIdAndExpect404(authorId);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), authorId);
+        this.getAuthorByIdAndExpect404(authorId);
     }
 
     @Test
@@ -116,11 +111,7 @@ class AuthorControllerTest {
     void shouldReturn404WhenUpdatingAuthorIsNotFound() {
         var author = AUTHOR_SUPPLIER.get();
         var authorId = Integer.MAX_VALUE;
-        var result = this.updateAuthorAndExpect404(authorId, author);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), authorId);
+        this.updateAuthorAndExpect404(authorId, author);
     }
 
     @Test
@@ -134,11 +125,7 @@ class AuthorControllerTest {
     @Test
     void shouldReturn404WhenDeletingAuthorIsNotFound() {
         var authorId = Integer.MAX_VALUE;
-        var result = this.deleteAuthorAndExpect404(authorId);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), authorId);
+        this.deleteAuthorAndExpect404(authorId);
     }
 
     @SneakyThrows
@@ -194,14 +181,9 @@ class AuthorControllerTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String getAuthorByIdAndExpect404(long authorId) {
-        return this.mockMvc.perform(get("/author/{id}", authorId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void getAuthorByIdAndExpect404(long authorId) {
+        this.mockMvc.perform(get("/author/{id}", authorId))
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -227,18 +209,13 @@ class AuthorControllerTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String updateAuthorAndExpect404(long authorId, @NotNull Author author) {
-        return this.mockMvc.perform(put("/author/{id}", authorId)
+    private void updateAuthorAndExpect404(long authorId, @NotNull Author author) {
+        this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(author))
                 )
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -248,14 +225,9 @@ class AuthorControllerTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String deleteAuthorAndExpect404(long authorId) {
-        return this.mockMvc.perform(delete("/author/{id}", authorId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void deleteAuthorAndExpect404(long authorId) {
+        this.mockMvc.perform(delete("/author/{id}", authorId))
+                .andExpect(status().isNotFound());
     }
 
 }

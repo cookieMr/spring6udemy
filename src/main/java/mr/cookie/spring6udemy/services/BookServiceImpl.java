@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;

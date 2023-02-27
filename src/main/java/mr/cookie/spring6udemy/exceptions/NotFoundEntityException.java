@@ -1,9 +1,14 @@
-package mr.cookie.spring6udemy.services.exceptions;
+package mr.cookie.spring6udemy.exceptions;
 
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Getter
+@ControllerAdvice
+@NoArgsConstructor
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class NotFoundEntityException extends RuntimeException {
 
     /**
@@ -11,14 +16,8 @@ public class NotFoundEntityException extends RuntimeException {
      */
     public static final String ERROR_MESSAGE = "Could not find entity of %s for id %d";
 
-    private final Long id;
-    private final Class<?> clazz;
-
     public NotFoundEntityException(@NotNull Long id, @NotNull Class<?> clazz) {
         super(ERROR_MESSAGE.formatted(clazz.getSimpleName(), id));
-
-        this.id = id;
-        this.clazz = clazz;
     }
 
 }

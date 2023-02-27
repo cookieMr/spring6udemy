@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.controllers;
 import mr.cookie.spring6udemy.controllers.BookController;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.services.BookService;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

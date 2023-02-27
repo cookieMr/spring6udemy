@@ -6,7 +6,7 @@ import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.services.AuthorServiceImpl;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -3,7 +3,6 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.model.Book;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -75,11 +74,7 @@ class BookControllerTest {
     @Test
     void shouldReturn404WhenBookIsNotFound() {
         var bookId = Integer.MAX_VALUE;
-        var result = this.getBookByIdAndExpect404(bookId);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), bookId);
+        this.getBookByIdAndExpect404(bookId);
     }
 
     @Test
@@ -99,7 +94,6 @@ class BookControllerTest {
         );
     }
 
-    // todo: 404
     @Test
     void shouldUpdateBook() {
         var book = BOOK_SUPPLIER.get();
@@ -117,11 +111,7 @@ class BookControllerTest {
     void shouldReturn404WhenUpdatingBookIsNotFound() {
         var book = BOOK_SUPPLIER.get();
         var bookId = Integer.MAX_VALUE;
-        var result = this.updateBookAndExpect404(bookId, book);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), bookId);
+        this.updateBookAndExpect404(bookId, book);
     }
 
     @Test
@@ -135,11 +125,7 @@ class BookControllerTest {
     @Test
     void shouldReturn404WhenDeletingBookIsNotFound() {
         var bookId = Integer.MAX_VALUE;
-        var result = this.deleteBookAndExpect404(bookId);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), bookId);
+        this.deleteBookAndExpect404(bookId);
     }
 
     @SneakyThrows
@@ -195,14 +181,9 @@ class BookControllerTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String getBookByIdAndExpect404(long bookId) {
-        return this.mockMvc.perform(get("/book/{id}", bookId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void getBookByIdAndExpect404(long bookId) {
+        this.mockMvc.perform(get("/book/{id}", bookId))
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -228,18 +209,13 @@ class BookControllerTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String updateBookAndExpect404(long bookId, @NotNull Book book) {
-        return this.mockMvc.perform(put("/book/{id}", bookId)
+    private void updateBookAndExpect404(long bookId, @NotNull Book book) {
+        this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(book))
                 )
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -249,14 +225,9 @@ class BookControllerTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String deleteBookAndExpect404(long bookId) {
-        return this.mockMvc.perform(delete("/book/{id}", bookId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void deleteBookAndExpect404(long bookId) {
+        this.mockMvc.perform(delete("/book/{id}", bookId))
+                .andExpect(status().isNotFound());
     }
 
 }
