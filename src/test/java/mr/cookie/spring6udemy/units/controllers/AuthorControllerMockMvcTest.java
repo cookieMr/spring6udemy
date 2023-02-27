@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.AuthorController;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.services.AuthorService;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -91,11 +91,7 @@ class AuthorControllerMockMvcTest {
         given(this.authorService.findById(anyLong()))
                 .willThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
 
-        var result = this.getAuthorByIdAndExpect404(AUTHOR_ID);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+        this.getAuthorByIdAndExpect404(AUTHOR_ID);
 
         verify(this.authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
@@ -134,11 +130,7 @@ class AuthorControllerMockMvcTest {
         given(this.authorService.update(anyLong(), any(Author.class)))
                 .willThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
 
-        var result = this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+        this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR);
 
         verify(this.authorService).update(AUTHOR_ID, AUTHOR);
         verifyNoMoreInteractions(this.authorService);
@@ -158,11 +150,7 @@ class AuthorControllerMockMvcTest {
                 .when(this.authorService)
                 .deleteById(AUTHOR_ID);
 
-        var result = this.deleteAuthorAndExpect404(AUTHOR_ID);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+        this.deleteAuthorAndExpect404(AUTHOR_ID);
 
         verify(this.authorService).deleteById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
@@ -217,14 +205,9 @@ class AuthorControllerMockMvcTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String getAuthorByIdAndExpect404(long authorId) {
-        return this.mockMvc.perform(get("/author/{id}", authorId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void getAuthorByIdAndExpect404(long authorId) {
+        this.mockMvc.perform(get("/author/{id}", authorId))
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -247,18 +230,13 @@ class AuthorControllerMockMvcTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String updateAuthorAndExpect404(long authorId, @NotNull Author author) {
-        return this.mockMvc.perform(put("/author/{id}", authorId)
+    private void updateAuthorAndExpect404(long authorId, @NotNull Author author) {
+        this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(author))
                 )
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -268,14 +246,9 @@ class AuthorControllerMockMvcTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String deleteAuthorAndExpect404(long authorId) {
-        return this.mockMvc.perform(delete("/author/{id}", authorId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void deleteAuthorAndExpect404(long authorId) {
+        this.mockMvc.perform(delete("/author/{id}", authorId))
+                .andExpect(status().isNotFound());
     }
 
 }

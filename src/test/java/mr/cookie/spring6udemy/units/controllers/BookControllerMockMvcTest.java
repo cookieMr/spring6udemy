@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.BookController;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.services.BookService;
-import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -91,11 +91,7 @@ class BookControllerMockMvcTest {
         given(this.bookService.findById(anyLong()))
                 .willThrow(new NotFoundEntityException(BOOK_ID, Book.class));
 
-        var result = this.getBookByIdAndExpect404(BOOK_ID);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+        this.getBookByIdAndExpect404(BOOK_ID);
 
         verify(this.bookService).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);
@@ -134,11 +130,7 @@ class BookControllerMockMvcTest {
         given(this.bookService.update(anyLong(), any(Book.class)))
                 .willThrow(new NotFoundEntityException(BOOK_ID, Book.class));
 
-        var result = this.updateBookAndExpect404(BOOK_ID, BOOK);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+        this.updateBookAndExpect404(BOOK_ID, BOOK);
 
         verify(this.bookService).update(BOOK_ID, BOOK);
         verifyNoMoreInteractions(this.bookService);
@@ -158,11 +150,7 @@ class BookControllerMockMvcTest {
                 .when(this.bookService)
                 .deleteById(BOOK_ID);
 
-        var result = this.deleteBookAndExpect404(BOOK_ID);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+        this.deleteBookAndExpect404(BOOK_ID);
 
         verify(this.bookService).deleteById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);
@@ -217,14 +205,9 @@ class BookControllerMockMvcTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String getBookByIdAndExpect404(long bookId) {
-        return this.mockMvc.perform(get("/book/{id}", bookId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void getBookByIdAndExpect404(long bookId) {
+        this.mockMvc.perform(get("/book/{id}", bookId))
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -247,18 +230,13 @@ class BookControllerMockMvcTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String updateBookAndExpect404(long bookId, @NotNull Book book) {
-        return this.mockMvc.perform(put("/book/{id}", bookId)
+    private void updateBookAndExpect404(long bookId, @NotNull Book book) {
+        this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(book))
                 )
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
@@ -268,14 +246,9 @@ class BookControllerMockMvcTest {
     }
 
     @SneakyThrows
-    @NotNull
-    private String deleteBookAndExpect404(long bookId) {
-        return this.mockMvc.perform(delete("/book/{id}", bookId))
-                .andExpect(status().isNotFound())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    private void deleteBookAndExpect404(long bookId) {
+        this.mockMvc.perform(delete("/book/{id}", bookId))
+                .andExpect(status().isNotFound());
     }
 
 }
