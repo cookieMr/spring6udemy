@@ -6,9 +6,9 @@
 
 <suppressions>
     <suppress checks="JavadocPackage"/>
+    <suppress checks="RightCurly"/>
     <suppress checks="SpringHeader"/>
     <suppress checks="SpringImportOrder"/>
     <suppress checks="SpringLambda"/>
     <suppress checks="SpringLeadingWhitespace"/>
 </suppressions>
-

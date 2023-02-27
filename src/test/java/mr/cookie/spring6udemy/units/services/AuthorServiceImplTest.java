@@ -6,6 +6,7 @@ import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.services.AuthorServiceImpl;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -89,6 +91,20 @@ class AuthorServiceImplTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCannotFindAuthorById() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.authorService.findById(AUTHOR_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
+    }
+
+    @Test
     void shouldCreateNewAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
@@ -138,10 +154,40 @@ class AuthorServiceImplTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCannotUpdateAuthorById() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
+    }
+
+    @Test
     void shouldDeleteExistingAuthor() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO_SUPPLIER.get()));
+
         this.authorService.deleteById(AUTHOR_ID);
 
         verify(this.authorRepository).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotDeleteAuthorById() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.authorService.deleteById(AUTHOR_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);
         verifyNoInteractions(this.authorMapper);
     }

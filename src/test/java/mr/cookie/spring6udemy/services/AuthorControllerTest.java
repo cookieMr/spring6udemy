@@ -3,9 +3,9 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,12 +24,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("SameParameterValue")
 @SpringBootTest
 @AutoConfigureMockMvc
 class AuthorControllerTest {
@@ -72,12 +72,14 @@ class AuthorControllerTest {
                 .returns(author.getLastName(), Author::getLastName);
     }
 
-    @Disabled
     @Test
-    void shouldReturn404WhenAuthorIsNotFound() throws Exception {
-        // TODO: error handling
-        this.mockMvc.perform(get("/author/{id}", Integer.MAX_VALUE))
-                .andExpect(status().isNotFound());
+    void shouldReturn404WhenAuthorIsNotFound() {
+        var authorId = Integer.MAX_VALUE;
+        var result = this.getAuthorByIdAndExpect404(authorId);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), authorId);
     }
 
     @Test
@@ -172,6 +174,17 @@ class AuthorControllerTest {
 
     @SneakyThrows
     @NotNull
+    private String getAuthorByIdAndExpect404(long authorId) {
+        return this.mockMvc.perform(get("/author/{id}", authorId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @SneakyThrows
+    @NotNull
     private Author updateAuthor(long authorId, @NotNull Author author) {
         var strAuthor = this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -195,8 +208,7 @@ class AuthorControllerTest {
     @SneakyThrows
     private void deleteAuthorById(long authorId) {
         this.mockMvc.perform(delete("/author/{id}", authorId))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
     }
 
 }
