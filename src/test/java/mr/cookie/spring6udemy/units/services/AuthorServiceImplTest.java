@@ -169,9 +169,25 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO_SUPPLIER.get()));
+
         this.authorService.deleteById(AUTHOR_ID);
 
         verify(this.authorRepository).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotDeleteAuthorById() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.authorService.deleteById(AUTHOR_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);
         verifyNoInteractions(this.authorMapper);
     }

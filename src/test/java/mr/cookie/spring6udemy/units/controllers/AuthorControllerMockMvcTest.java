@@ -24,18 +24,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("SameParameterValue")
 @WebMvcTest(AuthorController.class)
 class AuthorControllerMockMvcTest {
 
@@ -151,6 +152,22 @@ class AuthorControllerMockMvcTest {
         verifyNoMoreInteractions(this.authorService);
     }
 
+    @Test
+    void shouldGet404WhenCannotDeleteAuthorById() {
+        doThrow(new NotFoundEntityException(AUTHOR_ID, Author.class))
+                .when(this.authorService)
+                .deleteById(AUTHOR_ID);
+
+        var result = this.deleteAuthorAndExpect404(AUTHOR_ID);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorService).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
     @SneakyThrows
     @NotNull
     private List<Author> getAllAuthors() {
@@ -247,8 +264,18 @@ class AuthorControllerMockMvcTest {
     @SneakyThrows
     private void deleteAuthorById(long authorId) {
         this.mockMvc.perform(delete("/author/{id}", authorId))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
+    }
+
+    @SneakyThrows
+    @NotNull
+    private String deleteAuthorAndExpect404(long authorId) {
+        return this.mockMvc.perform(delete("/author/{id}", authorId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
 }

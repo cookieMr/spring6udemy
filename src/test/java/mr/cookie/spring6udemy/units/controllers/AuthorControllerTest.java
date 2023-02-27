@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -122,6 +123,20 @@ class AuthorControllerTest {
     @Test
     void shouldDeleteExistingAuthor() {
         this.authorController.deleteAuthor(AUTHOR_ID);
+
+        verify(this.authorService).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotDeleteAuthorById() {
+        doThrow(new NotFoundEntityException(AUTHOR_ID, Author.class))
+                .when(this.authorService).deleteById(anyLong());
+
+        assertThatThrownBy(() -> this.authorController.deleteAuthor(AUTHOR_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
 
         verify(this.authorService).deleteById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
