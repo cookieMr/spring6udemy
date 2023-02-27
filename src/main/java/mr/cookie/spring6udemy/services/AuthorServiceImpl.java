@@ -40,8 +40,9 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
     }
 
+    @NotNull
     @Override
-    public @NotNull Author create(@NotNull Author author) {
+    public Author create(@NotNull Author author) {
         return Optional.of(author)
                 .map(this.authorMapper::map)
                 .map(this.authorRepository::save)
@@ -50,8 +51,9 @@ public class AuthorServiceImpl implements AuthorService {
         // TODO: return conflict when publisher exists
     }
 
+    @NotNull
     @Override
-    public @NotNull Author update(long id, @NotNull Author author) {
+    public Author update(long id, @NotNull Author author) {
         var existingDto = this.authorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
 
