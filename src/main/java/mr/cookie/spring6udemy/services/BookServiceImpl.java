@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,15 +32,17 @@ public class BookServiceImpl implements BookService {
                 .orElse(Collections.emptyList());
     }
 
+    @NotNull
     @Override
-    public @Nullable Book findById(long id) {
+    public Book findById(long id) {
         return this.bookRepository.findById(id)
                 .map(this.bookMapper::map)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundEntityException(id, Book.class));
     }
 
+    @NotNull
     @Override
-    public @NotNull Book create(@NotNull Book book) {
+    public Book create(@NotNull Book book) {
         return Optional.of(book)
                 .map(this.bookMapper::map)
                 .map(this.bookRepository::save)
@@ -49,10 +51,11 @@ public class BookServiceImpl implements BookService {
         // TODO: return conflict when publisher exists
     }
 
+    @NotNull
     @Override
-    public @NotNull Book update(long id, @NotNull Book book) {
+    public Book update(long id, @NotNull Book book) {
         var existingDto = this.bookRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundEntityException(id, Book.class));
 
         existingDto.setTitle(book.getTitle());
         existingDto.setIsbn(book.getIsbn());
@@ -65,7 +68,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(long id) {
-        this.bookRepository.deleteById(id);
+        var doesBookExist = this.bookRepository.findById(id)
+                .isPresent();
+
+        if (doesBookExist) {
+            this.bookRepository.deleteById(id);
+        } else {
+            throw new NotFoundEntityException(id, Book.class);
+        }
     }
 
 }
