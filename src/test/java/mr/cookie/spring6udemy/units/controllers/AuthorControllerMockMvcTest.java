@@ -129,6 +129,21 @@ class AuthorControllerMockMvcTest {
     }
 
     @Test
+    void shouldGet404WhenCannotUpdateAuthorById() {
+        given(this.authorService.update(anyLong(), any(Author.class)))
+                .willThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+
+        var result = this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
     void shouldDeleteAuthor() {
         this.deleteAuthorById(AUTHOR_ID);
 
@@ -212,6 +227,21 @@ class AuthorControllerMockMvcTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strAuthor, Author.class);
+    }
+
+    @SneakyThrows
+    @NotNull
+    private String updateAuthorAndExpect404(long authorId, @NotNull Author author) {
+        return this.mockMvc.perform(put("/author/{id}", authorId)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(author))
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
     @SneakyThrows

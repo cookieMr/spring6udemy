@@ -53,7 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public @NotNull Author update(long id, @NotNull Author author) {
         var existingDto = this.authorRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
 
         existingDto.setFirstName(author.getFirstName());
         existingDto.setLastName(author.getLastName());

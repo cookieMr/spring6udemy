@@ -154,6 +154,20 @@ class AuthorServiceImplTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCannotUpdateAuthorById() {
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorRepository).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(this.authorRepository);
+        verifyNoInteractions(this.authorMapper);
+    }
+
+    @Test
     void shouldDeleteExistingAuthor() {
         this.authorService.deleteById(AUTHOR_ID);
 

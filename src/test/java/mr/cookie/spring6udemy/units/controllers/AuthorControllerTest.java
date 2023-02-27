@@ -106,6 +106,20 @@ class AuthorControllerTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCannotUpdateAuthorById() {
+        when(this.authorService.update(anyLong(), any(Author.class)))
+                .thenThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+
+        assertThatThrownBy(() -> this.authorController.updateAuthor(AUTHOR_ID, AUTHOR))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verifyNoMoreInteractions(this.authorService);
+    }
+
+    @Test
     void shouldDeleteExistingAuthor() {
         this.authorController.deleteAuthor(AUTHOR_ID);
 
