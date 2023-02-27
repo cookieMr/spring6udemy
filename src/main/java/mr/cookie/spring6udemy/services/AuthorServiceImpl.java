@@ -66,9 +66,14 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void deleteById(long id) {
-        this.authorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
-        this.authorRepository.deleteById(id);
+        var doesAuthorExist = this.authorRepository.findById(id)
+                .isPresent();
+
+        if (doesAuthorExist) {
+            this.authorRepository.deleteById(id);
+        } else {
+            throw new NotFoundEntityException(id, Author.class);
+        }
     }
 
 }
