@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.PublisherController;
 import mr.cookie.spring6udemy.model.model.Publisher;
 import mr.cookie.spring6udemy.services.PublisherService;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -88,6 +90,21 @@ class PublisherControllerMockMvcTest {
     }
 
     @Test
+    void shouldGet404WhenCannotFindPublisherById() {
+        given(this.publisherService.findById(anyLong()))
+                .willThrow(new NotFoundEntityException(PUBLISHER_ID, Publisher.class));
+
+        var result = this.getPublisherByIdAndExpect404(PUBLISHER_ID);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Publisher.class.getSimpleName(), PUBLISHER_ID);
+
+        verify(this.publisherService).findById(PUBLISHER_ID);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
+    @Test
     void shouldCreatePublisher() {
         given(this.publisherService.create(any(Publisher.class))).willReturn(PUBLISHER);
 
@@ -116,8 +133,39 @@ class PublisherControllerMockMvcTest {
     }
 
     @Test
+    void shouldGet404WhenCannotUpdatePublisherById() {
+        given(this.publisherService.update(anyLong(), any(Publisher.class)))
+                .willThrow(new NotFoundEntityException(PUBLISHER_ID, Publisher.class));
+
+        var result = this.updatePublisherAndExpect404(PUBLISHER_ID, PUBLISHER);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Publisher.class.getSimpleName(), PUBLISHER_ID);
+
+        verify(this.publisherService).update(PUBLISHER_ID, PUBLISHER);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
+    @Test
     void shouldDeletePublisher() {
         this.deletePublisherById(PUBLISHER_ID);
+
+        verify(this.publisherService).deleteById(PUBLISHER_ID);
+        verifyNoMoreInteractions(this.publisherService);
+    }
+
+    @Test
+    void shouldGet404WhenCannotDeletePublisherById() {
+        doThrow(new NotFoundEntityException(PUBLISHER_ID, Publisher.class))
+                .when(this.publisherService)
+                .deleteById(PUBLISHER_ID);
+
+        var result = this.deletePublisherAndExpect404(PUBLISHER_ID);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Publisher.class.getSimpleName(), PUBLISHER_ID);
 
         verify(this.publisherService).deleteById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherService);
@@ -176,6 +224,17 @@ class PublisherControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
+    private String getPublisherByIdAndExpect404(long publisherId) {
+        return this.mockMvc.perform(get("/publisher/{id}", publisherId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @SneakyThrows
+    @NotNull
     private Publisher updatePublisher(long publisherId, @NotNull Publisher publisher) {
         var strPublisher = this.mockMvc.perform(put("/publisher/{id}", publisherId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -197,9 +256,35 @@ class PublisherControllerMockMvcTest {
     }
 
     @SneakyThrows
+    @NotNull
+    private String updatePublisherAndExpect404(long publisherId, @NotNull Publisher publisher) {
+        return this.mockMvc.perform(put("/publisher/{id}", publisherId)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(publisher))
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @SneakyThrows
     private void deletePublisherById(long publisherId) {
         this.mockMvc.perform(delete("/publisher/{id}", publisherId))
                 .andExpect(status().isNoContent());
+    }
+
+    @SneakyThrows
+    @NotNull
+    private String deletePublisherAndExpect404(long publisherId) {
+        return this.mockMvc.perform(delete("/publisher/{id}", publisherId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
 }
