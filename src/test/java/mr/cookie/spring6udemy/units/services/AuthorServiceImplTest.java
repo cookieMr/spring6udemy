@@ -83,6 +83,8 @@ class AuthorServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
+                .isPresent()
+                .get()
                 .returns(AUTHOR_ID, Author::getId);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
@@ -94,10 +96,11 @@ class AuthorServiceImplTest {
     void shouldThrowExceptionWhenCannotFindAuthorById() {
         when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.authorService.findById(AUTHOR_ID))
+        var result = this.authorService.findById(AUTHOR_ID);
+
+        assertThat(result)
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+                .isEmpty();
 
         verify(this.authorRepository).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);
@@ -159,8 +162,7 @@ class AuthorServiceImplTest {
 
         assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+                .isInstanceOf(NotFoundEntityException.class);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);

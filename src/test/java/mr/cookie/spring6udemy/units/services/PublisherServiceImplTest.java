@@ -82,6 +82,8 @@ class PublisherServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
+                .isPresent()
+                .get()
                 .returns(PUBLISHER_ID, Publisher::getId);
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
@@ -93,10 +95,11 @@ class PublisherServiceImplTest {
     void shouldThrowExceptionWhenCannotFindPublisherById() {
         when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.publisherService.findById(PUBLISHER_ID))
+        var result = this.publisherService.findById(PUBLISHER_ID);
+
+        assertThat(result)
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Publisher.class.getSimpleName(), PUBLISHER_ID);
+                .isEmpty();
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherRepository);
@@ -167,8 +170,7 @@ class PublisherServiceImplTest {
 
         assertThatThrownBy(() -> this.publisherService.update(PUBLISHER_ID, PUBLISHER))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Publisher.class.getSimpleName(), PUBLISHER_ID);
+                .isInstanceOf(NotFoundEntityException.class);
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherRepository);

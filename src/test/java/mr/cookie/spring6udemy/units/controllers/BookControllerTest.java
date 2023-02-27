@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,7 +53,7 @@ class BookControllerTest {
 
     @Test
     void shouldGetBookById() {
-        when(this.bookService.findById(anyLong())).thenReturn(BOOK);
+        when(this.bookService.findById(anyLong())).thenReturn(Optional.of(BOOK));
 
         var result = this.bookController.getBookById(BOOK_ID);
 
@@ -66,13 +67,11 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        when(this.bookService.findById(anyLong()))
-                .thenThrow(new NotFoundEntityException(BOOK_ID, Book.class));
+        when(this.bookService.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.bookController.getBookById(BOOK_ID))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+                .isInstanceOf(NotFoundEntityException.class);
 
         verify(this.bookService).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);

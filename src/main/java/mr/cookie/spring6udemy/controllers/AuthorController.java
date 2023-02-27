@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
 import lombok.RequiredArgsConstructor;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.model.Author;
 import mr.cookie.spring6udemy.services.AuthorService;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,8 @@ public class AuthorController {
     )
     @Nullable
     public Author getAuthorById(@PathVariable Long id) {
-        return this.authorService.findById(id);
+        return this.authorService.findById(id)
+                .orElseThrow(NotFoundEntityException::new);
     }
 
     @PostMapping(

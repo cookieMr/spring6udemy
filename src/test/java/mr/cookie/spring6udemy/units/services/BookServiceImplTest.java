@@ -83,6 +83,8 @@ class BookServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
+                .isPresent()
+                .get()
                 .returns(BOOK_ID, Book::getId);
 
         verify(this.bookRepository).findById(BOOK_ID);
@@ -94,10 +96,11 @@ class BookServiceImplTest {
     void shouldThrowExceptionWhenCannotFindBookById() {
         when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.bookService.findById(BOOK_ID))
+        var result = this.bookService.findById(BOOK_ID);
+
+        assertThat(result)
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+                .isEmpty();
 
         verify(this.bookRepository).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookRepository);
@@ -159,8 +162,7 @@ class BookServiceImplTest {
 
         assertThatThrownBy(() -> this.bookService.update(BOOK_ID, BOOK))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+                .isInstanceOf(NotFoundEntityException.class);
 
         verify(this.bookRepository).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookRepository);

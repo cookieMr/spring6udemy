@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,7 +78,7 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldGetPublisherById() {
-        given(this.publisherService.findById(anyLong())).willReturn(PUBLISHER);
+        given(this.publisherService.findById(anyLong())).willReturn(Optional.of(PUBLISHER));
 
         var result = this.getPublisherById(PUBLISHER_ID);
 

@@ -6,7 +6,6 @@ import mr.cookie.spring6udemy.model.model.Publisher;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +33,9 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public @Nullable Publisher findById(long id) {
+    public Optional<Publisher> findById(long id) {
         return this.publisherRepository.findById(id)
-                .map(this.publisherMapper::map)
-                .orElseThrow(() -> new NotFoundEntityException(id, Publisher.class));
+                .map(this.publisherMapper::map);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public @NotNull Publisher update(long id, @NotNull Publisher publisher) {
         var existingDto = this.publisherRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(id, Publisher.class));
+                .orElseThrow(NotFoundEntityException::new);
 
         existingDto.setName(publisher.getName());
         existingDto.setAddress(publisher.getAddress());

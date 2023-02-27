@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +75,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGetBookById() {
-        given(this.bookService.findById(anyLong())).willReturn(BOOK);
+        given(this.bookService.findById(anyLong())).willReturn(Optional.of(BOOK));
 
         var result = this.getBookById(BOOK_ID);
 

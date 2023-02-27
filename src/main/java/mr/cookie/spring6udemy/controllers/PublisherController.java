@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
 import lombok.RequiredArgsConstructor;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.model.Publisher;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,8 @@ public class PublisherController {
     )
     @Nullable
     public Publisher getPublisherById(@PathVariable Long id) {
-        return this.publisherService.findById(id);
+        return this.publisherService.findById(id)
+                .orElseThrow(NotFoundEntityException::new);
     }
 
     @PostMapping(

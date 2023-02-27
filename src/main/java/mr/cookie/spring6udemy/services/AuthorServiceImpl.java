@@ -32,12 +32,10 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElse(Collections.emptyList());
     }
 
-    @NotNull
     @Override
-    public Author findById(long id) {
+    public Optional<Author> findById(long id) {
         return this.authorRepository.findById(id)
-                .map(this.authorMapper::map)
-                .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
+                .map(this.authorMapper::map);
     }
 
     @NotNull
@@ -55,7 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author update(long id, @NotNull Author author) {
         var existingDto = this.authorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEntityException(id, Author.class));
+                .orElseThrow(NotFoundEntityException::new);
 
         existingDto.setFirstName(author.getFirstName());
         existingDto.setLastName(author.getLastName());
