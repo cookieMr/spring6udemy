@@ -99,6 +99,7 @@ class AuthorControllerTest {
         );
     }
 
+    // todo: 404
     @Test
     void shouldUpdateAuthor() {
         var author = AUTHOR_SUPPLIER.get();
@@ -112,6 +113,7 @@ class AuthorControllerTest {
                 .returns(author.getLastName(), Author::getLastName);
     }
 
+    // todo: 404
     @Test
     void shouldDeleteExistingAuthor() {
         var author = AUTHOR_SUPPLIER.get();

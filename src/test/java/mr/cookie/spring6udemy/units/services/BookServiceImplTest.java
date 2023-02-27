@@ -6,6 +6,7 @@ import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
 import mr.cookie.spring6udemy.model.model.Book;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.services.BookServiceImpl;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -89,6 +91,20 @@ class BookServiceImplTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCannotFindBookById() {
+        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.bookService.findById(BOOK_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+
+        verify(this.bookRepository).findById(BOOK_ID);
+        verifyNoMoreInteractions(this.bookRepository);
+        verifyNoInteractions(this.bookMapper);
+    }
+
+    @Test
     void shouldCreateNewBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
@@ -138,10 +154,40 @@ class BookServiceImplTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenCannotUpdateBookById() {
+        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.bookService.update(BOOK_ID, BOOK))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+
+        verify(this.bookRepository).findById(BOOK_ID);
+        verifyNoMoreInteractions(this.bookRepository);
+        verifyNoInteractions(this.bookMapper);
+    }
+
+    @Test
     void shouldDeleteExistingBook() {
+        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.of(BOOK_DTO_SUPPLIER.get()));
+
         this.bookService.deleteById(BOOK_ID);
 
         verify(this.bookRepository).deleteById(BOOK_ID);
+        verifyNoMoreInteractions(this.bookRepository);
+        verifyNoInteractions(this.bookMapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotDeleteBookById() {
+        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.bookService.deleteById(BOOK_ID))
+                .isNotNull()
+                .isInstanceOf(NotFoundEntityException.class)
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+
+        verify(this.bookRepository).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookRepository);
         verifyNoInteractions(this.bookMapper);
     }
