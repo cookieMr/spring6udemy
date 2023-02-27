@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.model.model.Publisher;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
+import mr.cookie.spring6udemy.services.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.repository.CrudRepository;
@@ -36,7 +37,7 @@ public class PublisherServiceImpl implements PublisherService {
     public @Nullable Publisher findById(long id) {
         return this.publisherRepository.findById(id)
                 .map(this.publisherMapper::map)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundEntityException(id, Publisher.class));
     }
 
     @Override
@@ -52,7 +53,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public @NotNull Publisher update(long id, @NotNull Publisher publisher) {
         var existingDto = this.publisherRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundEntityException(id, Publisher.class));
 
         existingDto.setName(publisher.getName());
         existingDto.setAddress(publisher.getAddress());
@@ -68,7 +69,14 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public void deleteById(long id) {
-        this.publisherRepository.deleteById(id);
+        var doesPublishExists = this.publisherRepository.findById(id)
+                .isPresent();
+
+        if (doesPublishExists) {
+            this.publisherRepository.deleteById(id);
+        } else {
+            throw new NotFoundEntityException(id, Publisher.class);
+        }
     }
 
 }
