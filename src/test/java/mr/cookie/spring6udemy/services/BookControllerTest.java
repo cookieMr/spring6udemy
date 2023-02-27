@@ -113,13 +113,33 @@ class BookControllerTest {
                 .returns(book.getIsbn(), Book::getIsbn);
     }
 
-    // todo: 404
+    @Test
+    void shouldReturn404WhenUpdatingBookIsNotFound() {
+        var book = BOOK_SUPPLIER.get();
+        var bookId = Integer.MAX_VALUE;
+        var result = this.updateBookAndExpect404(bookId, book);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), bookId);
+    }
+
     @Test
     void shouldDeleteExistingBook() {
         var book = BOOK_SUPPLIER.get();
 
         var bookId = this.createBook(book).getId();
         this.deleteBookById(bookId);
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingBookIsNotFound() {
+        var bookId = Integer.MAX_VALUE;
+        var result = this.deleteBookAndExpect404(bookId);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), bookId);
     }
 
     @SneakyThrows
@@ -208,9 +228,35 @@ class BookControllerTest {
     }
 
     @SneakyThrows
+    @NotNull
+    private String updateBookAndExpect404(long bookId, @NotNull Book book) {
+        return this.mockMvc.perform(put("/book/{id}", bookId)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(book))
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    @SneakyThrows
     private void deleteBookById(long bookId) {
         this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNoContent());
+    }
+
+    @SneakyThrows
+    @NotNull
+    private String deleteBookAndExpect404(long bookId) {
+        return this.mockMvc.perform(delete("/book/{id}", bookId))
+                .andExpect(status().isNotFound())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
 }
