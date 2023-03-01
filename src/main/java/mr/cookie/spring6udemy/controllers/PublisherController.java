@@ -1,5 +1,8 @@
 package mr.cookie.spring6udemy.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.model.Publisher;
@@ -25,25 +28,46 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublisherController {
 
+    private static final String PATH_PUBLISHER_ID_DESCRIPTION = "Publisher's ID";
+    private static final String RESPONSE_404_DESCRIPTION = "Publisher was not found by ID.";
+    private static final String RESPONSE_409_DESCRIPTION = "Publisher with provided attributes already exists";
+
     @NotNull
     private final PublisherService publisherService;
 
+    @Operation(description = "Returns all publishers (or empty array).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     public List<Publisher> getAllPublishers() {
         return this.publisherService.findAll();
     }
 
+    @Operation(
+            description = "Returns a publisher by its ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Publisher was found by ID."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+            }
+    )
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Publisher getPublisherById(@PathVariable Long id) {
+    public Publisher getPublisherById(
+            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id
+    ) {
         return this.publisherService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
+    @Operation(
+            description = "Creates a new publisher and persists it.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Publisher was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+            }
+    )
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -55,19 +79,39 @@ public class PublisherController {
         // TODO: conflict status
     }
 
+    @Operation(
+            description = "Updates a publisher by ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Publisher was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+            }
+    )
     @PutMapping(
             path = "{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Publisher updatePublisher(@PathVariable Long id, @RequestBody Publisher publisher) {
+    public Publisher updatePublisher(
+            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id,
+            @RequestBody Publisher publisher
+    ) {
         return this.publisherService.update(id, publisher);
     }
 
+    @Operation(
+            description = "Deletes a publisher by its ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Publisher was found by ID and removed."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+            }
+    )
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePublisher(@PathVariable Long id) {
+    public void deletePublisher(
+            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id
+    ) {
         this.publisherService.deleteById(id);
     }
 

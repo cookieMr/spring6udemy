@@ -1,5 +1,8 @@
 package mr.cookie.spring6udemy.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.model.Book;
@@ -25,6 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
 
+    private static final String PATH_BOOK_ID_DESCRIPTION = "Book's ID";
+    private static final String RESPONSE_404_DESCRIPTION = "Book was not found by ID.";
+    private static final String RESPONSE_409_DESCRIPTION = "Book with provided attributes already exists";
+
     @NotNull
     private final BookService bookService;
 
@@ -34,40 +41,72 @@ public class BookController {
         return this.bookService.findAll();
     }
 
+    @Operation(description = "Returns all books (or empty array).")
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Book getBookById(@PathVariable Long id) {
+    public Book getBookById(
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id
+    ) {
         return this.bookService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
+    @Operation(
+            description = "Creates a new book and persists it.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Book was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+            }
+    )
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Book createBook(@RequestBody Book book) {
+    public Book createBook(
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @RequestBody Book book
+    ) {
         return this.bookService.create(book);
         // TODO: conflict status
     }
 
+    @Operation(
+            description = "Updates a book by ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Book was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+            }
+    )
     @PutMapping(
             path = "{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public Book updateBook(
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id,
+            @RequestBody Book book
+    ) {
         return this.bookService.update(id, book);
     }
 
+    @Operation(
+            description = "Deletes a book by its ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Book was found by ID and removed."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+            }
+    )
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(@PathVariable Long id) {
+    public void deleteBook(
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id
+    ) {
         this.bookService.deleteById(id);
     }
 
