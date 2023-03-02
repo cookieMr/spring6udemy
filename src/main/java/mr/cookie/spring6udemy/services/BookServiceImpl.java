@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
-import mr.cookie.spring6udemy.model.model.Book;
+import mr.cookie.spring6udemy.model.model.BookDto;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class BookServiceImpl implements BookService {
 
     @NotNull
     @Override
-    public List<Book> findAll() {
+    public List<BookDto> findAll() {
         return Optional.of(this.bookRepository)
                 .map(CrudRepository::findAll)
                 .map(this.bookMapper::mapToModel)
@@ -33,14 +33,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Optional<Book> findById(long id) {
+    public Optional<BookDto> findById(long id) {
         return this.bookRepository.findById(id)
                 .map(this.bookMapper::map);
     }
 
     @NotNull
     @Override
-    public Book create(@NotNull Book book) {
+    public BookDto create(@NotNull BookDto book) {
         return Optional.of(book)
                 .map(this.bookMapper::map)
                 .map(this.bookRepository::save)
@@ -51,7 +51,7 @@ public class BookServiceImpl implements BookService {
 
     @NotNull
     @Override
-    public Book update(long id, @NotNull Book book) {
+    public BookDto update(long id, @NotNull BookDto book) {
         var existingDto = this.bookRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
@@ -72,7 +72,7 @@ public class BookServiceImpl implements BookService {
         if (doesBookExist) {
             this.bookRepository.deleteById(id);
         } else {
-            throw new NotFoundEntityException(id, Book.class);
+            throw new NotFoundEntityException(id, BookDto.class);
         }
     }
 

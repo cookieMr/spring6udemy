@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import mr.cookie.spring6udemy.model.model.Publisher;
+import mr.cookie.spring6udemy.model.model.PublisherDto;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PublisherControllerTest {
 
     private static final long PUBLISHER_ID = 1L;
-    private static final Supplier<Publisher> PUBLISHER_SUPPLIER = () -> Publisher.builder()
+    private static final Supplier<PublisherDto> PUBLISHER_DTO_SUPPLIER = () -> PublisherDto.builder()
             .name("Penguin Random House")
             .address("Neumarkter Strasse 28")
             .state("Germany")
@@ -62,19 +62,19 @@ class PublisherControllerTest {
 
     @Test
     void shouldCreateAndThenGetPublisherById() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var publisherId = this.createPublisher(publisher).getId();
+        var publisherId = this.createPublisher(publisherDto).getId();
         var result = this.getPublisherById(publisherId);
 
         assertThat(result)
                 .isNotNull()
-                .returns(publisherId, Publisher::getId)
-                .returns(publisher.getName(), Publisher::getName)
-                .returns(publisher.getAddress(), Publisher::getAddress)
-                .returns(publisher.getState(), Publisher::getState)
-                .returns(publisher.getCity(), Publisher::getCity)
-                .returns(publisher.getZipCode(), Publisher::getZipCode);
+                .returns(publisherId, PublisherDto::getId)
+                .returns(publisherDto.getName(), PublisherDto::getName)
+                .returns(publisherDto.getAddress(), PublisherDto::getAddress)
+                .returns(publisherDto.getState(), PublisherDto::getState)
+                .returns(publisherDto.getCity(), PublisherDto::getCity)
+                .returns(publisherDto.getZipCode(), PublisherDto::getZipCode);
     }
 
     @Test
@@ -85,18 +85,18 @@ class PublisherControllerTest {
 
     @Test
     void shouldCreatePublisher() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var result = this.createPublisher(publisher);
+        var result = this.createPublisher(publisherDto);
 
         assertThat(result).isNotNull();
         assertAll(
                 () -> assertThat(result)
-                        .returns(publisher.getName(), Publisher::getName)
-                        .returns(publisher.getAddress(), Publisher::getAddress)
-                        .returns(publisher.getState(), Publisher::getState)
-                        .returns(publisher.getCity(), Publisher::getCity)
-                        .returns(publisher.getZipCode(), Publisher::getZipCode),
+                        .returns(publisherDto.getName(), PublisherDto::getName)
+                        .returns(publisherDto.getAddress(), PublisherDto::getAddress)
+                        .returns(publisherDto.getState(), PublisherDto::getState)
+                        .returns(publisherDto.getCity(), PublisherDto::getCity)
+                        .returns(publisherDto.getZipCode(), PublisherDto::getZipCode),
                 () -> assertThat(result.getId())
                         .isNotNull()
                         .isPositive()
@@ -105,32 +105,32 @@ class PublisherControllerTest {
 
     @Test
     void shouldUpdatePublisher() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var result = this.updatePublisher(PUBLISHER_ID, publisher);
+        var result = this.updatePublisher(PUBLISHER_ID, publisherDto);
 
         assertThat(result).isNotNull();
         assertThat(result)
-                .returns(PUBLISHER_ID, Publisher::getId)
-                .returns(publisher.getName(), Publisher::getName)
-                .returns(publisher.getAddress(), Publisher::getAddress)
-                .returns(publisher.getState(), Publisher::getState)
-                .returns(publisher.getCity(), Publisher::getCity)
-                .returns(publisher.getZipCode(), Publisher::getZipCode);
+                .returns(PUBLISHER_ID, PublisherDto::getId)
+                .returns(publisherDto.getName(), PublisherDto::getName)
+                .returns(publisherDto.getAddress(), PublisherDto::getAddress)
+                .returns(publisherDto.getState(), PublisherDto::getState)
+                .returns(publisherDto.getCity(), PublisherDto::getCity)
+                .returns(publisherDto.getZipCode(), PublisherDto::getZipCode);
     }
 
     @Test
     void shouldReturn404WhenUpdatingPublisherIsNotFound() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
         var publisherId = Integer.MAX_VALUE;
-        this.updatePublisherAndExpect404(publisherId, publisher);
+        this.updatePublisherAndExpect404(publisherId, publisherDto);
     }
 
     @Test
     void shouldDeleteExistingPublisher() {
-        var publisher = PUBLISHER_SUPPLIER.get();
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var publisherId = this.createPublisher(publisher).getId();
+        var publisherId = this.createPublisher(publisherDto).getId();
         this.deletePublisherById(publisherId);
     }
 
@@ -142,7 +142,7 @@ class PublisherControllerTest {
 
     @SneakyThrows
     @NotNull
-    private List<Publisher> getAllPublishers() {
+    private List<PublisherDto> getAllPublishers() {
         var strPublishers = this.mockMvc.perform(get("/publisher"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -151,13 +151,13 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayPublishers = this.objectMapper.readValue(strPublishers, Publisher[].class);
+        var arrayPublishers = this.objectMapper.readValue(strPublishers, PublisherDto[].class);
         return Arrays.asList(arrayPublishers);
     }
 
     @SneakyThrows
     @NotNull
-    private Publisher createPublisher(@NotNull Publisher publisher) {
+    private PublisherDto createPublisher(@NotNull PublisherDto publisher) {
         var strPublisher = this.mockMvc.perform(post("/publisher")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -176,12 +176,12 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strPublisher, Publisher.class);
+        return this.objectMapper.readValue(strPublisher, PublisherDto.class);
     }
 
     @SneakyThrows
     @NotNull
-    private Publisher getPublisherById(long publisherId) {
+    private PublisherDto getPublisherById(long publisherId) {
         var strPublisher = this.mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -192,7 +192,7 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strPublisher, Publisher.class);
+        return this.objectMapper.readValue(strPublisher, PublisherDto.class);
     }
 
     @SneakyThrows
@@ -203,7 +203,7 @@ class PublisherControllerTest {
 
     @SneakyThrows
     @NotNull
-    private Publisher updatePublisher(long publisherId, @NotNull Publisher publisher) {
+    private PublisherDto updatePublisher(long publisherId, @NotNull PublisherDto publisher) {
         var strPublisher = this.mockMvc.perform(put("/publisher/{id}", publisherId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -223,11 +223,11 @@ class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strPublisher, Publisher.class);
+        return this.objectMapper.readValue(strPublisher, PublisherDto.class);
     }
 
     @SneakyThrows
-    private void updatePublisherAndExpect404(long publisherId, @NotNull Publisher publisher) {
+    private void updatePublisherAndExpect404(long publisherId, @NotNull PublisherDto publisher) {
         this.mockMvc.perform(put("/publisher/{id}", publisherId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)

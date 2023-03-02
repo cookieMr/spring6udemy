@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthorControllerTest {
 
     private static final long AUTHOR_ID = 1L;
-    private static final Supplier<Author> AUTHOR_SUPPLIER = () -> Author.builder()
+    private static final Supplier<AuthorDto> AUTHOR_SUPPLIER = () -> AuthorDto.builder()
             .firstName("JRR")
             .lastName("Tolkien")
             .build();
@@ -66,9 +66,9 @@ class AuthorControllerTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(authorId, Author::getId)
-                .returns(author.getFirstName(), Author::getFirstName)
-                .returns(author.getLastName(), Author::getLastName);
+                .returns(authorId, AuthorDto::getId)
+                .returns(author.getFirstName(), AuthorDto::getFirstName)
+                .returns(author.getLastName(), AuthorDto::getLastName);
     }
 
     @Test
@@ -86,8 +86,8 @@ class AuthorControllerTest {
         assertThat(result).isNotNull();
         assertAll(
                 () -> assertThat(result)
-                        .returns(author.getFirstName(), Author::getFirstName)
-                        .returns(author.getLastName(), Author::getLastName),
+                        .returns(author.getFirstName(), AuthorDto::getFirstName)
+                        .returns(author.getLastName(), AuthorDto::getLastName),
                 () -> assertThat(result.getId())
                         .isNotNull()
                         .isPositive()
@@ -102,9 +102,9 @@ class AuthorControllerTest {
 
         assertThat(result).isNotNull();
         assertThat(result)
-                .returns(AUTHOR_ID, Author::getId)
-                .returns(author.getFirstName(), Author::getFirstName)
-                .returns(author.getLastName(), Author::getLastName);
+                .returns(AUTHOR_ID, AuthorDto::getId)
+                .returns(author.getFirstName(), AuthorDto::getFirstName)
+                .returns(author.getLastName(), AuthorDto::getLastName);
     }
 
     @Test
@@ -130,7 +130,7 @@ class AuthorControllerTest {
 
     @SneakyThrows
     @NotNull
-    private List<Author> getAllAuthors() {
+    private List<AuthorDto> getAllAuthors() {
         var strAuthors = this.mockMvc.perform(get("/author"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -139,13 +139,13 @@ class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayAuthors = this.objectMapper.readValue(strAuthors, Author[].class);
+        var arrayAuthors = this.objectMapper.readValue(strAuthors, AuthorDto[].class);
         return Arrays.asList(arrayAuthors);
     }
 
     @SneakyThrows
     @NotNull
-    private Author createAuthor(@NotNull Author author) {
+    private AuthorDto createAuthor(@NotNull AuthorDto author) {
         var strAuthor = this.mockMvc.perform(post("/author")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -161,12 +161,12 @@ class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Author.class);
+        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
     @NotNull
-    private Author getAuthorById(long authorId) {
+    private AuthorDto getAuthorById(long authorId) {
         var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -177,7 +177,7 @@ class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Author.class);
+        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
@@ -188,7 +188,7 @@ class AuthorControllerTest {
 
     @SneakyThrows
     @NotNull
-    private Author updateAuthor(long authorId, @NotNull Author author) {
+    private AuthorDto updateAuthor(long authorId, @NotNull AuthorDto author) {
         var strAuthor = this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -205,11 +205,11 @@ class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Author.class);
+        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
-    private void updateAuthorAndExpect404(long authorId, @NotNull Author author) {
+    private void updateAuthorAndExpect404(long authorId, @NotNull AuthorDto author) {
         this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)

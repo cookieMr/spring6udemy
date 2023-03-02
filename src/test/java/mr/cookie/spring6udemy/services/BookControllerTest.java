@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import mr.cookie.spring6udemy.model.model.Book;
+import mr.cookie.spring6udemy.model.model.BookDto;
 import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookControllerTest {
 
     private static final long BOOK_ID = 1L;
-    private static final Supplier<Book> BOOK_SUPPLIER = () -> Book.builder()
+    private static final Supplier<BookDto> BOOK_DTO_SUPPLIER = () -> BookDto.builder()
             .title("Warbreaker")
             .isbn("978-0765360038")
             .build();
@@ -59,16 +59,16 @@ class BookControllerTest {
 
     @Test
     void shouldCreateAndThenGetBookById() {
-        var book = BOOK_SUPPLIER.get();
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var bookId = this.createBook(book).getId();
+        var bookId = this.createBook(bookDto).getId();
         var result = this.getBookById(bookId);
 
         assertThat(result)
                 .isNotNull()
-                .returns(bookId, Book::getId)
-                .returns(book.getTitle(), Book::getTitle)
-                .returns(book.getIsbn(), Book::getIsbn);
+                .returns(bookId, BookDto::getId)
+                .returns(bookDto.getTitle(), BookDto::getTitle)
+                .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
 
     @Test
@@ -79,15 +79,15 @@ class BookControllerTest {
 
     @Test
     void shouldCreateBook() {
-        var book = BOOK_SUPPLIER.get();
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var result = this.createBook(book);
+        var result = this.createBook(bookDto);
 
         assertThat(result).isNotNull();
         assertAll(
                 () -> assertThat(result)
-                        .returns(book.getTitle(), Book::getTitle)
-                        .returns(book.getIsbn(), Book::getIsbn),
+                        .returns(bookDto.getTitle(), BookDto::getTitle)
+                        .returns(bookDto.getIsbn(), BookDto::getIsbn),
                 () -> assertThat(result.getId())
                         .isNotNull()
                         .isPositive()
@@ -96,29 +96,29 @@ class BookControllerTest {
 
     @Test
     void shouldUpdateBook() {
-        var book = BOOK_SUPPLIER.get();
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var result = this.updateBook(BOOK_ID, book);
+        var result = this.updateBook(BOOK_ID, bookDto);
 
         assertThat(result).isNotNull();
         assertThat(result)
-                .returns(BOOK_ID, Book::getId)
-                .returns(book.getTitle(), Book::getTitle)
-                .returns(book.getIsbn(), Book::getIsbn);
+                .returns(BOOK_ID, BookDto::getId)
+                .returns(bookDto.getTitle(), BookDto::getTitle)
+                .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
 
     @Test
     void shouldReturn404WhenUpdatingBookIsNotFound() {
-        var book = BOOK_SUPPLIER.get();
+        var bookDto = BOOK_DTO_SUPPLIER.get();
         var bookId = Integer.MAX_VALUE;
-        this.updateBookAndExpect404(bookId, book);
+        this.updateBookAndExpect404(bookId, bookDto);
     }
 
     @Test
     void shouldDeleteExistingBook() {
-        var book = BOOK_SUPPLIER.get();
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var bookId = this.createBook(book).getId();
+        var bookId = this.createBook(bookDto).getId();
         this.deleteBookById(bookId);
     }
 
@@ -130,7 +130,7 @@ class BookControllerTest {
 
     @SneakyThrows
     @NotNull
-    private List<Book> getAllBooks() {
+    private List<BookDto> getAllBooks() {
         var strBooks = this.mockMvc.perform(get("/book"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -139,13 +139,13 @@ class BookControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayBooks = this.objectMapper.readValue(strBooks, Book[].class);
+        var arrayBooks = this.objectMapper.readValue(strBooks, BookDto[].class);
         return Arrays.asList(arrayBooks);
     }
 
     @SneakyThrows
     @NotNull
-    private Book createBook(@NotNull Book book) {
+    private BookDto createBook(@NotNull BookDto book) {
         var strBook = this.mockMvc.perform(post("/book")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -161,12 +161,12 @@ class BookControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strBook, Book.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
     @NotNull
-    private Book getBookById(long bookId) {
+    private BookDto getBookById(long bookId) {
         var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -177,7 +177,7 @@ class BookControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strBook, Book.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
@@ -188,7 +188,7 @@ class BookControllerTest {
 
     @SneakyThrows
     @NotNull
-    private Book updateBook(long bookId, @NotNull Book book) {
+    private BookDto updateBook(long bookId, @NotNull BookDto book) {
         var strBook = this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -205,11 +205,11 @@ class BookControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strBook, Book.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
-    private void updateBookAndExpect404(long bookId, @NotNull Book book) {
+    private void updateBookAndExpect404(long bookId, @NotNull BookDto book) {
         this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)

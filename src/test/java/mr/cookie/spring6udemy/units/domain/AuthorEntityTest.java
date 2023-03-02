@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-class AuthorTest {
+class AuthorEntityTest {
 
     @Test
     void authorsWithDifferentIdsAndTheSameNameHaveDifferentHashCode() {

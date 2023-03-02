@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.BookController;
-import mr.cookie.spring6udemy.model.model.Book;
+import mr.cookie.spring6udemy.model.model.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookControllerMockMvcTest {
 
     private static final long BOOK_ID = 1L;
-    private static final Book BOOK = Book.builder()
+    private static final BookDto BOOK_DTO = BookDto.builder()
             .title("Warbreaker")
             .isbn("978-0765360038")
             .build();
@@ -61,13 +61,13 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGetAllBooks() {
-        given(this.bookService.findAll()).willReturn(Collections.singletonList(BOOK));
+        given(this.bookService.findAll()).willReturn(Collections.singletonList(BOOK_DTO));
 
         var result = this.getAllBooks();
 
         assertThat(result)
                 .isNotNull()
-                .containsOnly(BOOK);
+                .containsOnly(BOOK_DTO);
 
         verify(this.bookService).findAll();
         verifyNoMoreInteractions(this.bookService);
@@ -75,13 +75,13 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGetBookById() {
-        given(this.bookService.findById(anyLong())).willReturn(Optional.of(BOOK));
+        given(this.bookService.findById(anyLong())).willReturn(Optional.of(BOOK_DTO));
 
         var result = this.getBookById(BOOK_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(BOOK);
+                .isEqualTo(BOOK_DTO);
 
         verify(this.bookService).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);
@@ -90,7 +90,7 @@ class BookControllerMockMvcTest {
     @Test
     void shouldGet404WhenCannotFindBookById() {
         given(this.bookService.findById(anyLong()))
-                .willThrow(new NotFoundEntityException(BOOK_ID, Book.class));
+                .willThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
         this.getBookByIdAndExpect404(BOOK_ID);
 
@@ -100,40 +100,40 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldCreateBook() {
-        given(this.bookService.create(any(Book.class))).willReturn(BOOK);
+        given(this.bookService.create(any(BookDto.class))).willReturn(BOOK_DTO);
 
-        var result = this.createBook(BOOK);
+        var result = this.createBook(BOOK_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(BOOK);
+                .isEqualTo(BOOK_DTO);
 
-        verify(this.bookService).create(BOOK);
+        verify(this.bookService).create(BOOK_DTO);
         verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
     void shouldUpdateBook() {
-        given(this.bookService.update(anyLong(), any(Book.class))).willReturn(BOOK);
+        given(this.bookService.update(anyLong(), any(BookDto.class))).willReturn(BOOK_DTO);
 
-        var result = this.updateBook(BOOK_ID, BOOK);
+        var result = this.updateBook(BOOK_ID, BOOK_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(BOOK);
+                .isEqualTo(BOOK_DTO);
 
-        verify(this.bookService).update(BOOK_ID, BOOK);
+        verify(this.bookService).update(BOOK_ID, BOOK_DTO);
         verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
     void shouldGet404WhenCannotUpdateBookById() {
-        given(this.bookService.update(anyLong(), any(Book.class)))
-                .willThrow(new NotFoundEntityException(BOOK_ID, Book.class));
+        given(this.bookService.update(anyLong(), any(BookDto.class)))
+                .willThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
-        this.updateBookAndExpect404(BOOK_ID, BOOK);
+        this.updateBookAndExpect404(BOOK_ID, BOOK_DTO);
 
-        verify(this.bookService).update(BOOK_ID, BOOK);
+        verify(this.bookService).update(BOOK_ID, BOOK_DTO);
         verifyNoMoreInteractions(this.bookService);
     }
 
@@ -147,7 +147,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotDeleteBookById() {
-        doThrow(new NotFoundEntityException(BOOK_ID, Book.class))
+        doThrow(new NotFoundEntityException(BOOK_ID, BookDto.class))
                 .when(this.bookService)
                 .deleteById(BOOK_ID);
 
@@ -159,7 +159,7 @@ class BookControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private List<Book> getAllBooks() {
+    private List<BookDto> getAllBooks() {
         var strBooks = this.mockMvc.perform(get("/book"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -169,13 +169,13 @@ class BookControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayBooks = this.objectMapper.readValue(strBooks, Book[].class);
+        var arrayBooks = this.objectMapper.readValue(strBooks, BookDto[].class);
         return Arrays.asList(arrayBooks);
     }
 
     @SneakyThrows
     @NotNull
-    private Book createBook(@NotNull Book book) {
+    private BookDto createBook(@NotNull BookDto book) {
         var strBook = this.mockMvc.perform(post("/book")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -189,12 +189,12 @@ class BookControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strBook, Book.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
     @NotNull
-    private Book getBookById(long bookId) {
+    private BookDto getBookById(long bookId) {
         var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -202,7 +202,7 @@ class BookControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strBook, Book.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
@@ -213,7 +213,7 @@ class BookControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private Book updateBook(long bookId, @NotNull Book book) {
+    private BookDto updateBook(long bookId, @NotNull BookDto book) {
         var strBook = this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -227,11 +227,11 @@ class BookControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strBook, Book.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
-    private void updateBookAndExpect404(long bookId, @NotNull Book book) {
+    private void updateBookAndExpect404(long bookId, @NotNull BookDto book) {
         this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)

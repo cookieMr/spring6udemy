@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-class PublisherTest {
+class PublisherEntityTest {
 
     @Test
     void publishersWithDifferentIdsAndTheSameStateHaveDifferentHashCode() {
