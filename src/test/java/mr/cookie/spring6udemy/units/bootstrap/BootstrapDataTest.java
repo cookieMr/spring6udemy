@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.units.bootstrap;
 
 import mr.cookie.spring6udemy.bootstrap.BootstrapData;
-import mr.cookie.spring6udemy.model.entities.AuthorDto;
+import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.entities.BookDto;
 import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
@@ -53,7 +53,7 @@ class BootstrapDataTest {
     @Test
     void shouldInitEntities() {
         var savedPublisher = PublisherDto.builder().id(111L).build();
-        var savedAuthor = AuthorDto.builder().id(42L).build();
+        var savedAuthor = AuthorEntity.builder().id(42L).build();
         var savedBook1 = BookDto.builder().id(1L).build();
         var savedBook2 = BookDto.builder().id(2L).build();
         var savedBook3 = BookDto.builder().id(3L).build();
@@ -63,12 +63,12 @@ class BootstrapDataTest {
                 .thenReturn(savedPublisher);
         when(this.bookRepository.saveAll(this.booksCaptor.capture()))
                 .thenReturn(Arrays.asList(savedBook1, savedBook2, savedBook3, savedBook4));
-        when(this.authorRepository.save(any(AuthorDto.class)))
+        when(this.authorRepository.save(any(AuthorEntity.class)))
                 .thenReturn(savedAuthor);
 
         this.bootstrapData.run();
 
-        verify(this.authorRepository).save(any(AuthorDto.class));
+        verify(this.authorRepository).save(any(AuthorEntity.class));
         verify(this.authorRepository).count();
         verify(this.bookRepository, times(2)).saveAll(anyList());
         verify(this.bookRepository).count();

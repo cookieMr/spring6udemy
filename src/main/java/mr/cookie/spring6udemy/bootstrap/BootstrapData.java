@@ -2,6 +2,7 @@ package mr.cookie.spring6udemy.bootstrap;
 
 import java.util.Arrays;
 
+import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.apache.commons.collections4.IterableUtils;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mr.cookie.spring6udemy.model.entities.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.BookDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.repositories.BookRepository;
@@ -74,7 +74,7 @@ public class BootstrapData implements CommandLineRunner {
                 Arrays.asList(saBook1, saBook2, saBook3, saBook4)
         ));
 
-        var bSandersonAuthor = AuthorDto.builder()
+        var bSandersonAuthor = AuthorEntity.builder()
                 .firstName("Brandon")
                 .lastName("Sanderson")
                 .build();

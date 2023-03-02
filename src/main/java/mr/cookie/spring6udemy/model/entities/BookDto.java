@@ -40,7 +40,7 @@ public class BookDto {
         inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     @Builder.Default
-    private Set<AuthorDto> authors = new HashSet<>();
+    private Set<AuthorEntity> authors = new HashSet<>();
 
     @ManyToOne
     private PublisherDto publisher;

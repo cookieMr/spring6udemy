@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class AuthorDto {
+public class AuthorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

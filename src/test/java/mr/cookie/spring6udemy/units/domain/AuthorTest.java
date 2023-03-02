@@ -1,10 +1,9 @@
 package mr.cookie.spring6udemy.units.domain;
 
+import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import mr.cookie.spring6udemy.model.entities.AuthorDto;
 
 class AuthorTest {
 
@@ -47,8 +46,8 @@ class AuthorTest {
     }
 
     @NotNull
-    private AuthorDto buildAuthor(long id) {
-        return AuthorDto.builder()
+    private AuthorEntity buildAuthor(long id) {
+        return AuthorEntity.builder()
             .id(id)
             .firstName("Brandon")
             .lastName("Sanderson")
