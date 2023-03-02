@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.units.controllers;
 
 import mr.cookie.spring6udemy.controllers.BookController;
-import mr.cookie.spring6udemy.model.model.Book;
+import mr.cookie.spring6udemy.model.model.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +27,9 @@ import static org.mockito.Mockito.when;
 class BookControllerTest {
 
     private static final long BOOK_ID = 3L;
-    private static final Book BOOK = Book.builder().id(BOOK_ID).build();
+    private static final BookDto BOOK_DTO = BookDto.builder()
+            .id(BOOK_ID)
+            .build();
 
     @Mock
     @NotNull
@@ -39,13 +41,13 @@ class BookControllerTest {
 
     @Test
     void shoutGetAllBooks() {
-        when(this.bookService.findAll()).thenReturn(Collections.singletonList(BOOK));
+        when(this.bookService.findAll()).thenReturn(Collections.singletonList(BOOK_DTO));
 
         var result = this.bookController.getAllBooks();
 
         assertThat(result)
                 .isNotNull()
-                .containsOnly(BOOK);
+                .containsOnly(BOOK_DTO);
 
         verify(this.bookService).findAll();
         verifyNoMoreInteractions(this.bookService);
@@ -53,13 +55,13 @@ class BookControllerTest {
 
     @Test
     void shouldGetBookById() {
-        when(this.bookService.findById(anyLong())).thenReturn(Optional.of(BOOK));
+        when(this.bookService.findById(anyLong())).thenReturn(Optional.of(BOOK_DTO));
 
         var result = this.bookController.getBookById(BOOK_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(BOOK);
+                .isEqualTo(BOOK_DTO);
 
         verify(this.bookService).findById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);
@@ -79,43 +81,43 @@ class BookControllerTest {
 
     @Test
     void shouldCreateNewBook() {
-        when(this.bookService.create(any(Book.class))).thenReturn(BOOK);
+        when(this.bookService.create(any(BookDto.class))).thenReturn(BOOK_DTO);
 
-        var result = this.bookController.createBook(BOOK);
+        var result = this.bookController.createBook(BOOK_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isSameAs(BOOK);
+                .isSameAs(BOOK_DTO);
 
-        verify(this.bookService).create(BOOK);
+        verify(this.bookService).create(BOOK_DTO);
         verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
     void shouldUpdateExistingBook() {
-        when(this.bookService.update(anyLong(), any(Book.class))).thenReturn(BOOK);
+        when(this.bookService.update(anyLong(), any(BookDto.class))).thenReturn(BOOK_DTO);
 
-        var result = this.bookController.updateBook(BOOK_ID, BOOK);
+        var result = this.bookController.updateBook(BOOK_ID, BOOK_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isSameAs(BOOK);
+                .isSameAs(BOOK_DTO);
 
-        verify(this.bookService).update(BOOK_ID, BOOK);
+        verify(this.bookService).update(BOOK_ID, BOOK_DTO);
         verifyNoMoreInteractions(this.bookService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        when(this.bookService.update(anyLong(), any(Book.class)))
-                .thenThrow(new NotFoundEntityException(BOOK_ID, Book.class));
+        when(this.bookService.update(anyLong(), any(BookDto.class)))
+                .thenThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
-        assertThatThrownBy(() -> this.bookController.updateBook(BOOK_ID, BOOK))
+        assertThatThrownBy(() -> this.bookController.updateBook(BOOK_ID, BOOK_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), BOOK_ID);
 
-        verify(this.bookService).update(BOOK_ID, BOOK);
+        verify(this.bookService).update(BOOK_ID, BOOK_DTO);
         verifyNoMoreInteractions(this.bookService);
     }
 
@@ -129,13 +131,13 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteBookById() {
-        doThrow(new NotFoundEntityException(BOOK_ID, Book.class))
+        doThrow(new NotFoundEntityException(BOOK_ID, BookDto.class))
                 .when(this.bookService).deleteById(anyLong());
 
         assertThatThrownBy(() -> this.bookController.deleteBook(BOOK_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Book.class.getSimpleName(), BOOK_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), BOOK_ID);
 
         verify(this.bookService).deleteById(BOOK_ID);
         verifyNoMoreInteractions(this.bookService);

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class AuthorControllerTest {
 
     private static final long AUTHOR_ID = 7L;
-    private static final AuthorDto AUTHOR = AuthorDto.builder().id(AUTHOR_ID).build();
+    private static final AuthorDto AUTHOR_DTO = AuthorDto.builder().id(AUTHOR_ID).build();
 
     @Mock
     @NotNull
@@ -39,13 +39,13 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAllAuthors() {
-        when(this.authorService.findAll()).thenReturn(Collections.singletonList(AUTHOR));
+        when(this.authorService.findAll()).thenReturn(Collections.singletonList(AUTHOR_DTO));
 
         var result = this.authorController.getAllAuthors();
 
         assertThat(result)
                 .isNotNull()
-                .containsOnly(AUTHOR);
+                .containsOnly(AUTHOR_DTO);
 
         verify(this.authorService).findAll();
         verifyNoMoreInteractions(this.authorService);
@@ -53,13 +53,13 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAuthorById() {
-        when(this.authorService.findById(anyLong())).thenReturn(Optional.of(AUTHOR));
+        when(this.authorService.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO));
 
         var result = this.authorController.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(AUTHOR);
+                .isEqualTo(AUTHOR_DTO);
 
         verify(this.authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
@@ -79,29 +79,29 @@ class AuthorControllerTest {
 
     @Test
     void shouldCreateNewAuthor() {
-        when(this.authorService.create(any(AuthorDto.class))).thenReturn(AUTHOR);
+        when(this.authorService.create(any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
 
-        var result = this.authorController.createAuthor(AUTHOR);
+        var result = this.authorController.createAuthor(AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isSameAs(AUTHOR);
+                .isSameAs(AUTHOR_DTO);
 
-        verify(this.authorService).create(AUTHOR);
+        verify(this.authorService).create(AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorService);
     }
 
     @Test
     void shouldUpdateExistingAuthor() {
-        when(this.authorService.update(anyLong(), any(AuthorDto.class))).thenReturn(AUTHOR);
+        when(this.authorService.update(anyLong(), any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
 
-        var result = this.authorController.updateAuthor(AUTHOR_ID, AUTHOR);
+        var result = this.authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isSameAs(AUTHOR);
+                .isSameAs(AUTHOR_DTO);
 
-        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorService);
     }
 
@@ -110,12 +110,12 @@ class AuthorControllerTest {
         when(this.authorService.update(anyLong(), any(AuthorDto.class)))
                 .thenThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
-        assertThatThrownBy(() -> this.authorController.updateAuthor(AUTHOR_ID, AUTHOR))
+        assertThatThrownBy(() -> this.authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
 
-        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorService);
     }
 

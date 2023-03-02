@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
-import mr.cookie.spring6udemy.model.model.Book;
+import mr.cookie.spring6udemy.model.model.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public class BookController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public List<Book> getAllBooks() {
+    public List<BookDto> getAllBooks() {
         return this.bookService.findAll();
     }
 
@@ -47,7 +47,7 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Book getBookById(
+    public BookDto getBookById(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id
     ) {
         return this.bookService.findById(id)
@@ -67,8 +67,8 @@ public class BookController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Book createBook(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @RequestBody Book book
+    public BookDto createBook(
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @RequestBody BookDto book
     ) {
         return this.bookService.create(book);
         // TODO: conflict status
@@ -88,9 +88,9 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Book updateBook(
+    public BookDto updateBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id,
-            @RequestBody Book book
+            @RequestBody BookDto book
     ) {
         return this.bookService.update(id, book);
     }

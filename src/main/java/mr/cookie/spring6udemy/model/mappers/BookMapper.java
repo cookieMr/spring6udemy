@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.model.mappers;
 
 import mr.cookie.spring6udemy.model.entities.BookEntity;
-import mr.cookie.spring6udemy.model.model.Book;
+import mr.cookie.spring6udemy.model.model.BookDto;
 import org.jetbrains.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,14 +13,14 @@ import java.util.List;
 public interface BookMapper {
 
     @Nullable
-    Book map(@Nullable BookEntity source);
+    BookDto map(@Nullable BookEntity source);
 
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "publisher", ignore = true)
     @Nullable
-    BookEntity map(@Nullable Book source);
+    BookEntity map(@Nullable BookDto source);
 
     @Nullable
-    List<Book> mapToModel(@Nullable Iterable<BookEntity> source);
+    List<BookDto> mapToModel(@Nullable Iterable<BookEntity> source);
 
 }

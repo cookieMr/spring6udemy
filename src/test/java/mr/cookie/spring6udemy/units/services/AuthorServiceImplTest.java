@@ -35,8 +35,10 @@ import static org.mockito.Mockito.when;
 class AuthorServiceImplTest {
 
     private static final long AUTHOR_ID = 2L;
-    private static final AuthorDto AUTHOR = AuthorDto.builder().id(AUTHOR_ID).build();
-    private static final Supplier<AuthorEntity> AUTHOR_DTO_SUPPLIER = () -> AuthorEntity.builder()
+    private static final AuthorDto AUTHOR_DTO = AuthorDto.builder()
+            .id(AUTHOR_ID)
+            .build();
+    private static final Supplier<AuthorEntity> AUTHOR_ENTITY_SUPPLIER = () -> AuthorEntity.builder()
             .id(AUTHOR_ID)
             .build();
 
@@ -57,10 +59,10 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldReturnAllAuthors() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
 
         when(this.authorRepository.findAll())
-                .thenReturn(Collections.singletonList(authorDto));
+                .thenReturn(Collections.singletonList(authorEntity));
 
         var result = this.authorService.findAll();
 
@@ -71,15 +73,15 @@ class AuthorServiceImplTest {
 
         verify(this.authorRepository).findAll();
         verify(this.authorMapper).mapToModel(anyIterable());
-        verify(this.authorMapper).map(authorDto);
+        verify(this.authorMapper).map(authorEntity);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 
     @Test
     void shouldReturnAuthorById() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
 
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorDto));
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorEntity));
 
         var result = this.authorService.findById(AUTHOR_ID);
 
@@ -90,7 +92,7 @@ class AuthorServiceImplTest {
                 .returns(AUTHOR_ID, AuthorDto::getId);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
-        verify(this.authorMapper).map(authorDto);
+        verify(this.authorMapper).map(authorEntity);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 
@@ -111,58 +113,58 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldCreateNewAuthor() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
 
-        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorDto);
+        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
 
-        var result = this.authorService.create(AUTHOR);
+        var result = this.authorService.create(AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
                 .returns(AUTHOR_ID, AuthorDto::getId);
 
-        verify(this.authorRepository).save(authorDto);
-        verify(this.authorMapper).map(authorDto);
-        verify(this.authorMapper).map(AUTHOR);
+        verify(this.authorRepository).save(authorEntity);
+        verify(this.authorMapper).map(authorEntity);
+        verify(this.authorMapper).map(AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
     }
 
     @Test
     void shouldUpdateExistingAuthor() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var updatedAuthor = AuthorDto.builder()
+        var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
+        var updatedAuthorDto = AuthorDto.builder()
                 .firstName("Brandon")
                 .lastName("Sanderson")
                 .build();
 
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorDto));
-        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorDto);
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorEntity));
+        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
 
-        var result = this.authorService.update(AUTHOR_ID, updatedAuthor);
+        var result = this.authorService.update(AUTHOR_ID, updatedAuthorDto);
 
         assertThat(result)
                 .isNotNull()
                 .returns(AUTHOR_ID, AuthorDto::getId)
-                .returns(updatedAuthor.getFirstName(), AuthorDto::getFirstName)
-                .returns(updatedAuthor.getLastName(), AuthorDto::getLastName);
+                .returns(updatedAuthorDto.getFirstName(), AuthorDto::getFirstName)
+                .returns(updatedAuthorDto.getLastName(), AuthorDto::getLastName);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
         verify(this.authorRepository).save(this.authorDtoArgumentCaptor.capture());
-        verify(this.authorMapper).map(authorDto);
+        verify(this.authorMapper).map(authorEntity);
         verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
 
         assertThat(this.authorDtoArgumentCaptor.getValue())
                 .isNotNull()
                 .returns(AUTHOR_ID, AuthorEntity::getId)
-                .returns(updatedAuthor.getFirstName(), AuthorEntity::getFirstName)
-                .returns(updatedAuthor.getLastName(), AuthorEntity::getLastName);
+                .returns(updatedAuthorDto.getFirstName(), AuthorEntity::getFirstName)
+                .returns(updatedAuthorDto.getLastName(), AuthorEntity::getLastName);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
         when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR))
+        assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
@@ -173,7 +175,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO_SUPPLIER.get()));
+        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_ENTITY_SUPPLIER.get()));
 
         this.authorService.deleteById(AUTHOR_ID);
 

@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthorControllerMockMvcTest {
 
     private static final long AUTHOR_ID = 1L;
-    private static final AuthorDto AUTHOR = AuthorDto.builder()
+    private static final AuthorDto AUTHOR_DTO = AuthorDto.builder()
             .firstName("JRR")
             .lastName("Tolkien")
             .build();
@@ -61,13 +61,13 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGetAllAuthors() {
-        given(this.authorService.findAll()).willReturn(Collections.singletonList(AUTHOR));
+        given(this.authorService.findAll()).willReturn(Collections.singletonList(AUTHOR_DTO));
 
         var authors = this.getAllAuthors();
 
         assertThat(authors)
                 .isNotNull()
-                .containsOnly(AUTHOR);
+                .containsOnly(AUTHOR_DTO);
 
         verify(this.authorService).findAll();
         verifyNoMoreInteractions(this.authorService);
@@ -75,13 +75,13 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGetAuthorById() {
-        given(this.authorService.findById(anyLong())).willReturn(Optional.of(AUTHOR));
+        given(this.authorService.findById(anyLong())).willReturn(Optional.of(AUTHOR_DTO));
 
         var result = this.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(AUTHOR);
+                .isEqualTo(AUTHOR_DTO);
 
         verify(this.authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);
@@ -100,29 +100,29 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldCreateAuthor() {
-        given(this.authorService.create(any(AuthorDto.class))).willReturn(AUTHOR);
+        given(this.authorService.create(any(AuthorDto.class))).willReturn(AUTHOR_DTO);
 
-        var result = this.createAuthor(AUTHOR);
+        var result = this.createAuthor(AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(AUTHOR);
+                .isEqualTo(AUTHOR_DTO);
 
-        verify(this.authorService).create(AUTHOR);
+        verify(this.authorService).create(AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorService);
     }
 
     @Test
     void shouldUpdateAuthor() {
-        given(this.authorService.update(anyLong(), any(AuthorDto.class))).willReturn(AUTHOR);
+        given(this.authorService.update(anyLong(), any(AuthorDto.class))).willReturn(AUTHOR_DTO);
 
-        var result = this.updateAuthor(AUTHOR_ID, AUTHOR);
+        var result = this.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(AUTHOR);
+                .isEqualTo(AUTHOR_DTO);
 
-        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorService);
     }
 
@@ -131,9 +131,9 @@ class AuthorControllerMockMvcTest {
         given(this.authorService.update(anyLong(), any(AuthorDto.class)))
                 .willThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
-        this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR);
+        this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR_DTO);
 
-        verify(this.authorService).update(AUTHOR_ID, AUTHOR);
+        verify(this.authorService).update(AUTHOR_ID, AUTHOR_DTO);
         verifyNoMoreInteractions(this.authorService);
     }
 
