@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class PublisherDto {
+public class PublisherEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -34,6 +34,6 @@ public class PublisherDto {
 
     @Builder.Default
     @OneToMany(mappedBy = "publisher")
-    private Set<BookDto> books = new HashSet<>();
+    private Set<BookEntity> books = new HashSet<>();
 
 }

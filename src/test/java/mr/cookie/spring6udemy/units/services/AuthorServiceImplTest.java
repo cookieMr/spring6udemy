@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.units.services;
 
-import mr.cookie.spring6udemy.model.entities.AuthorDto;
+import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.model.model.Author;
@@ -36,7 +36,10 @@ class AuthorServiceImplTest {
 
     private static final long AUTHOR_ID = 2L;
     private static final Author AUTHOR = Author.builder().id(AUTHOR_ID).build();
-    private static final Supplier<AuthorDto> AUTHOR_DTO_SUPPLIER = () -> AuthorDto.builder().id(AUTHOR_ID).build();
+    private static final Supplier<AuthorEntity> AUTHOR_DTO_SUPPLIER = () -> AuthorEntity
+            .builder()
+            .id(AUTHOR_ID)
+            .build();
 
     @Spy
     @NotNull
@@ -51,7 +54,7 @@ class AuthorServiceImplTest {
     private AuthorServiceImpl authorService;
 
     @Captor
-    private ArgumentCaptor<AuthorDto> authorDtoArgumentCaptor;
+    private ArgumentCaptor<AuthorEntity> authorDtoArgumentCaptor;
 
     @Test
     void shouldReturnAllAuthors() {
@@ -111,7 +114,7 @@ class AuthorServiceImplTest {
     void shouldCreateNewAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
-        when(this.authorRepository.save(any(AuthorDto.class))).thenReturn(authorDto);
+        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorDto);
 
         var result = this.authorService.create(AUTHOR);
 
@@ -134,7 +137,7 @@ class AuthorServiceImplTest {
                 .build();
 
         when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorDto));
-        when(this.authorRepository.save(any(AuthorDto.class))).thenReturn(authorDto);
+        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorDto);
 
         var result = this.authorService.update(AUTHOR_ID, updatedAuthor);
 
@@ -151,9 +154,9 @@ class AuthorServiceImplTest {
 
         assertThat(this.authorDtoArgumentCaptor.getValue())
                 .isNotNull()
-                .returns(AUTHOR_ID, AuthorDto::getId)
-                .returns(updatedAuthor.getFirstName(), AuthorDto::getFirstName)
-                .returns(updatedAuthor.getLastName(), AuthorDto::getLastName);
+                .returns(AUTHOR_ID, AuthorEntity::getId)
+                .returns(updatedAuthor.getFirstName(), AuthorEntity::getFirstName)
+                .returns(updatedAuthor.getLastName(), AuthorEntity::getLastName);
     }
 
     @Test

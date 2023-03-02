@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.units.domain;
 
-import mr.cookie.spring6udemy.model.entities.PublisherDto;
+import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -46,8 +46,8 @@ class PublisherTest {
     }
 
     @NotNull
-    private PublisherDto buildPublisher(long id) {
-        return PublisherDto.builder()
+    private PublisherEntity buildPublisher(long id) {
+        return PublisherEntity.builder()
                 .id(id)
                 .name("DragonSteel Books")
                 .address("PO Box 698")

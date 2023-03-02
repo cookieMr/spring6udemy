@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.units.services;
 
-import mr.cookie.spring6udemy.model.entities.PublisherDto;
+import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapperImpl;
 import mr.cookie.spring6udemy.model.model.Publisher;
@@ -36,7 +36,10 @@ class PublisherServiceImplTest {
 
     private static final long PUBLISHER_ID = 5L;
     private static final Publisher PUBLISHER = Publisher.builder().id(PUBLISHER_ID).build();
-    private static final Supplier<PublisherDto> PUBLISHER_DTO_SUPPLIER = () -> PublisherDto.builder().id(PUBLISHER_ID).build();
+    private static final Supplier<PublisherEntity> PUBLISHER_DTO_SUPPLIER = () -> PublisherEntity
+            .builder()
+            .id(PUBLISHER_ID)
+            .build();
 
     @Spy
     @NotNull
@@ -51,7 +54,7 @@ class PublisherServiceImplTest {
     private PublisherServiceImpl publisherService;
 
     @Captor
-    private ArgumentCaptor<PublisherDto> publisherDtoArgumentCaptor;
+    private ArgumentCaptor<PublisherEntity> publisherDtoArgumentCaptor;
 
     @Test
     void shouldReturnAllPublishers() {
@@ -110,7 +113,7 @@ class PublisherServiceImplTest {
     void shouldCreateNewPublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        when(this.publisherRepository.save(any(PublisherDto.class))).thenReturn(publisherDto);
+        when(this.publisherRepository.save(any(PublisherEntity.class))).thenReturn(publisherDto);
 
         var result = this.publisherService.create(PUBLISHER);
 
@@ -136,7 +139,7 @@ class PublisherServiceImplTest {
                 .build();
 
         when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.of(publisherDto));
-        when(this.publisherRepository.save(any(PublisherDto.class))).thenReturn(publisherDto);
+        when(this.publisherRepository.save(any(PublisherEntity.class))).thenReturn(publisherDto);
 
         var result = this.publisherService.update(PUBLISHER_ID, updatedPublisher);
 
@@ -156,12 +159,12 @@ class PublisherServiceImplTest {
 
         assertThat(this.publisherDtoArgumentCaptor.getValue())
                 .isNotNull()
-                .returns(PUBLISHER_ID, PublisherDto::getId)
-                .returns(updatedPublisher.getName(), PublisherDto::getName)
-                .returns(updatedPublisher.getAddress(), PublisherDto::getAddress)
-                .returns(updatedPublisher.getState(), PublisherDto::getState)
-                .returns(updatedPublisher.getCity(), PublisherDto::getCity)
-                .returns(updatedPublisher.getZipCode(), PublisherDto::getZipCode);
+                .returns(PUBLISHER_ID, PublisherEntity::getId)
+                .returns(updatedPublisher.getName(), PublisherEntity::getName)
+                .returns(updatedPublisher.getAddress(), PublisherEntity::getAddress)
+                .returns(updatedPublisher.getState(), PublisherEntity::getState)
+                .returns(updatedPublisher.getCity(), PublisherEntity::getCity)
+                .returns(updatedPublisher.getZipCode(), PublisherEntity::getZipCode);
     }
 
     @Test

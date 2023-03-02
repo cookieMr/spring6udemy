@@ -7,10 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,31 +15,23 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@Entity(name = "books")
+@Entity(name = "authors")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class BookDto {
+public class AuthorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String title;
+    private String firstName;
 
-    private String isbn;
+    private String lastName;
 
-    @ManyToMany
-    @JoinTable(
-        name = "author_book",
-        joinColumns = @JoinColumn(name = "book_id"),
-        inverseJoinColumns = @JoinColumn(name = "author_id")
-    )
+    @ManyToMany(mappedBy = "authors")
     @Builder.Default
-    private Set<AuthorDto> authors = new HashSet<>();
-
-    @ManyToOne
-    private PublisherDto publisher;
+    private Set<BookEntity> books = new HashSet<>();
 
 }
