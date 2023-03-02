@@ -5,16 +5,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity(name = "publishers")
 @Builder
 @NoArgsConstructor
@@ -35,5 +38,8 @@ public class PublisherEntity {
     @Builder.Default
     @OneToMany(mappedBy = "publisher")
     private Set<BookEntity> books = new HashSet<>();
+
+    @Version
+    private Integer version;
 
 }
