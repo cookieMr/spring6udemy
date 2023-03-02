@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.model.mappers;
 
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
-import mr.cookie.spring6udemy.model.model.AuthorDto;
+import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import org.jetbrains.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

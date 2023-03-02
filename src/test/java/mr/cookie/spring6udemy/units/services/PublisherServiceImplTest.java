@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.services;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapperImpl;
-import mr.cookie.spring6udemy.model.model.PublisherDto;
+import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.services.PublisherServiceImpl;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;

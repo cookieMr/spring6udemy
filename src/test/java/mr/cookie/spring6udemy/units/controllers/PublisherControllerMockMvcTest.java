@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.PublisherController;
-import mr.cookie.spring6udemy.model.model.PublisherDto;
+import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.services.PublisherService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;

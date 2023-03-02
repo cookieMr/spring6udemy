@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.units.controllers;
 
 import mr.cookie.spring6udemy.controllers.AuthorController;
-import mr.cookie.spring6udemy.model.model.AuthorDto;
+import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
