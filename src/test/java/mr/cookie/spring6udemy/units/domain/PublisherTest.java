@@ -50,7 +50,7 @@ class PublisherTest {
         return PublisherDto.builder()
                 .id(id)
                 .name("DragonSteel Books")
-                .address("POBox 698")
+                .address("PO Box 698")
                 .state("UT")
                 .city("American Fork")
                 .zipCode("84003")

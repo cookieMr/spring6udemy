@@ -1,5 +1,8 @@
 package mr.cookie.spring6udemy.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.model.Author;
@@ -25,25 +28,46 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorController {
 
+    private static final String PATH_AUTHOR_ID_DESCRIPTION = "Author's ID";
+    private static final String RESPONSE_404_DESCRIPTION = "Author was not found by ID.";
+    private static final String RESPONSE_409_DESCRIPTION = "Author with provided attributes already exists";
+
     @NotNull
     private final AuthorService authorService;
 
+    @Operation(description = "Returns all authors (or empty array).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     public List<Author> getAllAuthors() {
         return this.authorService.findAll();
     }
 
+    @Operation(
+            description = "Returns an author by its ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Author was found by ID."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+            }
+    )
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Author getAuthorById(@PathVariable Long id) {
+    public Author getAuthorById(
+            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id
+    ) {
         return this.authorService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
+    @Operation(
+            description = "Creates a new author and persists it.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Author was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+            }
+    )
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -55,19 +79,39 @@ public class AuthorController {
         // TODO: conflict status
     }
 
+    @Operation(
+            description = "Updates an author by ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Author was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+            }
+    )
     @PutMapping(
             path = "{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Author updateAuthor(@PathVariable Long id, @RequestBody Author author) {
+    public Author updateAuthor(
+            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id,
+            @RequestBody Author author
+    ) {
         return this.authorService.update(id, author);
     }
 
+    @Operation(
+            description = "Deletes an author by its ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Author was found by ID and removed."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+            }
+    )
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAuthor(@PathVariable Long id) {
+    public void deleteAuthor(
+            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id
+    ) {
         this.authorService.deleteById(id);
     }
 
