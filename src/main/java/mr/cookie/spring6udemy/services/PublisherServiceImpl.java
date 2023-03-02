@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
-import mr.cookie.spring6udemy.model.model.Publisher;
+import mr.cookie.spring6udemy.model.model.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class PublisherServiceImpl implements PublisherService {
 
     @NotNull
     @Override
-    public List<Publisher> findAll() {
+    public List<PublisherDto> findAll() {
         return Optional.of(this.publisherRepository)
                 .map(CrudRepository::findAll)
                 .map(this.publisherMapper::mapToModel)
@@ -33,13 +33,13 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public Optional<Publisher> findById(long id) {
+    public Optional<PublisherDto> findById(long id) {
         return this.publisherRepository.findById(id)
                 .map(this.publisherMapper::map);
     }
 
     @Override
-    public @NotNull Publisher create(@NotNull Publisher publisher) {
+    public @NotNull PublisherDto create(@NotNull PublisherDto publisher) {
         return Optional.of(publisher)
                 .map(this.publisherMapper::map)
                 .map(this.publisherRepository::save)
@@ -49,7 +49,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public @NotNull Publisher update(long id, @NotNull Publisher publisher) {
+    public @NotNull PublisherDto update(long id, @NotNull PublisherDto publisher) {
         var existingDto = this.publisherRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
@@ -73,7 +73,7 @@ public class PublisherServiceImpl implements PublisherService {
         if (doesPublishExists) {
             this.publisherRepository.deleteById(id);
         } else {
-            throw new NotFoundEntityException(id, Publisher.class);
+            throw new NotFoundEntityException(id, PublisherDto.class);
         }
     }
 

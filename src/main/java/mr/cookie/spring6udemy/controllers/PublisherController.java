@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
-import mr.cookie.spring6udemy.model.model.Publisher;
+import mr.cookie.spring6udemy.model.model.PublisherDto;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +38,7 @@ public class PublisherController {
     @Operation(description = "Returns all publishers (or empty array).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public List<Publisher> getAllPublishers() {
+    public List<PublisherDto> getAllPublishers() {
         return this.publisherService.findAll();
     }
 
@@ -54,7 +54,7 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Publisher getPublisherById(
+    public PublisherDto getPublisherById(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id
     ) {
         return this.publisherService.findById(id)
@@ -74,7 +74,7 @@ public class PublisherController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Publisher createPublisher(@RequestBody Publisher publisher) {
+    public PublisherDto createPublisher(@RequestBody PublisherDto publisher) {
         return this.publisherService.create(publisher);
         // TODO: conflict status
     }
@@ -93,9 +93,9 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Publisher updatePublisher(
+    public PublisherDto updatePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id,
-            @RequestBody Publisher publisher
+            @RequestBody PublisherDto publisher
     ) {
         return this.publisherService.update(id, publisher);
     }

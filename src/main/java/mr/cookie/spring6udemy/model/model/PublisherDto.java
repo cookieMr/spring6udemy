@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Publisher {
+public class PublisherDto {
 
     @Schema(
             example = "123",

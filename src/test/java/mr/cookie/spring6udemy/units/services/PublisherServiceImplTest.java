@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.services;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapperImpl;
-import mr.cookie.spring6udemy.model.model.Publisher;
+import mr.cookie.spring6udemy.model.model.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.services.PublisherServiceImpl;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
@@ -35,9 +35,10 @@ import static org.mockito.Mockito.when;
 class PublisherServiceImplTest {
 
     private static final long PUBLISHER_ID = 5L;
-    private static final Publisher PUBLISHER = Publisher.builder().id(PUBLISHER_ID).build();
-    private static final Supplier<PublisherEntity> PUBLISHER_DTO_SUPPLIER = () -> PublisherEntity
-            .builder()
+    private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder()
+            .id(PUBLISHER_ID)
+            .build();
+    private static final Supplier<PublisherEntity> PUBLISHER_DTO_SUPPLIER = () -> PublisherEntity.builder()
             .id(PUBLISHER_ID)
             .build();
 
@@ -67,7 +68,7 @@ class PublisherServiceImplTest {
         assertThat(result)
                 .isNotNull()
                 .isNotEmpty()
-                .contains(Publisher.builder().id(PUBLISHER_ID).build());
+                .contains(PublisherDto.builder().id(PUBLISHER_ID).build());
 
         verify(this.publisherRepository).findAll();
         verify(this.publisherMapper).mapToModel(anyIterable());
@@ -87,7 +88,7 @@ class PublisherServiceImplTest {
                 .isNotNull()
                 .isPresent()
                 .get()
-                .returns(PUBLISHER_ID, Publisher::getId);
+                .returns(PUBLISHER_ID, PublisherDto::getId);
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
         verify(this.publisherMapper).map(publisherDto);
@@ -115,22 +116,22 @@ class PublisherServiceImplTest {
 
         when(this.publisherRepository.save(any(PublisherEntity.class))).thenReturn(publisherDto);
 
-        var result = this.publisherService.create(PUBLISHER);
+        var result = this.publisherService.create(PUBLISHER_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .returns(PUBLISHER_ID, Publisher::getId);
+                .returns(PUBLISHER_ID, PublisherDto::getId);
 
         verify(this.publisherRepository).save(publisherDto);
         verify(this.publisherMapper).map(publisherDto);
-        verify(this.publisherMapper).map(PUBLISHER);
+        verify(this.publisherMapper).map(PUBLISHER_DTO);
         verifyNoMoreInteractions(this.publisherRepository, this.publisherMapper);
     }
 
     @Test
     void shouldUpdateExistingPublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
-        var updatedPublisher = Publisher.builder()
+        var updatedPublisher = PublisherDto.builder()
                 .name("Penguin Random House")
                 .address("Neumarkter Strasse 28")
                 .state("Germany")
@@ -145,12 +146,12 @@ class PublisherServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(PUBLISHER_ID, Publisher::getId)
-                .returns(updatedPublisher.getName(), Publisher::getName)
-                .returns(updatedPublisher.getAddress(), Publisher::getAddress)
-                .returns(updatedPublisher.getState(), Publisher::getState)
-                .returns(updatedPublisher.getCity(), Publisher::getCity)
-                .returns(updatedPublisher.getZipCode(), Publisher::getZipCode);
+                .returns(PUBLISHER_ID, PublisherDto::getId)
+                .returns(updatedPublisher.getName(), PublisherDto::getName)
+                .returns(updatedPublisher.getAddress(), PublisherDto::getAddress)
+                .returns(updatedPublisher.getState(), PublisherDto::getState)
+                .returns(updatedPublisher.getCity(), PublisherDto::getCity)
+                .returns(updatedPublisher.getZipCode(), PublisherDto::getZipCode);
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
         verify(this.publisherRepository).save(this.publisherDtoArgumentCaptor.capture());
@@ -171,7 +172,7 @@ class PublisherServiceImplTest {
     void shouldThrowExceptionWhenCannotUpdatePublisherById() {
         when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.publisherService.update(PUBLISHER_ID, PUBLISHER))
+        assertThatThrownBy(() -> this.publisherService.update(PUBLISHER_ID, PUBLISHER_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
@@ -198,7 +199,7 @@ class PublisherServiceImplTest {
         assertThatThrownBy(() -> this.publisherService.deleteById(PUBLISHER_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Publisher.class.getSimpleName(), PUBLISHER_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, PublisherDto.class.getSimpleName(), PUBLISHER_ID);
 
         verify(this.publisherRepository).findById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherRepository);
