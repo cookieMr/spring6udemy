@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.bootstrap;
 import java.util.Arrays;
 
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
-import mr.cookie.spring6udemy.model.entities.PublisherDto;
+import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.apache.commons.collections4.IterableUtils;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(@Nullable String... args) {
-        var dragonSteelPublisher = PublisherDto.builder()
+        var dragonSteelPublisher = PublisherEntity.builder()
                 .name("DragonSteel Books")
                 .address("PO Box 698")
                 .state("UT")

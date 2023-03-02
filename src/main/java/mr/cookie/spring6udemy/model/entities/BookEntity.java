@@ -43,6 +43,6 @@ public class BookEntity {
     private Set<AuthorEntity> authors = new HashSet<>();
 
     @ManyToOne
-    private PublisherDto publisher;
+    private PublisherEntity publisher;
 
 }

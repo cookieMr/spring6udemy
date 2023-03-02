@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class PublisherDto {
+public class PublisherEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
