@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.services;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
-import mr.cookie.spring6udemy.model.model.AuthorDto;
+import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.services.AuthorServiceImpl;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;

@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.model.model;
+package mr.cookie.spring6udemy.model.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,32 +8,32 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@Schema
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookDto {
+public class AuthorDto {
 
     @Schema(
+            example = "123",
             pattern = "^\\d+$",
-            minimum = "0",
-            example = "123"
+            minimum = "0"
     )
     private Long id;
 
     @Schema(
             requiredMode = Schema.RequiredMode.REQUIRED,
             minLength = 1,
-            maxLength = 128,
-            example = "Warbreaker"
+            maxLength = 64,
+            example = "Brandon"
     )
-    private String title;
+    private String firstName;
 
     @Schema(
             requiredMode = Schema.RequiredMode.REQUIRED,
-            minLength = 13,
-            maxLength = 14,
-            example = "978-0765360038",
-            pattern = "^\\d{3}-?\\d{10}$"
+            minLength = 1,
+            maxLength = 64,
+            example = "Sanderson"
     )
-    private String isbn;
+    private String lastName;
 
 }

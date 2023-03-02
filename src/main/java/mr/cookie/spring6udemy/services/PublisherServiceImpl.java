@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
-import mr.cookie.spring6udemy.model.model.PublisherDto;
+import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;

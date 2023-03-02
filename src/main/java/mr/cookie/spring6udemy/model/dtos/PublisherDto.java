@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.model.model;
+package mr.cookie.spring6udemy.model.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

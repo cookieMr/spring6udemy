@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.services;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
-import mr.cookie.spring6udemy.model.model.BookDto;
+import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.services.BookServiceImpl;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
