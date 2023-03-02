@@ -1,9 +1,8 @@
 package mr.cookie.spring6udemy.repositories;
 
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.springframework.data.repository.CrudRepository;
 
-import mr.cookie.spring6udemy.model.entities.BookDto;
-
-public interface BookRepository extends CrudRepository<BookDto, Long> {
+public interface BookRepository extends CrudRepository<BookEntity, Long> {
 
 }

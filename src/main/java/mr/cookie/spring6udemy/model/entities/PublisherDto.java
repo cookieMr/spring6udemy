@@ -34,6 +34,6 @@ public class PublisherDto {
 
     @Builder.Default
     @OneToMany(mappedBy = "publisher")
-    private Set<BookDto> books = new HashSet<>();
+    private Set<BookEntity> books = new HashSet<>();
 
 }

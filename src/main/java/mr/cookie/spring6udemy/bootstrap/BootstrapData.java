@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mr.cookie.spring6udemy.model.entities.BookDto;
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 
@@ -50,22 +50,22 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
         var savedPublisher = this.publisherRepository.save(dragonSteelPublisher);
 
-        var saBook1 = BookDto.builder()
+        var saBook1 = BookEntity.builder()
                 .title("Way of Kings")
                 .isbn("978-0765365279")
                 .publisher(savedPublisher)
                 .build();
-        var saBook2 = BookDto.builder()
+        var saBook2 = BookEntity.builder()
                 .title("Words of Radiance")
                 .isbn("978-0765326362")
                 .publisher(savedPublisher)
                 .build();
-        var saBook3 = BookDto.builder()
+        var saBook3 = BookEntity.builder()
                 .title("Oathbringer")
                 .isbn("978-0765326379")
                 .publisher(savedPublisher)
                 .build();
-        var saBook4 = BookDto.builder()
+        var saBook4 = BookEntity.builder()
                 .title("Rhythm of War")
                 .isbn("978-0765326386")
                 .publisher(savedPublisher)

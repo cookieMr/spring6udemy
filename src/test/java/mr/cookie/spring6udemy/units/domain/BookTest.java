@@ -1,10 +1,9 @@
 package mr.cookie.spring6udemy.units.domain;
 
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import mr.cookie.spring6udemy.model.entities.BookDto;
 
 class BookTest {
 
@@ -47,8 +46,8 @@ class BookTest {
     }
 
     @NotNull
-    private BookDto buildBook(long id) {
-        return BookDto.builder()
+    private BookEntity buildBook(long id) {
+        return BookEntity.builder()
             .id(id)
             .title("Tress of Emerald See")
             .isbn("978-1250899651")

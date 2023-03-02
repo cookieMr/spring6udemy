@@ -32,6 +32,6 @@ public class AuthorEntity {
 
     @ManyToMany(mappedBy = "authors")
     @Builder.Default
-    private Set<BookDto> books = new HashSet<>();
+    private Set<BookEntity> books = new HashSet<>();
 
 }

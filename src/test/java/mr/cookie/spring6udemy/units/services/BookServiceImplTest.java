@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.units.services;
 
-import mr.cookie.spring6udemy.model.entities.BookDto;
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
 import mr.cookie.spring6udemy.model.model.Book;
@@ -36,7 +36,10 @@ class BookServiceImplTest {
 
     private static final long BOOK_ID = 1L;
     private static final Book BOOK = Book.builder().id(BOOK_ID).build();
-    private static final Supplier<BookDto> BOOK_DTO_SUPPLIER = () -> BookDto.builder().id(BOOK_ID).build();
+    private static final Supplier<BookEntity> BOOK_DTO_SUPPLIER = () -> BookEntity
+            .builder()
+            .id(BOOK_ID)
+            .build();
 
     @Spy
     @NotNull
@@ -51,7 +54,7 @@ class BookServiceImplTest {
     private BookServiceImpl bookService;
 
     @Captor
-    private ArgumentCaptor<BookDto> bookDtoArgumentCaptor;
+    private ArgumentCaptor<BookEntity> bookDtoArgumentCaptor;
 
     @Test
     void shouldReturnAllBooks() {
@@ -111,7 +114,7 @@ class BookServiceImplTest {
     void shouldCreateNewBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        when(this.bookRepository.save(any(BookDto.class))).thenReturn(bookDto);
+        when(this.bookRepository.save(any(BookEntity.class))).thenReturn(bookDto);
 
         var result = this.bookService.create(BOOK);
 
@@ -134,7 +137,7 @@ class BookServiceImplTest {
                 .build();
 
         when(this.bookRepository.findById(anyLong())).thenReturn(Optional.of(bookDto));
-        when(this.bookRepository.save(any(BookDto.class))).thenReturn(bookDto);
+        when(this.bookRepository.save(any(BookEntity.class))).thenReturn(bookDto);
 
         var result = this.bookService.update(BOOK_ID, updatedBook);
 
@@ -151,9 +154,9 @@ class BookServiceImplTest {
 
         assertThat(this.bookDtoArgumentCaptor.getValue())
                 .isNotNull()
-                .returns(BOOK_ID, BookDto::getId)
-                .returns(updatedBook.getTitle(), BookDto::getTitle)
-                .returns(updatedBook.getIsbn(), BookDto::getIsbn);
+                .returns(BOOK_ID, BookEntity::getId)
+                .returns(updatedBook.getTitle(), BookEntity::getTitle)
+                .returns(updatedBook.getIsbn(), BookEntity::getIsbn);
     }
 
     @Test

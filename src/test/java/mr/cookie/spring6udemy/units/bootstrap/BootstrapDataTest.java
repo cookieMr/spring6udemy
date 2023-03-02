@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.units.bootstrap;
 
 import mr.cookie.spring6udemy.bootstrap.BootstrapData;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
-import mr.cookie.spring6udemy.model.entities.BookDto;
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.entities.PublisherDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.repositories.BookRepository;
@@ -48,16 +48,16 @@ class BootstrapDataTest {
 
     @Captor
     @NotNull
-    private ArgumentCaptor<List<BookDto>> booksCaptor;
+    private ArgumentCaptor<List<BookEntity>> booksCaptor;
 
     @Test
     void shouldInitEntities() {
         var savedPublisher = PublisherDto.builder().id(111L).build();
         var savedAuthor = AuthorEntity.builder().id(42L).build();
-        var savedBook1 = BookDto.builder().id(1L).build();
-        var savedBook2 = BookDto.builder().id(2L).build();
-        var savedBook3 = BookDto.builder().id(3L).build();
-        var savedBook4 = BookDto.builder().id(4L).build();
+        var savedBook1 = BookEntity.builder().id(1L).build();
+        var savedBook2 = BookEntity.builder().id(2L).build();
+        var savedBook3 = BookEntity.builder().id(3L).build();
+        var savedBook4 = BookEntity.builder().id(4L).build();
 
         when(this.publisherRepository.save(any(PublisherDto.class)))
                 .thenReturn(savedPublisher);
