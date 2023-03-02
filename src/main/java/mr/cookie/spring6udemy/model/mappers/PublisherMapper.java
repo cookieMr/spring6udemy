@@ -16,6 +16,7 @@ public interface PublisherMapper {
     PublisherDto map(@Nullable PublisherEntity source);
 
     @Mapping(target = "books", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Nullable
     PublisherEntity map(@Nullable PublisherDto source);
 

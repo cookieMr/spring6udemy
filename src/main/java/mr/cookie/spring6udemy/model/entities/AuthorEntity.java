@@ -8,13 +8,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity(name = "authors")
 @Builder
 @NoArgsConstructor
@@ -33,5 +36,8 @@ public class AuthorEntity {
     @ManyToMany(mappedBy = "authors")
     @Builder.Default
     private Set<BookEntity> books = new HashSet<>();
+
+    @Version
+    private Integer version;
 
 }
