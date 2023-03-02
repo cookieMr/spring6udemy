@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.controllers.AuthorController;
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.hamcrest.core.Is;
@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthorControllerMockMvcTest {
 
     private static final long AUTHOR_ID = 1L;
-    private static final Author AUTHOR = Author.builder()
+    private static final AuthorDto AUTHOR = AuthorDto.builder()
             .firstName("JRR")
             .lastName("Tolkien")
             .build();
@@ -90,7 +90,7 @@ class AuthorControllerMockMvcTest {
     @Test
     void shouldGet404WhenCannotFindAuthorById() {
         given(this.authorService.findById(anyLong()))
-                .willThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+                .willThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         this.getAuthorByIdAndExpect404(AUTHOR_ID);
 
@@ -100,7 +100,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldCreateAuthor() {
-        given(this.authorService.create(any(Author.class))).willReturn(AUTHOR);
+        given(this.authorService.create(any(AuthorDto.class))).willReturn(AUTHOR);
 
         var result = this.createAuthor(AUTHOR);
 
@@ -114,7 +114,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldUpdateAuthor() {
-        given(this.authorService.update(anyLong(), any(Author.class))).willReturn(AUTHOR);
+        given(this.authorService.update(anyLong(), any(AuthorDto.class))).willReturn(AUTHOR);
 
         var result = this.updateAuthor(AUTHOR_ID, AUTHOR);
 
@@ -128,8 +128,8 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotUpdateAuthorById() {
-        given(this.authorService.update(anyLong(), any(Author.class)))
-                .willThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+        given(this.authorService.update(anyLong(), any(AuthorDto.class)))
+                .willThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR);
 
@@ -147,7 +147,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotDeleteAuthorById() {
-        doThrow(new NotFoundEntityException(AUTHOR_ID, Author.class))
+        doThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class))
                 .when(this.authorService)
                 .deleteById(AUTHOR_ID);
 
@@ -159,7 +159,7 @@ class AuthorControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private List<Author> getAllAuthors() {
+    private List<AuthorDto> getAllAuthors() {
         var strAuthors = this.mockMvc.perform(get("/author"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -169,13 +169,13 @@ class AuthorControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        var arrayAuthors = this.objectMapper.readValue(strAuthors, Author[].class);
+        var arrayAuthors = this.objectMapper.readValue(strAuthors, AuthorDto[].class);
         return Arrays.asList(arrayAuthors);
     }
 
     @SneakyThrows
     @NotNull
-    private Author createAuthor(@NotNull Author author) {
+    private AuthorDto createAuthor(@NotNull AuthorDto author) {
         var strAuthor = this.mockMvc.perform(post("/author")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -189,12 +189,12 @@ class AuthorControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Author.class);
+        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
     @NotNull
-    private Author getAuthorById(long authorId) {
+    private AuthorDto getAuthorById(long authorId) {
         var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -202,7 +202,7 @@ class AuthorControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Author.class);
+        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
@@ -213,7 +213,7 @@ class AuthorControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private Author updateAuthor(long authorId, @NotNull Author author) {
+    private AuthorDto updateAuthor(long authorId, @NotNull AuthorDto author) {
         var strAuthor = this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -227,11 +227,11 @@ class AuthorControllerMockMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, Author.class);
+        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
-    private void updateAuthorAndExpect404(long authorId, @NotNull Author author) {
+    private void updateAuthorAndExpect404(long authorId, @NotNull AuthorDto author) {
         this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)

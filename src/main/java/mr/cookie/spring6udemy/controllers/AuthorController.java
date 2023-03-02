@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +38,7 @@ public class AuthorController {
     @Operation(description = "Returns all authors (or empty array).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public List<Author> getAllAuthors() {
+    public List<AuthorDto> getAllAuthors() {
         return this.authorService.findAll();
     }
 
@@ -54,7 +54,7 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public Author getAuthorById(
+    public AuthorDto getAuthorById(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id
     ) {
         return this.authorService.findById(id)
@@ -74,7 +74,7 @@ public class AuthorController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public Author createAuthor(@RequestBody Author author) {
+    public AuthorDto createAuthor(@RequestBody AuthorDto author) {
         return this.authorService.create(author);
         // TODO: conflict status
     }
@@ -93,9 +93,9 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public Author updateAuthor(
+    public AuthorDto updateAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id,
-            @RequestBody Author author
+            @RequestBody AuthorDto author
     ) {
         return this.authorService.update(id, author);
     }

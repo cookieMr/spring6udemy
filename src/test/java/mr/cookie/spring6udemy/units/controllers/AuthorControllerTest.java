@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.units.controllers;
 
 import mr.cookie.spring6udemy.controllers.AuthorController;
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class AuthorControllerTest {
 
     private static final long AUTHOR_ID = 7L;
-    private static final Author AUTHOR = Author.builder().id(AUTHOR_ID).build();
+    private static final AuthorDto AUTHOR = AuthorDto.builder().id(AUTHOR_ID).build();
 
     @Mock
     @NotNull
@@ -79,7 +79,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldCreateNewAuthor() {
-        when(this.authorService.create(any(Author.class))).thenReturn(AUTHOR);
+        when(this.authorService.create(any(AuthorDto.class))).thenReturn(AUTHOR);
 
         var result = this.authorController.createAuthor(AUTHOR);
 
@@ -93,7 +93,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldUpdateExistingAuthor() {
-        when(this.authorService.update(anyLong(), any(Author.class))).thenReturn(AUTHOR);
+        when(this.authorService.update(anyLong(), any(AuthorDto.class))).thenReturn(AUTHOR);
 
         var result = this.authorController.updateAuthor(AUTHOR_ID, AUTHOR);
 
@@ -107,13 +107,13 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.authorService.update(anyLong(), any(Author.class)))
-                .thenThrow(new NotFoundEntityException(AUTHOR_ID, Author.class));
+        when(this.authorService.update(anyLong(), any(AuthorDto.class)))
+                .thenThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         assertThatThrownBy(() -> this.authorController.updateAuthor(AUTHOR_ID, AUTHOR))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
 
         verify(this.authorService).update(AUTHOR_ID, AUTHOR);
         verifyNoMoreInteractions(this.authorService);
@@ -129,13 +129,13 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        doThrow(new NotFoundEntityException(AUTHOR_ID, Author.class))
+        doThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class))
                 .when(this.authorService).deleteById(anyLong());
 
         assertThatThrownBy(() -> this.authorController.deleteAuthor(AUTHOR_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
 
         verify(this.authorService).deleteById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorService);

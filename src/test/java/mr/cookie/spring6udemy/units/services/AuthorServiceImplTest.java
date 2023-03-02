@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.units.services;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.services.AuthorServiceImpl;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
@@ -35,9 +35,8 @@ import static org.mockito.Mockito.when;
 class AuthorServiceImplTest {
 
     private static final long AUTHOR_ID = 2L;
-    private static final Author AUTHOR = Author.builder().id(AUTHOR_ID).build();
-    private static final Supplier<AuthorEntity> AUTHOR_DTO_SUPPLIER = () -> AuthorEntity
-            .builder()
+    private static final AuthorDto AUTHOR = AuthorDto.builder().id(AUTHOR_ID).build();
+    private static final Supplier<AuthorEntity> AUTHOR_DTO_SUPPLIER = () -> AuthorEntity.builder()
             .id(AUTHOR_ID)
             .build();
 
@@ -68,7 +67,7 @@ class AuthorServiceImplTest {
         assertThat(result)
                 .isNotNull()
                 .isNotEmpty()
-                .contains(Author.builder().id(AUTHOR_ID).build());
+                .contains(AuthorDto.builder().id(AUTHOR_ID).build());
 
         verify(this.authorRepository).findAll();
         verify(this.authorMapper).mapToModel(anyIterable());
@@ -88,7 +87,7 @@ class AuthorServiceImplTest {
                 .isNotNull()
                 .isPresent()
                 .get()
-                .returns(AUTHOR_ID, Author::getId);
+                .returns(AUTHOR_ID, AuthorDto::getId);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
         verify(this.authorMapper).map(authorDto);
@@ -120,7 +119,7 @@ class AuthorServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(AUTHOR_ID, Author::getId);
+                .returns(AUTHOR_ID, AuthorDto::getId);
 
         verify(this.authorRepository).save(authorDto);
         verify(this.authorMapper).map(authorDto);
@@ -131,7 +130,7 @@ class AuthorServiceImplTest {
     @Test
     void shouldUpdateExistingAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var updatedAuthor = Author.builder()
+        var updatedAuthor = AuthorDto.builder()
                 .firstName("Brandon")
                 .lastName("Sanderson")
                 .build();
@@ -143,9 +142,9 @@ class AuthorServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(AUTHOR_ID, Author::getId)
-                .returns(updatedAuthor.getFirstName(), Author::getFirstName)
-                .returns(updatedAuthor.getLastName(), Author::getLastName);
+                .returns(AUTHOR_ID, AuthorDto::getId)
+                .returns(updatedAuthor.getFirstName(), AuthorDto::getFirstName)
+                .returns(updatedAuthor.getLastName(), AuthorDto::getLastName);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
         verify(this.authorRepository).save(this.authorDtoArgumentCaptor.capture());
@@ -190,7 +189,7 @@ class AuthorServiceImplTest {
         assertThatThrownBy(() -> this.authorService.deleteById(AUTHOR_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, Author.class.getSimpleName(), AUTHOR_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
 
         verify(this.authorRepository).findById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);

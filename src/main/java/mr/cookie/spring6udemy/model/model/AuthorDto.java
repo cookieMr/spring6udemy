@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Schema
 @NoArgsConstructor
 @AllArgsConstructor
-public class Author {
+public class AuthorDto {
 
     @Schema(
             example = "123",

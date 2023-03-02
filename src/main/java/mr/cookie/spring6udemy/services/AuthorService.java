@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.services;
 
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 
-public interface AuthorService extends CrudService<Author> {
+public interface AuthorService extends CrudService<AuthorDto> {
 
 }

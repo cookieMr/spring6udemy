@@ -2,7 +2,7 @@ package mr.cookie.spring6udemy.services;
 
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
-import mr.cookie.spring6udemy.model.model.Author;
+import mr.cookie.spring6udemy.model.model.AuthorDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @NotNull
     @Override
-    public List<Author> findAll() {
+    public List<AuthorDto> findAll() {
         return Optional.of(this.authorRepository)
                 .map(CrudRepository::findAll)
                 .map(this.authorMapper::mapToModel)
@@ -33,14 +33,14 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Optional<Author> findById(long id) {
+    public Optional<AuthorDto> findById(long id) {
         return this.authorRepository.findById(id)
                 .map(this.authorMapper::map);
     }
 
     @NotNull
     @Override
-    public Author create(@NotNull Author author) {
+    public AuthorDto create(@NotNull AuthorDto author) {
         return Optional.of(author)
                 .map(this.authorMapper::map)
                 .map(this.authorRepository::save)
@@ -51,7 +51,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @NotNull
     @Override
-    public Author update(long id, @NotNull Author author) {
+    public AuthorDto update(long id, @NotNull AuthorDto author) {
         var existingDto = this.authorRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
@@ -72,7 +72,7 @@ public class AuthorServiceImpl implements AuthorService {
         if (doesAuthorExist) {
             this.authorRepository.deleteById(id);
         } else {
-            throw new NotFoundEntityException(id, Author.class);
+            throw new NotFoundEntityException(id, AuthorDto.class);
         }
     }
 
