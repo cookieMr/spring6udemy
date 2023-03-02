@@ -4,20 +4,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CrudService<T> {
 
     @NotNull
     List<T> findAll();
 
-    Optional<T> findById(long id);
+    Optional<T> findById(@NotNull UUID id);
 
     @NotNull
     T create(@NotNull T author);
 
     @NotNull
-    T update(long id, @NotNull T author);
+    T update(@NotNull UUID id, @NotNull T author);
 
-    void deleteById(long id);
+    void deleteById(@NotNull UUID id);
 
 }

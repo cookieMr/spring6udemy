@@ -13,11 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
 
-    private static final long BOOK_ID = 3L;
+    private static final UUID BOOK_ID = UUID.randomUUID();
     private static final BookDto BOOK_DTO = BookDto.builder()
             .id(BOOK_ID)
             .build();
@@ -55,7 +55,7 @@ class BookControllerTest {
 
     @Test
     void shouldGetBookById() {
-        when(this.bookService.findById(anyLong())).thenReturn(Optional.of(BOOK_DTO));
+        when(this.bookService.findById(any(UUID.class))).thenReturn(Optional.of(BOOK_DTO));
 
         var result = this.bookController.getBookById(BOOK_ID);
 
@@ -69,7 +69,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        when(this.bookService.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.bookService.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.bookController.getBookById(BOOK_ID))
                 .isNotNull()
@@ -95,7 +95,7 @@ class BookControllerTest {
 
     @Test
     void shouldUpdateExistingBook() {
-        when(this.bookService.update(anyLong(), any(BookDto.class))).thenReturn(BOOK_DTO);
+        when(this.bookService.update(any(UUID.class), any(BookDto.class))).thenReturn(BOOK_DTO);
 
         var result = this.bookController.updateBook(BOOK_ID, BOOK_DTO);
 
@@ -109,7 +109,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        when(this.bookService.update(anyLong(), any(BookDto.class)))
+        when(this.bookService.update(any(UUID.class), any(BookDto.class)))
                 .thenThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
         assertThatThrownBy(() -> this.bookController.updateBook(BOOK_ID, BOOK_DTO))
@@ -132,7 +132,7 @@ class BookControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotDeleteBookById() {
         doThrow(new NotFoundEntityException(BOOK_ID, BookDto.class))
-                .when(this.bookService).deleteById(anyLong());
+                .when(this.bookService).deleteById(any(UUID.class));
 
         assertThatThrownBy(() -> this.bookController.deleteBook(BOOK_ID))
                 .isNotNull()

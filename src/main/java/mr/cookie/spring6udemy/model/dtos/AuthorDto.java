@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @Schema
@@ -14,11 +16,9 @@ import lombok.NoArgsConstructor;
 public class AuthorDto {
 
     @Schema(
-            example = "123",
-            pattern = "^\\d+$",
-            minimum = "0"
+            example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
     )
-    private Long id;
+    private UUID id;
 
     @Schema(
             requiredMode = Schema.RequiredMode.REQUIRED,

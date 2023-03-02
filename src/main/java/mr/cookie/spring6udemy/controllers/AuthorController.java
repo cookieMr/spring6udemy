@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("author")
@@ -55,7 +56,7 @@ public class AuthorController {
     )
     @Nullable
     public AuthorDto getAuthorById(
-            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id
+            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         return this.authorService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
@@ -94,7 +95,7 @@ public class AuthorController {
     )
     @NotNull
     public AuthorDto updateAuthor(
-            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id,
+            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
             @RequestBody AuthorDto author
     ) {
         return this.authorService.update(id, author);
@@ -110,7 +111,7 @@ public class AuthorController {
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAuthor(
-            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable Long id
+            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         this.authorService.deleteById(id);
     }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Optional<BookDto> findById(long id) {
+    public Optional<BookDto> findById(@NotNull UUID id) {
         return this.bookRepository.findById(id)
                 .map(this.bookMapper::map);
     }
@@ -51,7 +52,7 @@ public class BookServiceImpl implements BookService {
 
     @NotNull
     @Override
-    public BookDto update(long id, @NotNull BookDto book) {
+    public BookDto update(@NotNull UUID id, @NotNull BookDto book) {
         var existingDto = this.bookRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
@@ -65,7 +66,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(@NotNull UUID id) {
         var doesBookExist = this.bookRepository.findById(id)
                 .isPresent();
 

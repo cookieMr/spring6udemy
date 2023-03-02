@@ -5,12 +5,14 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 class BookEntityTest {
 
     @Test
     void booksWithDifferentIdsAndTheSameTitleHaveDifferentHashCode() {
-        var book1 = buildBook(111L);
-        var book2 = buildBook(42L);
+        var book1 = buildBook(UUID.randomUUID());
+        var book2 = buildBook(UUID.randomUUID());
 
         Assertions.assertThat(book1)
             .doesNotHaveSameHashCodeAs(book2);
@@ -18,8 +20,10 @@ class BookEntityTest {
 
     @Test
     void booksWithSameIdsButDifferentTitlesHaveSameHashCode() {
-        var book1 = buildBook(111L);
-        var book2 = buildBook(111L);
+        var id = UUID.randomUUID();
+
+        var book1 = buildBook(id);
+        var book2 = buildBook(id);
         book2.setIsbn("1250899656");
 
         Assertions.assertThat(book1)
@@ -28,8 +32,8 @@ class BookEntityTest {
 
     @Test
     void booksWithDifferentIdsAndTheSameTitleAreNotEqual() {
-        var book1 = buildBook(111L);
-        var book2 = buildBook(42L);
+        var book1 = buildBook(UUID.randomUUID());
+        var book2 = buildBook(UUID.randomUUID());
 
         Assertions.assertThat(book1)
             .isNotEqualTo(book2);
@@ -37,8 +41,10 @@ class BookEntityTest {
 
     @Test
     void booksWithSameIdsButDifferentTitlesAreEqual() {
-        var book1 = buildBook(111L);
-        var book2 = buildBook(111L);
+        var id = UUID.randomUUID();
+
+        var book1 = buildBook(id);
+        var book2 = buildBook(id);
         book2.setIsbn("1250899656");
 
         Assertions.assertThat(book1)
@@ -46,7 +52,7 @@ class BookEntityTest {
     }
 
     @NotNull
-    private BookEntity buildBook(long id) {
+    private BookEntity buildBook(@NotNull UUID id) {
         return BookEntity.builder()
             .id(id)
             .title("Tress of Emerald See")

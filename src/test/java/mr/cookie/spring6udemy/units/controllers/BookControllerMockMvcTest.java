@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookController.class)
 class BookControllerMockMvcTest {
 
-    private static final long BOOK_ID = 1L;
+    private static final UUID BOOK_ID = UUID.randomUUID();
     private static final BookDto BOOK_DTO = BookDto.builder()
             .title("Warbreaker")
             .isbn("978-0765360038")
@@ -75,7 +75,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGetBookById() {
-        given(this.bookService.findById(anyLong())).willReturn(Optional.of(BOOK_DTO));
+        given(this.bookService.findById(any(UUID.class))).willReturn(Optional.of(BOOK_DTO));
 
         var result = this.getBookById(BOOK_ID);
 
@@ -89,7 +89,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotFindBookById() {
-        given(this.bookService.findById(anyLong()))
+        given(this.bookService.findById(any(UUID.class)))
                 .willThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
         this.getBookByIdAndExpect404(BOOK_ID);
@@ -114,7 +114,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldUpdateBook() {
-        given(this.bookService.update(anyLong(), any(BookDto.class))).willReturn(BOOK_DTO);
+        given(this.bookService.update(any(UUID.class), any(BookDto.class))).willReturn(BOOK_DTO);
 
         var result = this.updateBook(BOOK_ID, BOOK_DTO);
 
@@ -128,7 +128,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotUpdateBookById() {
-        given(this.bookService.update(anyLong(), any(BookDto.class)))
+        given(this.bookService.update(any(UUID.class), any(BookDto.class)))
                 .willThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
         this.updateBookAndExpect404(BOOK_ID, BOOK_DTO);
@@ -194,7 +194,7 @@ class BookControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private BookDto getBookById(long bookId) {
+    private BookDto getBookById(@NotNull UUID bookId) {
         var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -206,14 +206,14 @@ class BookControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void getBookByIdAndExpect404(long bookId) {
+    private void getBookByIdAndExpect404(@NotNull UUID bookId) {
         this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
-    private BookDto updateBook(long bookId, @NotNull BookDto book) {
+    private BookDto updateBook(@NotNull UUID bookId, @NotNull BookDto book) {
         var strBook = this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -231,7 +231,7 @@ class BookControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void updateBookAndExpect404(long bookId, @NotNull BookDto book) {
+    private void updateBookAndExpect404(@NotNull UUID bookId, @NotNull BookDto book) {
         this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -241,13 +241,13 @@ class BookControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void deleteBookById(long bookId) {
+    private void deleteBookById(@NotNull UUID bookId) {
         this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
-    private void deleteBookAndExpect404(long bookId) {
+    private void deleteBookAndExpect404(@NotNull UUID bookId) {
         this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNotFound());
     }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("book")
@@ -48,7 +49,7 @@ public class BookController {
     )
     @Nullable
     public BookDto getBookById(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         return this.bookService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
@@ -89,7 +90,7 @@ public class BookController {
     )
     @NotNull
     public BookDto updateBook(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id,
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
             @RequestBody BookDto book
     ) {
         return this.bookService.update(id, book);
@@ -105,7 +106,7 @@ public class BookController {
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBook(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable Long id
+            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         this.bookService.deleteById(id);
     }

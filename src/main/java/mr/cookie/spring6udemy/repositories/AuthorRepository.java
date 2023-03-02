@@ -3,6 +3,8 @@ package mr.cookie.spring6udemy.repositories;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import org.springframework.data.repository.CrudRepository;
 
-public interface AuthorRepository extends CrudRepository<AuthorEntity, Long> {
+import java.util.UUID;
+
+public interface AuthorRepository extends CrudRepository<AuthorEntity, UUID> {
 
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public Optional<PublisherDto> findById(long id) {
+    public Optional<PublisherDto> findById(@NotNull UUID id) {
         return this.publisherRepository.findById(id)
                 .map(this.publisherMapper::map);
     }
@@ -49,7 +50,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public @NotNull PublisherDto update(long id, @NotNull PublisherDto publisher) {
+    public @NotNull PublisherDto update(@NotNull UUID id, @NotNull PublisherDto publisher) {
         var existingDto = this.publisherRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
@@ -66,7 +67,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(@NotNull UUID id) {
         var doesPublishExists = this.publisherRepository.findById(id)
                 .isPresent();
 

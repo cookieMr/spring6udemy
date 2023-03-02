@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,12 +53,12 @@ class BootstrapDataTest {
 
     @Test
     void shouldInitEntities() {
-        var savedPublisher = PublisherEntity.builder().id(111L).build();
-        var savedAuthor = AuthorEntity.builder().id(42L).build();
-        var savedBook1 = BookEntity.builder().id(1L).build();
-        var savedBook2 = BookEntity.builder().id(2L).build();
-        var savedBook3 = BookEntity.builder().id(3L).build();
-        var savedBook4 = BookEntity.builder().id(4L).build();
+        var savedPublisher = PublisherEntity.builder().id(UUID.randomUUID()).build();
+        var savedAuthor = AuthorEntity.builder().id(UUID.randomUUID()).build();
+        var savedBook1 = BookEntity.builder().id(UUID.randomUUID()).build();
+        var savedBook2 = BookEntity.builder().id(UUID.randomUUID()).build();
+        var savedBook3 = BookEntity.builder().id(UUID.randomUUID()).build();
+        var savedBook4 = BookEntity.builder().id(UUID.randomUUID()).build();
 
         when(this.publisherRepository.save(any(PublisherEntity.class)))
                 .thenReturn(savedPublisher);

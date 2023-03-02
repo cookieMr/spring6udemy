@@ -5,12 +5,14 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 class AuthorEntityTest {
 
     @Test
     void authorsWithDifferentIdsAndTheSameNameHaveDifferentHashCode() {
-        var author1 = buildAuthor(111L);
-        var author2 = buildAuthor(42L);
+        var author1 = buildAuthor(UUID.randomUUID());
+        var author2 = buildAuthor(UUID.randomUUID());
 
         Assertions.assertThat(author1)
             .doesNotHaveSameHashCodeAs(author2);
@@ -18,8 +20,10 @@ class AuthorEntityTest {
 
     @Test
     void authorsWithSameIdsButDifferentNamesHaveSameHashCode() {
-        var author1 = buildAuthor(111L);
-        var author2 = buildAuthor(111L);
+        var id = UUID.randomUUID();
+
+        var author1 = buildAuthor(id);
+        var author2 = buildAuthor(id);
         author2.setFirstName("CookieMr");
 
         Assertions.assertThat(author1)
@@ -28,8 +32,8 @@ class AuthorEntityTest {
 
     @Test
     void authorsWithDifferentIdsAndTheSameNameAreNotEqual() {
-        var author1 = buildAuthor(111L);
-        var author2 = buildAuthor(42L);
+        var author1 = buildAuthor(UUID.randomUUID());
+        var author2 = buildAuthor(UUID.randomUUID());
 
         Assertions.assertThat(author1)
             .isNotEqualTo(author2);
@@ -37,8 +41,10 @@ class AuthorEntityTest {
 
     @Test
     void authorsWithSameIdsButDifferentNamesAreEqual() {
-        var author1 = buildAuthor(111L);
-        var author2 = buildAuthor(111L);
+        var id = UUID.randomUUID();
+
+        var author1 = buildAuthor(id);
+        var author2 = buildAuthor(id);
         author2.setFirstName("CookieMr");
 
         Assertions.assertThat(author1)
@@ -46,7 +52,7 @@ class AuthorEntityTest {
     }
 
     @NotNull
-    private AuthorEntity buildAuthor(long id) {
+    private AuthorEntity buildAuthor(@NotNull UUID id) {
         return AuthorEntity.builder()
             .id(id)
             .firstName("Brandon")
