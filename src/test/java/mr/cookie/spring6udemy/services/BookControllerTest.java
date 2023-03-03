@@ -3,7 +3,6 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
-import org.hamcrest.core.Is;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class BookControllerTest {
 
-    private static final long BOOK_ID = 1L;
     private static final Supplier<BookDto> BOOK_DTO_SUPPLIER = () -> BookDto.builder()
             .title("Warbreaker")
             .isbn("978-0765360038")
@@ -66,14 +65,14 @@ class BookControllerTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(bookId, BookDto::getId)
+                .matches(dto -> bookId.equals(dto.getId()))
                 .returns(bookDto.getTitle(), BookDto::getTitle)
                 .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
 
     @Test
     void shouldReturn404WhenBookIsNotFound() {
-        var bookId = Integer.MAX_VALUE;
+        var bookId = UUID.randomUUID();
         this.getBookByIdAndExpect404(bookId);
     }
 
@@ -90,19 +89,19 @@ class BookControllerTest {
                         .returns(bookDto.getIsbn(), BookDto::getIsbn),
                 () -> assertThat(result.getId())
                         .isNotNull()
-                        .isPositive()
         );
     }
 
     @Test
     void shouldUpdateBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
+        var createdBook = this.createBook(bookDto);
 
-        var result = this.updateBook(BOOK_ID, bookDto);
+        var result = this.updateBook(createdBook);
 
-        assertThat(result).isNotNull();
         assertThat(result)
-                .returns(BOOK_ID, BookDto::getId)
+                .isNotNull()
+                .matches(dto -> dto.getId().equals(createdBook.getId()))
                 .returns(bookDto.getTitle(), BookDto::getTitle)
                 .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
@@ -110,7 +109,7 @@ class BookControllerTest {
     @Test
     void shouldReturn404WhenUpdatingBookIsNotFound() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
-        var bookId = Integer.MAX_VALUE;
+        var bookId = UUID.randomUUID();
         this.updateBookAndExpect404(bookId, bookDto);
     }
 
@@ -124,7 +123,7 @@ class BookControllerTest {
 
     @Test
     void shouldReturn404WhenDeletingBookIsNotFound() {
-        var bookId = Integer.MAX_VALUE;
+        var bookId = UUID.randomUUID();
         this.deleteBookAndExpect404(bookId);
     }
 
@@ -145,18 +144,17 @@ class BookControllerTest {
 
     @SneakyThrows
     @NotNull
-    private BookDto createBook(@NotNull BookDto book) {
+    private BookDto createBook(@NotNull BookDto bookDto) {
         var strBook = this.mockMvc.perform(post("/book")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(book))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.title").value(book.getTitle()))
-                .andExpect(jsonPath("$.isbn").value(book.getIsbn()))
+                .andExpect(jsonPath("$.title").value(bookDto.getTitle()))
+                .andExpect(jsonPath("$.isbn").value(bookDto.getIsbn()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -166,13 +164,12 @@ class BookControllerTest {
 
     @SneakyThrows
     @NotNull
-    private BookDto getBookById(long bookId) {
+    private BookDto getBookById(@NotNull UUID bookId) {
         var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id").value(bookId))
+                .andExpect(jsonPath("$.id").value(bookId.toString()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -181,26 +178,25 @@ class BookControllerTest {
     }
 
     @SneakyThrows
-    private void getBookByIdAndExpect404(long bookId) {
+    private void getBookByIdAndExpect404(@NotNull UUID bookId) {
         this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
-    private BookDto updateBook(long bookId, @NotNull BookDto book) {
-        var strBook = this.mockMvc.perform(put("/book/{id}", bookId)
+    private BookDto updateBook(@NotNull BookDto bookDto) {
+        var strBook = this.mockMvc.perform(put("/book/{id}", bookDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(book))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.id", Is.is(bookId), Long.class))
-                .andExpect(jsonPath("$.title").value(book.getTitle()))
-                .andExpect(jsonPath("$.isbn").value(book.getIsbn()))
+                .andExpect(jsonPath("$.id").value(bookDto.getId().toString()))
+                .andExpect(jsonPath("$.title").value(bookDto.getTitle()))
+                .andExpect(jsonPath("$.isbn").value(bookDto.getIsbn()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -209,23 +205,23 @@ class BookControllerTest {
     }
 
     @SneakyThrows
-    private void updateBookAndExpect404(long bookId, @NotNull BookDto book) {
+    private void updateBookAndExpect404(@NotNull UUID bookId, @NotNull BookDto bookDto) {
         this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(book))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
-    private void deleteBookById(long bookId) {
+    private void deleteBookById(@NotNull UUID bookId) {
         this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
-    private void deleteBookAndExpect404(long bookId) {
+    private void deleteBookAndExpect404(@NotNull UUID bookId) {
         this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNotFound());
     }

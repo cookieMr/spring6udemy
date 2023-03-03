@@ -5,12 +5,14 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 class PublisherEntityTest {
 
     @Test
     void publishersWithDifferentIdsAndTheSameStateHaveDifferentHashCode() {
-        var publisher1 = buildPublisher(111L);
-        var publisher2 = buildPublisher(42L);
+        var publisher1 = buildPublisher(UUID.randomUUID());
+        var publisher2 = buildPublisher(UUID.randomUUID());
 
         Assertions.assertThat(publisher1)
                 .doesNotHaveSameHashCodeAs(publisher2);
@@ -18,8 +20,10 @@ class PublisherEntityTest {
 
     @Test
     void publishersWithSameIdsButDifferentStateHaveSameHashCode() {
-        var publisher1 = buildPublisher(111L);
-        var publisher2 = buildPublisher(111L);
+        var id = UUID.randomUUID();
+
+        var publisher1 = buildPublisher(id);
+        var publisher2 = buildPublisher(id);
         publisher2.setState("FL");
 
         Assertions.assertThat(publisher1)
@@ -28,8 +32,8 @@ class PublisherEntityTest {
 
     @Test
     void publishersWithDifferentIdsAndTheSameStateAreNotEqual() {
-        var publisher1 = buildPublisher(111L);
-        var publisher2 = buildPublisher(42L);
+        var publisher1 = buildPublisher(UUID.randomUUID());
+        var publisher2 = buildPublisher(UUID.randomUUID());
 
         Assertions.assertThat(publisher1)
                 .isNotEqualTo(publisher2);
@@ -37,8 +41,10 @@ class PublisherEntityTest {
 
     @Test
     void publishersWithSameIdsButDifferentStateAreEqual() {
-        var publisher1 = buildPublisher(111L);
-        var publisher2 = buildPublisher(111L);
+        var id = UUID.randomUUID();
+
+        var publisher1 = buildPublisher(id);
+        var publisher2 = buildPublisher(id);
         publisher2.setState("FL");
 
         Assertions.assertThat(publisher1)
@@ -46,7 +52,7 @@ class PublisherEntityTest {
     }
 
     @NotNull
-    private PublisherEntity buildPublisher(long id) {
+    private PublisherEntity buildPublisher(@NotNull UUID id) {
         return PublisherEntity.builder()
                 .id(id)
                 .name("DragonSteel Books")

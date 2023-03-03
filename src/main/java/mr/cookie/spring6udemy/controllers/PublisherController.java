@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("publisher")
@@ -55,7 +56,7 @@ public class PublisherController {
     )
     @Nullable
     public PublisherDto getPublisherById(
-            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id
+            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         return this.publisherService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
@@ -94,7 +95,7 @@ public class PublisherController {
     )
     @NotNull
     public PublisherDto updatePublisher(
-            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id,
+            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
             @RequestBody PublisherDto publisher
     ) {
         return this.publisherService.update(id, publisher);
@@ -110,7 +111,7 @@ public class PublisherController {
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePublisher(
-            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable Long id
+            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         this.publisherService.deleteById(id);
     }

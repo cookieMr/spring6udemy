@@ -19,13 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuthorServiceImplTest {
 
-    private static final long AUTHOR_ID = 2L;
+    private static final UUID AUTHOR_ID = UUID.randomUUID();
     private static final AuthorDto AUTHOR_DTO = AuthorDto.builder()
             .id(AUTHOR_ID)
             .build();
@@ -81,7 +81,7 @@ class AuthorServiceImplTest {
     void shouldReturnAuthorById() {
         var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
 
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorEntity));
+        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(authorEntity));
 
         var result = this.authorService.findById(AUTHOR_ID);
 
@@ -98,7 +98,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         var result = this.authorService.findById(AUTHOR_ID);
 
@@ -137,7 +137,7 @@ class AuthorServiceImplTest {
                 .lastName("Sanderson")
                 .build();
 
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(authorEntity));
+        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(authorEntity));
         when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
 
         var result = this.authorService.update(AUTHOR_ID, updatedAuthorDto);
@@ -162,7 +162,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR_DTO))
                 .isNotNull()
@@ -175,7 +175,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.of(AUTHOR_ENTITY_SUPPLIER.get()));
+        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(AUTHOR_ENTITY_SUPPLIER.get()));
 
         this.authorService.deleteById(AUTHOR_ID);
 
@@ -186,7 +186,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(this.authorRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.authorService.deleteById(AUTHOR_ID))
                 .isNotNull()

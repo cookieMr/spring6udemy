@@ -19,13 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
 
-    private static final long BOOK_ID = 1L;
+    private static final UUID BOOK_ID = UUID.randomUUID();
     private static final BookDto BOOK = BookDto.builder()
             .id(BOOK_ID)
             .build();
@@ -82,7 +82,7 @@ class BookServiceImplTest {
     void shouldFindBookById() {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
 
-        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.of(bookEntity));
+        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
 
         var result = this.bookService.findById(BOOK_ID);
 
@@ -99,7 +99,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         var result = this.bookService.findById(BOOK_ID);
 
@@ -138,7 +138,7 @@ class BookServiceImplTest {
                 .isbn("978-0765350374")
                 .build();
 
-        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.of(bookEntity));
+        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
         when(this.bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
 
         var result = this.bookService.update(BOOK_ID, updatedBookDto);
@@ -163,7 +163,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.bookService.update(BOOK_ID, BOOK))
                 .isNotNull()
@@ -176,7 +176,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.of(BOOK_ENTITY_SUPPLIER.get()));
+        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(BOOK_ENTITY_SUPPLIER.get()));
 
         this.bookService.deleteById(BOOK_ID);
 
@@ -187,7 +187,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteBookById() {
-        when(this.bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.bookService.deleteById(BOOK_ID))
                 .isNotNull()

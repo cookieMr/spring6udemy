@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Optional<AuthorDto> findById(long id) {
+    public Optional<AuthorDto> findById(@NotNull UUID id) {
         return this.authorRepository.findById(id)
                 .map(this.authorMapper::map);
     }
@@ -51,7 +52,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @NotNull
     @Override
-    public AuthorDto update(long id, @NotNull AuthorDto author) {
+    public AuthorDto update(@NotNull UUID id, @NotNull AuthorDto author) {
         var existingDto = this.authorRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
@@ -65,7 +66,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(@NotNull UUID id) {
         var doesAuthorExist = this.authorRepository.findById(id)
                 .isPresent();
 

@@ -13,11 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuthorControllerTest {
 
-    private static final long AUTHOR_ID = 7L;
+    private static final UUID AUTHOR_ID = UUID.randomUUID();
     private static final AuthorDto AUTHOR_DTO = AuthorDto.builder().id(AUTHOR_ID).build();
 
     @Mock
@@ -53,7 +53,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAuthorById() {
-        when(this.authorService.findById(anyLong())).thenReturn(Optional.of(AUTHOR_DTO));
+        when(this.authorService.findById(any(UUID.class))).thenReturn(Optional.of(AUTHOR_DTO));
 
         var result = this.authorController.getAuthorById(AUTHOR_ID);
 
@@ -67,7 +67,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(this.authorService.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.authorService.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.authorController.getAuthorById(AUTHOR_ID))
                 .isNotNull()
@@ -93,7 +93,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldUpdateExistingAuthor() {
-        when(this.authorService.update(anyLong(), any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+        when(this.authorService.update(any(UUID.class), any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
 
         var result = this.authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
 
@@ -107,7 +107,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.authorService.update(anyLong(), any(AuthorDto.class)))
+        when(this.authorService.update(any(UUID.class), any(AuthorDto.class)))
                 .thenThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         assertThatThrownBy(() -> this.authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO))
@@ -130,7 +130,7 @@ class AuthorControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
         doThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class))
-                .when(this.authorService).deleteById(anyLong());
+                .when(this.authorService).deleteById(any(UUID.class));
 
         assertThatThrownBy(() -> this.authorController.deleteAuthor(AUTHOR_ID))
                 .isNotNull()

@@ -3,6 +3,8 @@ package mr.cookie.spring6udemy.repositories;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.springframework.data.repository.CrudRepository;
 
-public interface BookRepository extends CrudRepository<BookEntity, Long> {
+import java.util.UUID;
+
+public interface BookRepository extends CrudRepository<BookEntity, UUID> {
 
 }

@@ -13,11 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PublisherControllerTest {
 
-    private static final long PUBLISHER_ID = 4L;
+    private static final UUID PUBLISHER_ID = UUID.randomUUID();
     private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder().id(PUBLISHER_ID).build();
 
     @Mock
@@ -53,7 +53,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldGetPublisherById() {
-        when(this.publisherService.findById(anyLong())).thenReturn(Optional.of(PUBLISHER_DTO));
+        when(this.publisherService.findById(any(UUID.class))).thenReturn(Optional.of(PUBLISHER_DTO));
 
         var result = this.publisherController.getPublisherById(PUBLISHER_ID);
 
@@ -67,7 +67,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(this.publisherService.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.publisherService.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.publisherController.getPublisherById(PUBLISHER_ID))
                 .isNotNull()
@@ -93,7 +93,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldUpdateExistingPublisher() {
-        when(this.publisherService.update(anyLong(), any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
+        when(this.publisherService.update(any(UUID.class), any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
 
         var result = this.publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO);
 
@@ -107,7 +107,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.publisherService.update(anyLong(), any(PublisherDto.class)))
+        when(this.publisherService.update(any(UUID.class), any(PublisherDto.class)))
                 .thenThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class));
 
         assertThatThrownBy(() -> this.publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO))
@@ -130,7 +130,7 @@ class PublisherControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
         doThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class))
-                .when(this.publisherService).deleteById(anyLong());
+                .when(this.publisherService).deleteById(any(UUID.class));
 
         assertThatThrownBy(() -> this.publisherController.deletePublisher(PUBLISHER_ID))
                 .isNotNull()

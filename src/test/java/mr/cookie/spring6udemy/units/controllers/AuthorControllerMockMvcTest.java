@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthorController.class)
 class AuthorControllerMockMvcTest {
 
-    private static final long AUTHOR_ID = 1L;
+    private static final UUID AUTHOR_ID = UUID.randomUUID();
     private static final AuthorDto AUTHOR_DTO = AuthorDto.builder()
             .firstName("JRR")
             .lastName("Tolkien")
@@ -75,7 +75,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGetAuthorById() {
-        given(this.authorService.findById(anyLong())).willReturn(Optional.of(AUTHOR_DTO));
+        given(this.authorService.findById(any(UUID.class))).willReturn(Optional.of(AUTHOR_DTO));
 
         var result = this.getAuthorById(AUTHOR_ID);
 
@@ -89,7 +89,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotFindAuthorById() {
-        given(this.authorService.findById(anyLong()))
+        given(this.authorService.findById(any(UUID.class)))
                 .willThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         this.getAuthorByIdAndExpect404(AUTHOR_ID);
@@ -114,7 +114,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldUpdateAuthor() {
-        given(this.authorService.update(anyLong(), any(AuthorDto.class))).willReturn(AUTHOR_DTO);
+        given(this.authorService.update(any(UUID.class), any(AuthorDto.class))).willReturn(AUTHOR_DTO);
 
         var result = this.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
 
@@ -128,7 +128,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotUpdateAuthorById() {
-        given(this.authorService.update(anyLong(), any(AuthorDto.class)))
+        given(this.authorService.update(any(UUID.class), any(AuthorDto.class)))
                 .willThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         this.updateAuthorAndExpect404(AUTHOR_ID, AUTHOR_DTO);
@@ -194,7 +194,7 @@ class AuthorControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private AuthorDto getAuthorById(long authorId) {
+    private AuthorDto getAuthorById(@NotNull UUID authorId) {
         var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -206,14 +206,14 @@ class AuthorControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void getAuthorByIdAndExpect404(long authorId) {
+    private void getAuthorByIdAndExpect404(@NotNull UUID authorId) {
         this.mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
-    private AuthorDto updateAuthor(long authorId, @NotNull AuthorDto author) {
+    private AuthorDto updateAuthor(@NotNull UUID authorId, @NotNull AuthorDto author) {
         var strAuthor = this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -231,7 +231,7 @@ class AuthorControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void updateAuthorAndExpect404(long authorId, @NotNull AuthorDto author) {
+    private void updateAuthorAndExpect404(@NotNull UUID authorId, @NotNull AuthorDto author) {
         this.mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -241,13 +241,13 @@ class AuthorControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void deleteAuthorById(long authorId) {
+    private void deleteAuthorById(@NotNull UUID authorId) {
         this.mockMvc.perform(delete("/author/{id}", authorId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
-    private void deleteAuthorAndExpect404(long authorId) {
+    private void deleteAuthorAndExpect404(@NotNull UUID authorId) {
         this.mockMvc.perform(delete("/author/{id}", authorId))
                 .andExpect(status().isNotFound());
     }

@@ -19,13 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PublisherServiceImplTest {
 
-    private static final long PUBLISHER_ID = 5L;
+    private static final UUID PUBLISHER_ID = UUID.randomUUID();
     private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder()
             .id(PUBLISHER_ID)
             .build();
@@ -80,7 +80,7 @@ class PublisherServiceImplTest {
     void shouldReturnPublisherById() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.of(publisherDto));
+        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.of(publisherDto));
 
         var result = this.publisherService.findById(PUBLISHER_ID);
 
@@ -97,7 +97,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindPublisherById() {
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         var result = this.publisherService.findById(PUBLISHER_ID);
 
@@ -139,7 +139,7 @@ class PublisherServiceImplTest {
                 .zipCode("D-81673")
                 .build();
 
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.of(publisherDto));
+        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.of(publisherDto));
         when(this.publisherRepository.save(any(PublisherEntity.class))).thenReturn(publisherDto);
 
         var result = this.publisherService.update(PUBLISHER_ID, updatedPublisher);
@@ -170,7 +170,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdatePublisherById() {
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.publisherService.update(PUBLISHER_ID, PUBLISHER_DTO))
                 .isNotNull()
@@ -183,7 +183,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.of(PUBLISHER_DTO_SUPPLIER.get()));
+        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.of(PUBLISHER_DTO_SUPPLIER.get()));
 
         this.publisherService.deleteById(PUBLISHER_ID);
 
@@ -194,7 +194,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeletePublisherById() {
-        when(this.publisherRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> this.publisherService.deleteById(PUBLISHER_ID))
                 .isNotNull()

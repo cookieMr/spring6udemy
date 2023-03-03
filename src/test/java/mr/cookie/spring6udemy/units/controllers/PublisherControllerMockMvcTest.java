@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PublisherController.class)
 class PublisherControllerMockMvcTest {
 
-    private static final long PUBLISHER_ID = 1L;
+    private static final UUID PUBLISHER_ID = UUID.randomUUID();
     private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder()
             .name("Penguin Random House")
             .address("Neumarkter Strasse 28")
@@ -78,7 +78,7 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldGetPublisherById() {
-        given(this.publisherService.findById(anyLong())).willReturn(Optional.of(PUBLISHER_DTO));
+        given(this.publisherService.findById(any(UUID.class))).willReturn(Optional.of(PUBLISHER_DTO));
 
         var result = this.getPublisherById(PUBLISHER_ID);
 
@@ -92,7 +92,7 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotFindPublisherById() {
-        given(this.publisherService.findById(anyLong()))
+        given(this.publisherService.findById(any(UUID.class)))
                 .willThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class));
 
         this.getPublisherByIdAndExpect404(PUBLISHER_ID);
@@ -117,7 +117,7 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldUpdatePublisher() {
-        given(this.publisherService.update(anyLong(), any(PublisherDto.class))).willReturn(PUBLISHER_DTO);
+        given(this.publisherService.update(any(UUID.class), any(PublisherDto.class))).willReturn(PUBLISHER_DTO);
 
         var result = this.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO);
 
@@ -131,7 +131,7 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotUpdatePublisherById() {
-        given(this.publisherService.update(anyLong(), any(PublisherDto.class)))
+        given(this.publisherService.update(any(UUID.class), any(PublisherDto.class)))
                 .willThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class));
 
         this.updatePublisherAndExpect404(PUBLISHER_ID, PUBLISHER_DTO);
@@ -200,7 +200,7 @@ class PublisherControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private PublisherDto getPublisherById(long publisherId) {
+    private PublisherDto getPublisherById(@NotNull UUID publisherId) {
         var strPublisher = this.mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -212,14 +212,14 @@ class PublisherControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void getPublisherByIdAndExpect404(long publisherId) {
+    private void getPublisherByIdAndExpect404(@NotNull UUID publisherId) {
         this.mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
-    private PublisherDto updatePublisher(long publisherId, @NotNull PublisherDto publisher) {
+    private PublisherDto updatePublisher(@NotNull UUID publisherId, @NotNull PublisherDto publisher) {
         var strPublisher = this.mockMvc.perform(put("/publisher/{id}", publisherId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -240,7 +240,7 @@ class PublisherControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void updatePublisherAndExpect404(long publisherId, @NotNull PublisherDto publisher) {
+    private void updatePublisherAndExpect404(@NotNull UUID publisherId, @NotNull PublisherDto publisher) {
         this.mockMvc.perform(put("/publisher/{id}", publisherId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -250,13 +250,13 @@ class PublisherControllerMockMvcTest {
     }
 
     @SneakyThrows
-    private void deletePublisherById(long publisherId) {
+    private void deletePublisherById(@NotNull UUID publisherId) {
         this.mockMvc.perform(delete("/publisher/{id}", publisherId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
-    private void deletePublisherAndExpect404(long publisherId) {
+    private void deletePublisherAndExpect404(@NotNull UUID publisherId) {
         this.mockMvc.perform(delete("/publisher/{id}", publisherId))
                 .andExpect(status().isNotFound());
     }
