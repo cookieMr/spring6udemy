@@ -99,8 +99,8 @@ class BookControllerTest {
 
         var result = this.updateBook(createdBook);
 
-        assertThat(result).isNotNull();
         assertThat(result)
+                .isNotNull()
                 .matches(dto -> dto.getId().equals(createdBook.getId()))
                 .returns(bookDto.getTitle(), BookDto::getTitle)
                 .returns(bookDto.getIsbn(), BookDto::getIsbn);

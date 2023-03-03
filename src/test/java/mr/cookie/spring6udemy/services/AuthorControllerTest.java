@@ -100,8 +100,8 @@ class AuthorControllerTest {
 
         var result = this.updateAuthor(createdAuthor);
 
-        assertThat(result).isNotNull();
         assertThat(result)
+                .isNotNull()
                 .matches(dto -> dto.getId().equals(createdAuthor.getId()))
                 .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
                 .returns(authorDto.getLastName(), AuthorDto::getLastName);

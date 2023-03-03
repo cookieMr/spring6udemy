@@ -108,8 +108,8 @@ class PublisherControllerTest {
 
         var result = this.updatePublisher(createdPublisher);
 
-        assertThat(result).isNotNull();
         assertThat(result)
+                .isNotNull()
                 .matches(dto -> dto.getId().equals(createdPublisher.getId()))
                 .returns(publisherDto.getName(), PublisherDto::getName)
                 .returns(publisherDto.getAddress(), PublisherDto::getAddress)
