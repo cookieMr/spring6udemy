@@ -1,5 +1,6 @@
 package mr.cookie.spring6udemy.model.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,6 +30,10 @@ public class PublisherEntity {
     @Id
     @GeneratedValue(generator = Constant.UUID_NAME)
     @GenericGenerator(name = Constant.UUID_NAME, strategy = Constant.UUID_GENERATOR_STRATEGY)
+    @Column(
+            columnDefinition = "varchar", length = 36,
+            unique = true, nullable = false, insertable = false, updatable = false
+    )
     private UUID id;
 
     private String name;

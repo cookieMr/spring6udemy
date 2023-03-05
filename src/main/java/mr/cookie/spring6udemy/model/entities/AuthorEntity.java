@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,6 +30,10 @@ public class AuthorEntity {
     @Id
     @GeneratedValue(generator = Constant.UUID_NAME)
     @GenericGenerator(name = Constant.UUID_NAME, strategy = Constant.UUID_GENERATOR_STRATEGY)
+    @Column(
+            columnDefinition = "varchar", length = 36,
+            unique = true, nullable = false, insertable = false, updatable = false
+    )
     private UUID id;
 
     private String firstName;
