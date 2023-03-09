@@ -121,6 +121,8 @@ class PublisherControllerTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
+        when(this.publisherService.deleteById(any(UUID.class))).thenReturn(true);
+
         this.publisherController.deletePublisher(PUBLISHER_ID);
 
         verify(this.publisherService).deleteById(PUBLISHER_ID);

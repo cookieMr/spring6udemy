@@ -183,25 +183,27 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
-        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.of(PUBLISHER_DTO_SUPPLIER.get()));
+        when(this.publisherRepository.existsById(any(UUID.class))).thenReturn(true);
 
-        this.publisherService.deleteById(PUBLISHER_ID);
+        var result = this.publisherService.deleteById(PUBLISHER_ID);
 
+        assertThat(result).isTrue();
+
+        verify(this.publisherRepository).existsById(PUBLISHER_ID);
         verify(this.publisherRepository).deleteById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherRepository);
         verifyNoInteractions(this.publisherMapper);
     }
 
     @Test
-    void shouldThrowExceptionWhenCannotDeletePublisherById() {
-        when(this.publisherRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+    void shouldNotDeleteNotExistingPublisher() {
+        when(this.publisherRepository.existsById(any(UUID.class))).thenReturn(false);
 
-        assertThatThrownBy(() -> this.publisherService.deleteById(PUBLISHER_ID))
-                .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, PublisherDto.class.getSimpleName(), PUBLISHER_ID);
+        var result = this.publisherService.deleteById(PUBLISHER_ID);
 
-        verify(this.publisherRepository).findById(PUBLISHER_ID);
+        assertThat(result).isFalse();
+
+        verify(this.publisherRepository).existsById(PUBLISHER_ID);
         verifyNoMoreInteractions(this.publisherRepository);
         verifyNoInteractions(this.publisherMapper);
     }

@@ -139,6 +139,8 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldDeleteAuthor() {
+        given(this.authorService.deleteById(any(UUID.class))).willReturn(true);
+
         this.deleteAuthorById(AUTHOR_ID);
 
         verify(this.authorService).deleteById(AUTHOR_ID);

@@ -139,6 +139,8 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldDeleteBook() {
+        given(this.bookService.deleteById(any(UUID.class))).willReturn(true);
+
         this.deleteBookById(BOOK_ID);
 
         verify(this.bookService).deleteById(BOOK_ID);

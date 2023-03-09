@@ -123,6 +123,8 @@ class BookControllerTest {
 
     @Test
     void shouldDeleteExistingBook() {
+        when(this.bookService.deleteById(any(UUID.class))).thenReturn(true);
+
         this.bookController.deleteBook(BOOK_ID);
 
         verify(this.bookService).deleteById(BOOK_ID);

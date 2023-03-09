@@ -175,25 +175,27 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(AUTHOR_ENTITY_SUPPLIER.get()));
+        when(this.authorRepository.existsById(any(UUID.class))).thenReturn(true);
 
-        this.authorService.deleteById(AUTHOR_ID);
+        var result = this.authorService.deleteById(AUTHOR_ID);
+
+        assertThat(result).isTrue();
 
         verify(this.authorRepository).deleteById(AUTHOR_ID);
+        verify(this.authorRepository).existsById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);
         verifyNoInteractions(this.authorMapper);
     }
 
     @Test
-    void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+    void shouldNotDeleteNotExistingAuthor() {
+        when(this.authorRepository.existsById(any(UUID.class))).thenReturn(false);
 
-        assertThatThrownBy(() -> this.authorService.deleteById(AUTHOR_ID))
-                .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
+        var result = this.authorService.deleteById(AUTHOR_ID);
 
-        verify(this.authorRepository).findById(AUTHOR_ID);
+        assertThat(result).isFalse();
+
+        verify(this.authorRepository).existsById(AUTHOR_ID);
         verifyNoMoreInteractions(this.authorRepository);
         verifyNoInteractions(this.authorMapper);
     }

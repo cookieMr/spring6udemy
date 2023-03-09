@@ -121,6 +121,8 @@ class AuthorControllerTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
+        when(this.authorService.deleteById(any(UUID.class))).thenReturn(true);
+
         this.authorController.deleteAuthor(AUTHOR_ID);
 
         verify(this.authorService).deleteById(AUTHOR_ID);

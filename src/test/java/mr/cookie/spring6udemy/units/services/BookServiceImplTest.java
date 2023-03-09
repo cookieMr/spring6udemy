@@ -176,25 +176,27 @@ class BookServiceImplTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(BOOK_ENTITY_SUPPLIER.get()));
+        when(this.bookRepository.existsById(any(UUID.class))).thenReturn(true);
 
-        this.bookService.deleteById(BOOK_ID);
+        var result = this.bookService.deleteById(BOOK_ID);
+
+        assertThat(result).isTrue();
 
         verify(this.bookRepository).deleteById(BOOK_ID);
+        verify(this.bookRepository).existsById(BOOK_ID);
         verifyNoMoreInteractions(this.bookRepository);
         verifyNoInteractions(this.bookMapper);
     }
 
     @Test
-    void shouldThrowExceptionWhenCannotDeleteBookById() {
-        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+    void shouldNotDeleteNotExistingBook() {
+        when(this.bookRepository.existsById(any(UUID.class))).thenReturn(false);
 
-        assertThatThrownBy(() -> this.bookService.deleteById(BOOK_ID))
-                .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), BOOK_ID);
+        var result = this.bookService.deleteById(BOOK_ID);
 
-        verify(this.bookRepository).findById(BOOK_ID);
+        assertThat(result).isFalse();
+
+        verify(this.bookRepository).existsById(BOOK_ID);
         verifyNoMoreInteractions(this.bookRepository);
         verifyNoInteractions(this.bookMapper);
     }

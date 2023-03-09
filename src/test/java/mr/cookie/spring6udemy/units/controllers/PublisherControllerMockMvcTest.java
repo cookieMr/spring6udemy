@@ -142,6 +142,8 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldDeletePublisher() {
+        given(this.publisherService.deleteById(any(UUID.class))).willReturn(true);
+
         this.deletePublisherById(PUBLISHER_ID);
 
         verify(this.publisherService).deleteById(PUBLISHER_ID);
