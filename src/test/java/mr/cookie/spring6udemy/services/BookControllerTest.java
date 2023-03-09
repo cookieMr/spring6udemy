@@ -84,6 +84,8 @@ class BookControllerTest {
                 book -> book.setIsbn(null),
                 book -> book.setIsbn(Constant.BLANK_STRING),
                 book -> book.setIsbn(RandomStringUtils.random(12)),
+                book -> book.setIsbn(RandomStringUtils.random(13)),
+                book -> book.setIsbn(RandomStringUtils.random(14)),
                 book -> book.setIsbn(RandomStringUtils.random(15))
         );
     }
