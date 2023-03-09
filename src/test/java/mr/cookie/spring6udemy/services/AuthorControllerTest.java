@@ -3,8 +3,12 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
+import mr.cookie.spring6udemy.services.constants.Constant;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -71,6 +77,26 @@ class AuthorControllerTest {
                 .returns(authorDto.getLastName(), AuthorDto::getLastName);
     }
 
+    static Stream<Consumer<AuthorDto>> authorModifiers() {
+        return Stream.of(
+                author -> author.setFirstName(null),
+                author -> author.setFirstName(Constant.BLANK_STRING),
+                author -> author.setFirstName(RandomStringUtils.random(65)),
+                author -> author.setLastName(null),
+                author -> author.setLastName(Constant.BLANK_STRING),
+                author -> author.setLastName(RandomStringUtils.random(65))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("authorModifiers")
+    void shouldFailToCreateAuthor(@NotNull Consumer<AuthorDto> authorModifier) {
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        authorModifier.accept(authorDto);
+
+        this.createAuthorAndExpect400(authorDto);
+    }
+
     @Test
     void shouldReturn404WhenAuthorIsNotFound() {
         var authorId = UUID.randomUUID();
@@ -105,6 +131,16 @@ class AuthorControllerTest {
                 .matches(dto -> dto.getId().equals(createdAuthor.getId()))
                 .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
                 .returns(authorDto.getLastName(), AuthorDto::getLastName);
+    }
+
+    @ParameterizedTest
+    @MethodSource("authorModifiers")
+    void shouldFailToUpdateAuthor(@NotNull Consumer<AuthorDto> authorModifier) {
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var createdAuthor = this.createAuthor(authorDto);
+        authorModifier.accept(createdAuthor);
+
+        this.updateAuthorAndExpect400(createdAuthor);
     }
 
     @Test
@@ -164,6 +200,16 @@ class AuthorControllerTest {
     }
 
     @SneakyThrows
+    private void createAuthorAndExpect400(@NotNull AuthorDto authorDto) {
+        this.mockMvc.perform(post("/author")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(authorDto))
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
     @NotNull
     private AuthorDto getAuthorById(@NotNull UUID authorId) {
         var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
@@ -203,6 +249,16 @@ class AuthorControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+    }
+
+    @SneakyThrows
+    private void updateAuthorAndExpect400(@NotNull AuthorDto authorDto) {
+        this.mockMvc.perform(put("/author/{id}", authorDto.getId())
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(authorDto))
+                )
+                .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows

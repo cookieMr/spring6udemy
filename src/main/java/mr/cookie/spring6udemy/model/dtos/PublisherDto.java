@@ -1,6 +1,8 @@
 package mr.cookie.spring6udemy.model.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +27,8 @@ public class PublisherDto {
             maxLength = 128,
             example = "DragonSteel Books"
     )
+    @NotNull
+    @Size(min = 1, max = 128)
     private String name;
 
     @Schema(
@@ -33,6 +37,8 @@ public class PublisherDto {
             maxLength = 128,
             example = "PO Box 698"
     )
+    @NotNull
+    @Size(min = 1, max = 128)
     private String address;
 
     @Schema(
@@ -41,6 +47,8 @@ public class PublisherDto {
             maxLength = 64,
             example = "American Fork"
     )
+    @NotNull
+    @Size(min = 1, max = 64)
     private String city;
 
     @Schema(
@@ -48,6 +56,8 @@ public class PublisherDto {
             maxLength = 64,
             example = "UT"
     )
+    @NotNull
+    @Size(min = 1, max = 64)
     private String state;
 
     @Schema(
@@ -56,6 +66,8 @@ public class PublisherDto {
             maxLength = 64,
             example = "84003"
     )
+    @NotNull
+    @Size(min = 1, max = 64)
     private String zipCode;
 
 }

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,7 +76,7 @@ public class AuthorController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public AuthorDto createAuthor(@RequestBody AuthorDto author) {
+    public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
         return this.authorService.create(author);
         // TODO: conflict status
     }
@@ -96,7 +97,7 @@ public class AuthorController {
     @NotNull
     public AuthorDto updateAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
-            @RequestBody AuthorDto author
+            @Validated @RequestBody AuthorDto author
     ) {
         return this.authorService.update(id, author);
     }

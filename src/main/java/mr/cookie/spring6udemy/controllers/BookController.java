@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,9 +69,7 @@ public class BookController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public BookDto createBook(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @RequestBody BookDto book
-    ) {
+    public BookDto createBook(@Validated @RequestBody BookDto book) {
         return this.bookService.create(book);
         // TODO: conflict status
     }
@@ -91,7 +90,7 @@ public class BookController {
     @NotNull
     public BookDto updateBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
-            @RequestBody BookDto book
+            @Validated @RequestBody BookDto book
     ) {
         return this.bookService.update(id, book);
     }

@@ -3,8 +3,12 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
+import mr.cookie.spring6udemy.services.constants.Constant;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -70,6 +76,29 @@ class BookControllerTest {
                 .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
 
+    static Stream<Consumer<BookDto>> bookModifiers() {
+        return Stream.of(
+                book -> book.setTitle(null),
+                book -> book.setTitle(Constant.BLANK_STRING),
+                book -> book.setTitle(RandomStringUtils.random(129)),
+                book -> book.setIsbn(null),
+                book -> book.setIsbn(Constant.BLANK_STRING),
+                book -> book.setIsbn(RandomStringUtils.random(12)),
+                book -> book.setIsbn(RandomStringUtils.random(13)),
+                book -> book.setIsbn(RandomStringUtils.random(14)),
+                book -> book.setIsbn(RandomStringUtils.random(15))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("bookModifiers")
+    void shouldFailToCreateBook(@NotNull Consumer<BookDto> bookModifier) {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        bookModifier.accept(bookDto);
+
+        this.createBookAndExpect400(bookDto);
+    }
+
     @Test
     void shouldReturn404WhenBookIsNotFound() {
         var bookId = UUID.randomUUID();
@@ -104,6 +133,16 @@ class BookControllerTest {
                 .matches(dto -> dto.getId().equals(createdBook.getId()))
                 .returns(bookDto.getTitle(), BookDto::getTitle)
                 .returns(bookDto.getIsbn(), BookDto::getIsbn);
+    }
+
+    @ParameterizedTest
+    @MethodSource("bookModifiers")
+    void shouldFailToUpdateBook(@NotNull Consumer<BookDto> bookModifier) {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        var createdBook = this.createBook(bookDto);
+        bookModifier.accept(createdBook);
+
+        this.updateBookAndExpect400(createdBook);
     }
 
     @Test
@@ -163,6 +202,16 @@ class BookControllerTest {
     }
 
     @SneakyThrows
+    private void createBookAndExpect400(@NotNull BookDto bookDto) {
+        this.mockMvc.perform(post("/book")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(bookDto))
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
     @NotNull
     private BookDto getBookById(@NotNull UUID bookId) {
         var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
@@ -202,6 +251,16 @@ class BookControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strBook, BookDto.class);
+    }
+
+    @SneakyThrows
+    private void updateBookAndExpect400(@NotNull BookDto bookDto) {
+        this.mockMvc.perform(put("/book/{id}", bookDto.getId())
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(bookDto))
+                )
+                .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows
