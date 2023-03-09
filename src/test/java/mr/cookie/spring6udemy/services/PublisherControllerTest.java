@@ -3,8 +3,12 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
+import mr.cookie.spring6udemy.services.constants.Constant;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -76,6 +82,35 @@ class PublisherControllerTest {
                 .returns(publisherDto.getZipCode(), PublisherDto::getZipCode);
     }
 
+    static Stream<Consumer<PublisherDto>> publisherModifiers() {
+        return Stream.of(
+                publisher -> publisher.setName(null),
+                publisher -> publisher.setName(Constant.BLANK_STRING),
+                publisher -> publisher.setName(RandomStringUtils.random(129)),
+                publisher -> publisher.setAddress(null),
+                publisher -> publisher.setAddress(Constant.BLANK_STRING),
+                publisher -> publisher.setAddress(RandomStringUtils.random(129)),
+                publisher -> publisher.setCity(null),
+                publisher -> publisher.setCity(Constant.BLANK_STRING),
+                publisher -> publisher.setCity(RandomStringUtils.random(65)),
+                publisher -> publisher.setState(null),
+                publisher -> publisher.setState(Constant.BLANK_STRING),
+                publisher -> publisher.setState(RandomStringUtils.random(65)),
+                publisher -> publisher.setZipCode(null),
+                publisher -> publisher.setZipCode(Constant.BLANK_STRING),
+                publisher -> publisher.setZipCode(RandomStringUtils.random(65))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("publisherModifiers")
+    void shouldFailToCreatePublisher(@NotNull Consumer<PublisherDto> publisherModifier) {
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        publisherModifier.accept(publisherDto);
+
+        this.createPublisherAndExpect400(publisherDto);
+    }
+
     @Test
     void shouldReturn404WhenPublisherIsNotFound() {
         var publisherId = UUID.randomUUID();
@@ -116,6 +151,16 @@ class PublisherControllerTest {
                 .returns(publisherDto.getState(), PublisherDto::getState)
                 .returns(publisherDto.getCity(), PublisherDto::getCity)
                 .returns(publisherDto.getZipCode(), PublisherDto::getZipCode);
+    }
+
+    @ParameterizedTest
+    @MethodSource("publisherModifiers")
+    void shouldFailToUpdatePublisher(@NotNull Consumer<PublisherDto> publisherModifier) {
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        var createdPublisher = this.createPublisher(publisherDto);
+        publisherModifier.accept(createdPublisher);
+
+        this.updatePublisherAndExpect400(createdPublisher);
     }
 
     @Test
@@ -178,6 +223,16 @@ class PublisherControllerTest {
     }
 
     @SneakyThrows
+    private void createPublisherAndExpect400(@NotNull PublisherDto publisherDto) {
+        this.mockMvc.perform(post("/publisher")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
     @NotNull
     private PublisherDto getPublisherById(@NotNull UUID publisherId) {
         var strPublisher = this.mockMvc.perform(get("/publisher/{id}", publisherId))
@@ -220,6 +275,16 @@ class PublisherControllerTest {
                 .getContentAsString();
 
         return this.objectMapper.readValue(strPublisher, PublisherDto.class);
+    }
+
+    @SneakyThrows
+    private void updatePublisherAndExpect400(@NotNull PublisherDto publisherDto) {
+        this.mockMvc.perform(put("/publisher/{id}", publisherDto.getId())
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                )
+                .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows
