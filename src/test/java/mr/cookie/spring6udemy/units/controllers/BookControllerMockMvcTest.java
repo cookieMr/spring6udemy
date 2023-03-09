@@ -25,7 +25,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -139,6 +138,8 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldDeleteBook() {
+        given(this.bookService.deleteById(any(UUID.class))).willReturn(true);
+
         this.deleteBookById(BOOK_ID);
 
         verify(this.bookService).deleteById(BOOK_ID);
@@ -147,9 +148,7 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotDeleteBookById() {
-        doThrow(new NotFoundEntityException(BOOK_ID, BookDto.class))
-                .when(this.bookService)
-                .deleteById(BOOK_ID);
+        given(this.bookService.deleteById(any(UUID.class))).willReturn(false);
 
         this.deleteBookAndExpect404(BOOK_ID);
 

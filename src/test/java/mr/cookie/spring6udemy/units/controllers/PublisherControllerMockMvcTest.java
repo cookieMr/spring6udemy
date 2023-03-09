@@ -25,7 +25,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -142,6 +141,8 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldDeletePublisher() {
+        given(this.publisherService.deleteById(any(UUID.class))).willReturn(true);
+
         this.deletePublisherById(PUBLISHER_ID);
 
         verify(this.publisherService).deleteById(PUBLISHER_ID);
@@ -150,9 +151,7 @@ class PublisherControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotDeletePublisherById() {
-        doThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class))
-                .when(this.publisherService)
-                .deleteById(PUBLISHER_ID);
+        given(this.publisherService.deleteById(any(UUID.class))).willReturn(false);
 
         this.deletePublisherAndExpect404(PUBLISHER_ID);
 

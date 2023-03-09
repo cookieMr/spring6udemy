@@ -66,15 +66,14 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void deleteById(@NotNull UUID id) {
-        var doesAuthorExist = this.authorRepository.findById(id)
-                .isPresent();
+    public boolean deleteById(@NotNull UUID id) {
+        var doesAuthorExist = this.authorRepository.existsById(id);
 
         if (doesAuthorExist) {
             this.authorRepository.deleteById(id);
-        } else {
-            throw new NotFoundEntityException(id, AuthorDto.class);
         }
+
+        return doesAuthorExist;
     }
 
 }
