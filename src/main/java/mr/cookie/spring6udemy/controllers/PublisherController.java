@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,7 +76,7 @@ public class PublisherController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public PublisherDto createPublisher(@RequestBody PublisherDto publisher) {
+    public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
         return this.publisherService.create(publisher);
         // TODO: conflict status
     }
@@ -96,7 +97,7 @@ public class PublisherController {
     @NotNull
     public PublisherDto updatePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
-            @RequestBody PublisherDto publisher
+            @Validated @RequestBody PublisherDto publisher
     ) {
         return this.publisherService.update(id, publisher);
     }
