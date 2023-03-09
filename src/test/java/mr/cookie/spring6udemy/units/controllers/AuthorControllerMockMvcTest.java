@@ -25,7 +25,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -149,9 +148,7 @@ class AuthorControllerMockMvcTest {
 
     @Test
     void shouldGet404WhenCannotDeleteAuthorById() {
-        doThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class))
-                .when(this.authorService)
-                .deleteById(AUTHOR_ID);
+        given(this.authorService.deleteById(any(UUID.class))).willReturn(false);
 
         this.deleteAuthorAndExpect404(AUTHOR_ID);
 
