@@ -1,10 +1,11 @@
 package mr.cookie.spring6udemy.services.constants;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
-public class Constants {
+public final class Constant {
 
     public static final String BLANK_STRING = "";
+
+    private Constant() {
+        throw new IllegalCallerException();
+    }
 
 }

@@ -3,6 +3,7 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
+import mr.cookie.spring6udemy.services.constants.Constant;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static mr.cookie.spring6udemy.services.constants.Constants.BLANK_STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -80,10 +80,10 @@ class AuthorControllerTest {
     static Stream<Consumer<AuthorDto>> authorModifiers() {
         return Stream.of(
                 author -> author.setFirstName(null),
-                author -> author.setFirstName(BLANK_STRING),
+                author -> author.setFirstName(Constant.BLANK_STRING),
                 author -> author.setFirstName(RandomStringUtils.random(65)),
                 author -> author.setLastName(null),
-                author -> author.setLastName(BLANK_STRING),
+                author -> author.setLastName(Constant.BLANK_STRING),
                 author -> author.setLastName(RandomStringUtils.random(65))
         );
     }

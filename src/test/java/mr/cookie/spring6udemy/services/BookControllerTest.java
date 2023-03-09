@@ -3,6 +3,7 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
+import mr.cookie.spring6udemy.services.constants.Constant;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static mr.cookie.spring6udemy.services.constants.Constants.BLANK_STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -79,10 +79,10 @@ class BookControllerTest {
     static Stream<Consumer<BookDto>> bookModifiers() {
         return Stream.of(
                 book -> book.setTitle(null),
-                book -> book.setTitle(BLANK_STRING),
+                book -> book.setTitle(Constant.BLANK_STRING),
                 book -> book.setTitle(RandomStringUtils.random(129)),
                 book -> book.setIsbn(null),
-                book -> book.setIsbn(BLANK_STRING),
+                book -> book.setIsbn(Constant.BLANK_STRING),
                 book -> book.setIsbn(RandomStringUtils.random(12)),
                 book -> book.setIsbn(RandomStringUtils.random(15))
         );
