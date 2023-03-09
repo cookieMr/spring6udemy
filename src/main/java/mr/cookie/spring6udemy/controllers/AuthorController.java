@@ -113,7 +113,9 @@ public class AuthorController {
     public void deleteAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        this.authorService.deleteById(id);
+        if (!this.authorService.deleteById(id)) {
+            throw new NotFoundEntityException(id, AuthorDto.class);
+        }
     }
 
 }

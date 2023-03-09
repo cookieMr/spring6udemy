@@ -113,7 +113,9 @@ public class PublisherController {
     public void deletePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        this.publisherService.deleteById(id);
+        if (!this.publisherService.deleteById(id)) {
+            throw new NotFoundEntityException(id, PublisherDto.class);
+        }
     }
 
 }

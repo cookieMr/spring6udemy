@@ -108,7 +108,9 @@ public class BookController {
     public void deleteBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        this.bookService.deleteById(id);
+        if (!this.bookService.deleteById(id)) {
+            throw new NotFoundEntityException(id, BookDto.class);
+        }
     }
 
 }

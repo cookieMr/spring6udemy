@@ -67,15 +67,14 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public void deleteById(@NotNull UUID id) {
-        var doesPublishExists = this.publisherRepository.findById(id)
-                .isPresent();
+    public boolean deleteById(@NotNull UUID id) {
+        var doesBeerExist = this.publisherRepository.existsById(id);
 
-        if (doesPublishExists) {
+        if (doesBeerExist) {
             this.publisherRepository.deleteById(id);
-        } else {
-            throw new NotFoundEntityException(id, PublisherDto.class);
         }
+
+        return doesBeerExist;
     }
 
 }

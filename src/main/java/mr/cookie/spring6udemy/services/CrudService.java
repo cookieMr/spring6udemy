@@ -19,6 +19,11 @@ public interface CrudService<T> {
     @NotNull
     T update(@NotNull UUID id, @NotNull T author);
 
-    void deleteById(@NotNull UUID id);
+    /**
+     * Returns {@code true} if en entity with provided ID was removed, {@code false} otherwise.
+     * @param id id of an entity to remove
+     * @return {@code true} if an entity was removed, {@code false} otherwise
+     */
+    boolean deleteById(@NotNull UUID id);
 
 }

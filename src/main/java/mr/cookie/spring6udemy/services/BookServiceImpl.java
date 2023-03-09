@@ -66,15 +66,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteById(@NotNull UUID id) {
-        var doesBookExist = this.bookRepository.findById(id)
-                .isPresent();
+    public boolean deleteById(@NotNull UUID id) {
+        var doesBookExist = this.bookRepository.existsById(id);
 
         if (doesBookExist) {
             this.bookRepository.deleteById(id);
-        } else {
-            throw new NotFoundEntityException(id, BookDto.class);
         }
+
+        return doesBookExist;
     }
 
 }
