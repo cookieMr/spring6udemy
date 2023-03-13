@@ -39,8 +39,10 @@ public class BookEntity {
     )
     private UUID id;
 
+    @Column(columnDefinition = "varchar", length = 128, nullable = false)
     private String title;
 
+    @Column(columnDefinition = "varchar", length = 14, unique = true, nullable = false)
     private String isbn;
 
     @ManyToMany
