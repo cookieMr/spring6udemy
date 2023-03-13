@@ -36,10 +36,19 @@ public class PublisherEntity {
     )
     private UUID id;
 
+    @Column(columnDefinition = "varchar", length = 128, nullable = false)
     private String name;
+
+    @Column(columnDefinition = "varchar", length = 128, nullable = false)
     private String address;
+
+    @Column(columnDefinition = "varchar", length = 64, nullable = false)
     private String city;
+
+    @Column(columnDefinition = "varchar", length = 64, nullable = false)
     private String state;
+
+    @Column(columnDefinition = "varchar", length = 64, nullable = false)
     private String zipCode;
 
     @Builder.Default

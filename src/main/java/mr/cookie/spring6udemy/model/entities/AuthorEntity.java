@@ -36,8 +36,10 @@ public class AuthorEntity {
     )
     private UUID id;
 
+    @Column(columnDefinition = "varchar", length = 64, nullable = false)
     private String firstName;
 
+    @Column(columnDefinition = "varchar", length = 64, nullable = false)
     private String lastName;
 
     @ManyToMany(mappedBy = "authors")
