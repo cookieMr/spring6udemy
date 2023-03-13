@@ -62,7 +62,6 @@ class PublisherControllerTest {
         assertThat(result)
                 .isNotNull()
                 .isNotEmpty();
-        // TODO: should contain a publisher
     }
 
     @Test

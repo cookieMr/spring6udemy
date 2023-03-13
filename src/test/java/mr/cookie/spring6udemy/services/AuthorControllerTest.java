@@ -59,7 +59,6 @@ class AuthorControllerTest {
         assertThat(result)
                 .isNotNull()
                 .isNotEmpty();
-        // TODO: should contain an author
     }
 
     @Test
