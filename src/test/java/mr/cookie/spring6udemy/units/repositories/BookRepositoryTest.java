@@ -53,10 +53,8 @@ class BookRepositoryTest {
         var book = BOOK_SUPPLIER.get();
         bookModifier.accept(book);
 
-        assertThatThrownBy(() -> {
-            this.bookRepository.save(book);
-            this.bookRepository.flush();
-        })
+        this.bookRepository.save(book);
+        assertThatThrownBy(this.bookRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessage("could not execute statement; SQL [n/a]; constraint [null]");

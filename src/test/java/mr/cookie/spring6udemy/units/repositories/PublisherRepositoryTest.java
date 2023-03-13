@@ -59,14 +59,11 @@ class PublisherRepositoryTest {
         var publisher = PUBLISHER_SUPPLIER.get();
         publisherModifier.accept(publisher);
 
-        assertThatThrownBy(() -> {
-            this.publisherRepository.save(publisher);
-            this.publisherRepository.flush();
-        })
+        this.publisherRepository.save(publisher);
+        assertThatThrownBy(this.publisherRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessage("could not execute statement; SQL [n/a]; constraint [null]");
     }
-
 
 }

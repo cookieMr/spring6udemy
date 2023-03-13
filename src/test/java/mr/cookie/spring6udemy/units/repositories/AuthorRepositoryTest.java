@@ -53,10 +53,8 @@ class AuthorRepositoryTest {
         var author = AUTHOR_SUPPLIER.get();
         authorModifier.accept(author);
 
-        assertThatThrownBy(() -> {
-            this.authorRepository.save(author);
-            this.authorRepository.flush();
-        })
+        this.authorRepository.save(author);
+        assertThatThrownBy(this.authorRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessage("could not execute statement; SQL [n/a]; constraint [null]");
