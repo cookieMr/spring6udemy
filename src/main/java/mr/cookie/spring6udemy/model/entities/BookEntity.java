@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -33,16 +35,19 @@ public class BookEntity {
     @Id
     @GeneratedValue(generator = Constant.UUID_NAME)
     @GenericGenerator(name = Constant.UUID_NAME, strategy = Constant.UUID_GENERATOR_STRATEGY)
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(
-            columnDefinition = "varchar", length = 36,
+            columnDefinition = "varchar(36)", length = 36,
             unique = true, nullable = false, insertable = false, updatable = false
     )
     private UUID id;
 
-    @Column(columnDefinition = "varchar", length = 128, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(128)", length = 128, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "varchar", length = 14, unique = true, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(14)", length = 14, unique = true, nullable = false)
     private String isbn;
 
     @ManyToMany

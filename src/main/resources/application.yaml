@@ -2,9 +2,22 @@ spring:
   main:
     banner-mode: off
 
-  h2:
-    console:
-      enabled: true
+  datasource:
+    username: docker
+    password: mysql_very_secret_docker_password
+    url: jdbc:mysql://docker-mysql:3306/cosmere?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: cosmere-pool
+      maximum-pool-size: 5
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
 
 server:
   servlet:

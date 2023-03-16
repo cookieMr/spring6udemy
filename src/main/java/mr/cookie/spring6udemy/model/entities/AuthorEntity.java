@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -30,16 +32,19 @@ public class AuthorEntity {
     @Id
     @GeneratedValue(generator = Constant.UUID_NAME)
     @GenericGenerator(name = Constant.UUID_NAME, strategy = Constant.UUID_GENERATOR_STRATEGY)
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(
-            columnDefinition = "varchar", length = 36,
+            columnDefinition = "varchar(36)", length = 36,
             unique = true, nullable = false, insertable = false, updatable = false
     )
     private UUID id;
 
-    @Column(columnDefinition = "varchar", length = 64, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(64)", length = 64, nullable = false)
     private String firstName;
 
-    @Column(columnDefinition = "varchar", length = 64, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(64)", length = 64, nullable = false)
     private String lastName;
 
     @ManyToMany(mappedBy = "authors")
