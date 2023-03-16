@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  docker-mysql:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql_very_secret_docker_password
+      - MYSQL_DATABASE=cosmere
+    volumes:
+      - ./src/main/resources/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", 'mysqladmin ping' ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: none
+    networks:
+      - java_develop
+
+  docker-spring-boot:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      docker-mysql:
+        condition: service_healthy
+    networks:
+      - java_develop
+
+networks:
+  java_develop:

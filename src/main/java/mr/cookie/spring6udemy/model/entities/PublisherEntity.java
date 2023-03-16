@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,25 +32,31 @@ public class PublisherEntity {
     @Id
     @GeneratedValue(generator = Constant.UUID_NAME)
     @GenericGenerator(name = Constant.UUID_NAME, strategy = Constant.UUID_GENERATOR_STRATEGY)
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(
-            columnDefinition = "varchar", length = 36,
+            columnDefinition = "varchar(36)", length = 36,
             unique = true, nullable = false, insertable = false, updatable = false
     )
     private UUID id;
 
-    @Column(columnDefinition = "varchar", length = 128, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(128)", length = 128, nullable = false)
     private String name;
 
-    @Column(columnDefinition = "varchar", length = 128, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(128)", length = 128, nullable = false)
     private String address;
 
-    @Column(columnDefinition = "varchar", length = 64, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(64)", length = 64, nullable = false)
     private String city;
 
-    @Column(columnDefinition = "varchar", length = 64, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(64)", length = 64, nullable = false)
     private String state;
 
-    @Column(columnDefinition = "varchar", length = 64, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "varchar(64)", length = 64, nullable = false)
     private String zipCode;
 
     @Builder.Default

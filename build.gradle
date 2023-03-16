@@ -25,6 +25,7 @@ ext {
     jetBrainsAnnotationVersion = "24.0.0"
     lombokVersion = "1.18.26"
     mapStructVersion = "1.5.3.Final"
+    mysqlConnectorVersion = "8.0.32"
     snakeyamlVersion = "2.0"
     springDocVersion = "2.0.2"
 }
@@ -36,6 +37,7 @@ dependencies {
     implementation "org.apache.commons:commons-collections4:${apacheCollectionsVersion}"
     implementation "org.jetbrains:annotations:${jetBrainsAnnotationVersion}"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+    implementation "mysql:mysql-connector-java:${mysqlConnectorVersion}"
 
     // transitive dep
     implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
