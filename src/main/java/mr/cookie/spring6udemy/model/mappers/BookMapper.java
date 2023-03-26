@@ -18,6 +18,8 @@ public interface BookMapper {
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "publisher", ignore = true)
     @Mapping(target = "version", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updateDate", ignore = true)
     @Nullable
     BookEntity map(@Nullable BookDto source);
 
