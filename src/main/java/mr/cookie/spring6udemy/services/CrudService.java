@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.services;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +15,11 @@ public interface CrudService<T> {
     Optional<T> findById(@NotNull UUID id);
 
     @NotNull
+    @Transactional
     T create(@NotNull T author);
 
     @NotNull
+    @Transactional
     T update(@NotNull UUID id, @NotNull T author);
 
     /**
@@ -24,6 +27,7 @@ public interface CrudService<T> {
      * @param id id of an entity to remove
      * @return {@code true} if an entity was removed, {@code false} otherwise
      */
+    @Transactional
     boolean deleteById(@NotNull UUID id);
 
 }

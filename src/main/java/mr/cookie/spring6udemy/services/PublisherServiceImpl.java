@@ -8,6 +8,7 @@ import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional
     public @NotNull PublisherDto create(@NotNull PublisherDto publisher) {
         return Optional.of(publisher)
                 .map(this.publisherMapper::map)
@@ -50,6 +52,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional
     public @NotNull PublisherDto update(@NotNull UUID id, @NotNull PublisherDto publisher) {
         var existingDto = this.publisherRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
@@ -67,6 +70,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional
     public boolean deleteById(@NotNull UUID id) {
         var doesBeerExist = this.publisherRepository.existsById(id);
 

@@ -8,6 +8,7 @@ import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,7 @@ public class BookServiceImpl implements BookService {
 
     @NotNull
     @Override
+    @Transactional
     public BookDto create(@NotNull BookDto book) {
         return Optional.of(book)
                 .map(this.bookMapper::map)
@@ -52,6 +54,7 @@ public class BookServiceImpl implements BookService {
 
     @NotNull
     @Override
+    @Transactional
     public BookDto update(@NotNull UUID id, @NotNull BookDto book) {
         var existingDto = this.bookRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
@@ -66,6 +69,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public boolean deleteById(@NotNull UUID id) {
         var doesBookExist = this.bookRepository.existsById(id);
 
