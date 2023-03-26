@@ -14,7 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,15 +58,22 @@ class PublisherControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @Rollback
+    @Transactional
     void shouldGetAllPublishers() {
+        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        var createdPublisher = this.createPublisher(publisherDto);
+
         var result = this.getAllPublishers();
 
         assertThat(result)
                 .isNotNull()
-                .isNotEmpty();
+                .containsOnly(createdPublisher);
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldCreateAndThenGetPublisherById() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
@@ -117,6 +126,8 @@ class PublisherControllerTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldCreatePublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
@@ -136,6 +147,8 @@ class PublisherControllerTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldUpdatePublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
         var createdPublisher = this.createPublisher(publisherDto);
@@ -152,6 +165,8 @@ class PublisherControllerTest {
                 .returns(publisherDto.getZipCode(), PublisherDto::getZipCode);
     }
 
+    @Rollback
+    @Transactional
     @ParameterizedTest
     @MethodSource("publisherModifiers")
     void shouldFailToUpdatePublisher(@NotNull Consumer<PublisherDto> publisherModifier) {
@@ -170,6 +185,8 @@ class PublisherControllerTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldDeleteExistingPublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 

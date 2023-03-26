@@ -22,6 +22,7 @@ ext {
     apacheCollectionsVersion = "4.4"
     assertjVersion = "3.24.2"
     checkstyleVersion = "0.0.35"
+    flywayVersion = "9.16.0"
     jetBrainsAnnotationVersion = "24.0.0"
     lombokVersion = "1.18.26"
     mapStructVersion = "1.5.3.Final"
@@ -38,6 +39,7 @@ dependencies {
     implementation "org.jetbrains:annotations:${jetBrainsAnnotationVersion}"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
     implementation "mysql:mysql-connector-java:${mysqlConnectorVersion}"
+    implementation "org.flywaydb:flyway-mysql:${flywayVersion}"
 
     // transitive dep
     implementation "org.yaml:snakeyaml:${snakeyamlVersion}"

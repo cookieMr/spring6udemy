@@ -14,7 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,15 +55,22 @@ class AuthorControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @Rollback
+    @Transactional
     void shouldGetAllAuthors() {
+        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var createdAuthor = this.createAuthor(authorDto);
+
         var result = this.getAllAuthors();
 
         assertThat(result)
                 .isNotNull()
-                .isNotEmpty();
+                .containsOnly(createdAuthor);
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldCreateAndThenGetAuthorById() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
@@ -103,6 +112,8 @@ class AuthorControllerTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldCreateAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
@@ -119,6 +130,8 @@ class AuthorControllerTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldUpdateAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
         var createdAuthor = this.createAuthor(authorDto);
@@ -150,6 +163,8 @@ class AuthorControllerTest {
     }
 
     @Test
+    @Rollback
+    @Transactional
     void shouldDeleteExistingAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 

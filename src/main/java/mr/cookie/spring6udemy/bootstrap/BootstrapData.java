@@ -1,25 +1,22 @@
 package mr.cookie.spring6udemy.bootstrap;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
+import mr.cookie.spring6udemy.repositories.AuthorRepository;
+import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.apache.commons.collections4.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import mr.cookie.spring6udemy.model.entities.BookEntity;
-import mr.cookie.spring6udemy.repositories.AuthorRepository;
-import mr.cookie.spring6udemy.repositories.BookRepository;
 
 @Slf4j
-@Component
+//@Component
 @RequiredArgsConstructor
 public class BootstrapData implements CommandLineRunner {
 
