@@ -22,19 +22,19 @@ ext {
     apacheCollectionsVersion = "4.4"
     assertjVersion = "3.24.2"
     checkstyleVersion = "0.0.35"
-    flywayVersion = "9.16.0"
-    jetBrainsAnnotationVersion = "24.0.0"
+    flywayVersion = "9.16.1"
+    jetBrainsAnnotationVersion = "24.0.1"
     lombokVersion = "1.18.26"
     mapStructVersion = "1.5.3.Final"
     mysqlConnectorVersion = "8.0.32"
     snakeyamlVersion = "2.0"
-    springDocVersion = "2.0.2"
+    springDocVersion = "2.0.4"
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.apache.commons:commons-collections4:${apacheCollectionsVersion}"
     implementation "org.jetbrains:annotations:${jetBrainsAnnotationVersion}"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
@@ -44,7 +44,7 @@ dependencies {
     // transitive dep
     implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
 
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly "com.h2database:h2"
 
     implementation "org.mapstruct:mapstruct:${mapStructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
@@ -53,7 +53,7 @@ dependencies {
 
     checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${checkstyleVersion}"
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
 }
 

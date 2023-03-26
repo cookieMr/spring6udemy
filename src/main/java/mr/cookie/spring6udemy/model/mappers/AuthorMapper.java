@@ -17,6 +17,8 @@ public interface AuthorMapper {
 
     @Mapping(target = "books", ignore = true)
     @Mapping(target = "version", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updateDate", ignore = true)
     @Nullable
     AuthorEntity map(@Nullable AuthorDto source);
 

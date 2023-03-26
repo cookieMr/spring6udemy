@@ -44,7 +44,8 @@ And then run the Gradle task:
 To build the same Docker image and to run it as a docker composed app
 (along with all necessary dockers e.g. MySQL) just run the following command:
 ```bash
-docker-compose down && docker-compose up --build --pull always
+docker-compose down --volumes --remove-orphans && \
+  docker-compose up --build
 ```
 
 ## Useful Internal Links

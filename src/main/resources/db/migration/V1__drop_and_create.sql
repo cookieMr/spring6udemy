@@ -12,10 +12,12 @@ CREATE TABLE author_book
 
 CREATE TABLE authors
 (
-    id         VARCHAR(36) NOT NULL,
-    first_name VARCHAR(64) NOT NULL,
-    last_name  VARCHAR(64) NOT NULL,
-    version    INTEGER,
+    id           VARCHAR(36) NOT NULL,
+    first_name   VARCHAR(64) NOT NULL,
+    last_name    VARCHAR(64) NOT NULL,
+    version      INTEGER,
+    created_date TIMESTAMP   NOT NULL,
+    update_date  TIMESTAMP   NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
@@ -25,19 +27,23 @@ CREATE TABLE books
     isbn         VARCHAR(14)  NOT NULL,
     title        VARCHAR(128) NOT NULL,
     version      INTEGER,
+    created_date TIMESTAMP    NOT NULL,
+    update_date  TIMESTAMP    NOT NULL,
     publisher_id VARCHAR(36),
     PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
 CREATE TABLE publishers
 (
-    id       VARCHAR(36)  NOT NULL,
-    address  VARCHAR(128) NOT NULL,
-    city     VARCHAR(64)  NOT NULL,
-    name     VARCHAR(128) NOT NULL,
-    state    VARCHAR(64)  NOT NULL,
-    version  INTEGER,
-    zip_code VARCHAR(64)  NOT NULL,
+    id           VARCHAR(36)  NOT NULL,
+    address      VARCHAR(128) NOT NULL,
+    city         VARCHAR(64)  NOT NULL,
+    name         VARCHAR(128) NOT NULL,
+    state        VARCHAR(64)  NOT NULL,
+    version      INTEGER,
+    created_date TIMESTAMP    NOT NULL,
+    update_date  TIMESTAMP    NOT NULL,
+    zip_code     VARCHAR(64)  NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
