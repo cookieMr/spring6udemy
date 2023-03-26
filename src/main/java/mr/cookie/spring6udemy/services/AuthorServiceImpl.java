@@ -8,6 +8,7 @@ import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @NotNull
     @Override
+    @Transactional
     public AuthorDto create(@NotNull AuthorDto author) {
         return Optional.of(author)
                 .map(this.authorMapper::map)
@@ -52,6 +54,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @NotNull
     @Override
+    @Transactional
     public AuthorDto update(@NotNull UUID id, @NotNull AuthorDto author) {
         var existingDto = this.authorRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
@@ -66,6 +69,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public boolean deleteById(@NotNull UUID id) {
         var doesAuthorExist = this.authorRepository.existsById(id);
 
