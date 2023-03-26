@@ -45,7 +45,12 @@ To build the same Docker image and to run it as a docker composed app
 (along with all necessary dockers e.g. MySQL) just run the following command:
 ```bash
 docker-compose down --volumes --remove-orphans && \
-  docker-compose up --build
+docker-compose up --build
+```
+
+To check if Spring Boot App is healthy run:
+```bash
+curl -f http://localhost:8080/api/actuator/health && echo -e
 ```
 
 ## Useful Internal Links
