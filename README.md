@@ -48,7 +48,7 @@ docker-compose down --volumes --remove-orphans && \
 docker-compose up --build
 ```
 
-To check if Spring Boot App is healthy run:
+To check if a Spring Boot App is healthy run:
 ```bash
 curl -f http://localhost:8080/api/actuator/health && echo -e
 ```
