@@ -55,17 +55,22 @@ class BookControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @Rollback
+    @Transactional
     void shouldGetAllBooks() {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        var createdBook = this.createBook(bookDto);
+
         var result = this.getAllBooks();
 
         assertThat(result)
                 .isNotNull()
-                .isNotEmpty();
+                .containsOnly(createdBook);
     }
 
+    @Test
     @Rollback
     @Transactional
-    @Test
     void shouldCreateAndThenGetBookById() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
@@ -108,9 +113,9 @@ class BookControllerTest {
         this.getBookByIdAndExpect404(bookId);
     }
 
+    @Test
     @Rollback
     @Transactional
-    @Test
     void shouldCreateBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
@@ -126,9 +131,9 @@ class BookControllerTest {
         );
     }
 
+    @Test
     @Rollback
     @Transactional
-    @Test
     void shouldUpdateBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
         var createdBook = this.createBook(bookDto);
@@ -161,9 +166,9 @@ class BookControllerTest {
         this.updateBookAndExpect404(bookId, bookDto);
     }
 
+    @Test
     @Rollback
     @Transactional
-    @Test
     void shouldDeleteExistingBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
