@@ -12,7 +12,7 @@ services:
     volumes:
       - ./src/main/resources/sql:/docker-entrypoint-initdb.d
     healthcheck:
-      test: [ "CMD-SHELL", 'mysqladmin ping' ]
+      test: [ "CMD-SHELL", "mysqladmin ping" ]
       interval: 7s
       timeout: 7s
       retries: 4
@@ -29,6 +29,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://docker-spring-boot:8080/api/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     depends_on:
       docker-mysql:
         condition: service_healthy
