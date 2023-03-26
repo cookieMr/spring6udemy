@@ -9,14 +9,13 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=mysql_very_secret_docker_password
-      - MYSQL_DATABASE=cosmere
     volumes:
       - ./src/main/resources/sql:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD-SHELL", 'mysqladmin ping' ]
-      interval: 5s
-      timeout: 5s
-      retries: 3
+      interval: 7s
+      timeout: 7s
+      retries: 4
       start_period: 10s
     logging:
       driver: none

@@ -23,12 +23,11 @@ Run MySQL docker image:
 ```bash
 docker run --publish 3306:3306 \
   --name local-mysql \
-  --env MYSQL_ROOT_PASSWORD=mysql_very_secret_docker_password \
-  --env MYSQL_DATABASE=cosmere \
+  --env MYSQL_ROOT_PASSWORD=mysql_very_secret_root_password \
   --volume ./src/main/resources/sql:/docker-entrypoint-initdb.d \
-  --health-interval 5s \
-  --health-retries 3 \
-  --health-timeout 5s \
+  --health-interval 7s \
+  --health-timeout 7s \
+  --health-retries 4 \
   --health-start-period 10s \
   --health-cmd 'mysqladmin ping mysql' \
   --detach mysql:latest
@@ -45,7 +44,7 @@ And then run the Gradle task:
 To build the same Docker image and to run it as a docker composed app
 (along with all necessary dockers e.g. MySQL) just run the following command:
 ```bash
-docker-compose down && docker-compose up --build
+docker-compose down && docker-compose up --build --pull always
 ```
 
 ## Useful Internal Links
