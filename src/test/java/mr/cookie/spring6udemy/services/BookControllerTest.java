@@ -74,7 +74,7 @@ class BookControllerTest {
                 .map(this::createBook)
                 .toList();
 
-        var result = this.getAllBooks(TEST_PAGE_SIZE , true, 1);
+        var result = this.getAllBooks(TEST_PAGE_SIZE, true, 1);
 
         assertThat(result)
                 .isNotNull()
@@ -95,7 +95,7 @@ class BookControllerTest {
                 .map(this::createBook)
                 .toList();
 
-        var result = this.getAllBooks(createdBooks.size() , false, 2);
+        var result = this.getAllBooks(createdBooks.size(), false, 2);
 
         assertThat(result)
                 .isNotNull()
