@@ -10,14 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -38,15 +40,16 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAllAuthors() {
-        when(this.authorService.findAll()).thenReturn(Collections.singletonList(AUTHOR_DTO));
+        var pageAuthor = new PageImpl<>(List.of(AUTHOR_DTO));
 
-        var result = this.authorController.getAllAuthors();
+        when(this.authorService.findAll(anyInt(), anyInt()))
+                .thenReturn(pageAuthor);
 
-        assertThat(result)
-                .isNotNull()
-                .containsOnly(AUTHOR_DTO);
+        var result = this.authorController.getAllAuthors(1, 2);
 
-        verify(this.authorService).findAll();
+        assertThat(result).isSameAs(pageAuthor);
+
+        verify(this.authorService).findAll(1, 2);
         verifyNoMoreInteractions(this.authorService);
     }
 

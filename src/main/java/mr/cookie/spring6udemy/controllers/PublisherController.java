@@ -9,6 +9,7 @@ import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -19,10 +20,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,11 +38,14 @@ public class PublisherController {
     @NotNull
     private final PublisherService publisherService;
 
-    @Operation(description = "Returns all publishers (or empty array).")
+    @Operation(description = "Returns all publishers (or an empty page).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public List<PublisherDto> getAllPublishers() {
-        return this.publisherService.findAll();
+    public Page<PublisherDto> getAllPublishers(
+            @RequestParam(required = false) Integer pageNumber,
+            @RequestParam(required = false) Integer pageSize
+    ) {
+        return this.publisherService.findAll(pageNumber, pageSize);
     }
 
     @Operation(

@@ -10,14 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -40,15 +42,17 @@ class BookControllerTest {
 
     @Test
     void shoutGetAllBooks() {
-        when(this.bookService.findAll()).thenReturn(Collections.singletonList(BOOK_DTO));
+        var pageBook = new PageImpl<>(List.of(BOOK_DTO));
 
-        var result = this.bookController.getAllBooks();
+        when(this.bookService.findAll(anyInt(), anyInt()))
+                .thenReturn(pageBook);
+
+        var result = this.bookController.getAllBooks(3, 4);
 
         assertThat(result)
-                .isNotNull()
-                .containsOnly(BOOK_DTO);
+                .isSameAs(pageBook);
 
-        verify(this.bookService).findAll();
+        verify(this.bookService).findAll(3, 4);
         verifyNoMoreInteractions(this.bookService);
     }
 

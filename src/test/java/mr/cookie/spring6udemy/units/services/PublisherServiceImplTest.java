@@ -7,17 +7,18 @@ import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.services.PublisherServiceImpl;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
-import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -25,7 +26,9 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyIterable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -42,36 +45,44 @@ class PublisherServiceImplTest {
             .id(PUBLISHER_ID)
             .build();
 
-    @Spy
-    @NotNull
-    private PublisherMapper publisherMapper = new PublisherMapperImpl();
-
-    @Mock
-    @NotNull
-    private PublisherRepository publisherRepository;
-
-    @NotNull
-    @InjectMocks
-    private PublisherServiceImpl publisherService;
-
     @Captor
     private ArgumentCaptor<PublisherEntity> publisherDtoArgumentCaptor;
+
+    private PublisherMapper publisherMapper;
+    private PublisherRepository publisherRepository;
+    private PublisherServiceImpl publisherService;
+
+    @BeforeEach
+    void setupBeforeAll() {
+        this.publisherRepository = mock(PublisherRepository.class);
+        this.publisherMapper = spy(new PublisherMapperImpl());
+        this.publisherService = new PublisherServiceImpl(
+                25,
+                this.publisherMapper,
+                this.publisherRepository
+        );
+    }
+
+    @AfterEach
+    void cleanUp() {
+        reset(this.publisherRepository, this.publisherMapper);
+    }
 
     @Test
     void shouldReturnAllPublishers() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        var publisherPage = new PageImpl<>(List.of(publisherDto));
 
-        when(this.publisherRepository.findAll()).thenReturn(Collections.singletonList(publisherDto));
+        when(this.publisherRepository.findAll(any(Pageable.class)))
+                .thenReturn(publisherPage);
 
-        var result = this.publisherService.findAll();
+        var result = this.publisherService.findAll(null, null);
 
         assertThat(result)
                 .isNotNull()
-                .isNotEmpty()
-                .contains(PublisherDto.builder().id(PUBLISHER_ID).build());
+                .hasSize(1);
 
-        verify(this.publisherRepository).findAll();
-        verify(this.publisherMapper).mapToModel(anyIterable());
+        verify(this.publisherRepository).findAll(any(PageRequest.class));
         verify(this.publisherMapper).map(publisherDto);
         verifyNoMoreInteractions(this.publisherRepository, this.publisherMapper);
     }

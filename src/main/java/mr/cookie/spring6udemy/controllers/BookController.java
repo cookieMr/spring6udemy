@@ -9,6 +9,7 @@ import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -19,10 +20,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,11 +40,14 @@ public class BookController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public List<BookDto> getAllBooks() {
-        return this.bookService.findAll();
+    public Page<BookDto> getAllBooks(
+            @RequestParam(required = false) Integer pageNumber,
+            @RequestParam(required = false) Integer pageSize
+    ) {
+        return this.bookService.findAll(pageNumber, pageSize);
     }
 
-    @Operation(description = "Returns all books (or empty array).")
+    @Operation(description = "Returns all books (or an empty page).")
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
