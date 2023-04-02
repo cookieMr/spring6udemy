@@ -75,11 +75,32 @@ class PublisherControllerTest {
                 .map(this::createPublisher)
                 .toList();
 
-        var result = this.getAllPublishers(createdPublishers.size());
+        var result = this.getAllPublishers(createdPublishers.size(), true, 1);
 
         assertThat(result)
                 .isNotNull()
                 .containsAll(createdPublishers);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetFirstPageOfPublishers() {
+        var createdPublishers = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+                        .name(RandomStringUtils.randomAlphabetic(25))
+                        .address(RandomStringUtils.randomAlphabetic(25))
+                        .state(RandomStringUtils.randomAlphabetic(25))
+                        .city(RandomStringUtils.randomAlphabetic(25))
+                        .zipCode(RandomStringUtils.randomAlphabetic(25))
+                        .build())
+                .map(this::createPublisher)
+                .toList();
+
+        var result = this.getAllPublishers(createdPublishers.size(), false, 2);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdPublishers.subList(0, TEST_PAGE_SIZE));
     }
 
     @Test
@@ -213,7 +234,7 @@ class PublisherControllerTest {
 
     @SneakyThrows
     @NotNull
-    private List<PublisherDto> getAllPublishers(int expectedSize) {
+    private List<PublisherDto> getAllPublishers(int expectedSize, boolean last, int totalPages) {
         var mockMvcResult = this.mockMvc.perform(get("/publisher"))
                 .andExpectAll(
                         status().isOk(),
@@ -229,10 +250,10 @@ class PublisherControllerTest {
                         jsonPath("$.pageable.pageSize").value(TEST_PAGE_SIZE),
                         jsonPath("$.pageable.paged").value(true),
                         jsonPath("$.pageable.unpaged").value(false),
-                        jsonPath("$.totalPages").value(1),
+                        jsonPath("$.totalPages").value(totalPages),
                         jsonPath("$.totalElements").value(expectedSize),
                         jsonPath("$.first").value(true),
-                        jsonPath("$.last").value(true),
+                        jsonPath("$.last").value(last),
                         jsonPath("$.size").value(TEST_PAGE_SIZE),
                         jsonPath("$.empty").value(false),
                         jsonPath("$.sort", notNullValue()),
@@ -240,7 +261,7 @@ class PublisherControllerTest {
                         jsonPath("$.sort.sorted").value(true),
                         jsonPath("$.sort.unsorted").value(false),
                         jsonPath("$.number").value(0),
-                        jsonPath("$.numberOfElements").value(expectedSize)
+                        jsonPath("$.numberOfElements").value(TEST_PAGE_SIZE)
                 )
                 .andReturn()
                 .getResponse()

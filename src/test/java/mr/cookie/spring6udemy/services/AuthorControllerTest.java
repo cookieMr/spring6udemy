@@ -71,11 +71,29 @@ class AuthorControllerTest {
                 .map(this::createAuthor)
                 .toList();
 
-        var result = this.getAllAuthors(createdAuthors.size());
+        var result = this.getAllAuthors(TEST_PAGE_SIZE, true, 1);
 
         assertThat(result)
                 .isNotNull()
                 .containsAll(createdAuthors);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetFirstPageOfAuthors() {
+        var createdAuthors = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> AuthorDto.builder()
+                        .firstName(RandomStringUtils.randomAlphabetic(25))
+                        .lastName(RandomStringUtils.randomAlphabetic(25))
+                        .build())
+                .map(this::createAuthor)
+                .toList();
+
+        var result = this.getAllAuthors(createdAuthors.size(), false, 2);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdAuthors.subList(0, TEST_PAGE_SIZE));
     }
 
     @Test
@@ -190,7 +208,7 @@ class AuthorControllerTest {
 
     @SneakyThrows
     @NotNull
-    private List<AuthorDto> getAllAuthors(int expectedSize) {
+    private List<AuthorDto> getAllAuthors(int expectedSize, boolean last, int totalPages) {
         var mockMvcResult = this.mockMvc.perform(get("/author"))
                 .andExpectAll(
                         status().isOk(),
@@ -206,10 +224,10 @@ class AuthorControllerTest {
                         jsonPath("$.pageable.pageSize").value(TEST_PAGE_SIZE),
                         jsonPath("$.pageable.paged").value(true),
                         jsonPath("$.pageable.unpaged").value(false),
-                        jsonPath("$.totalPages").value(1),
+                        jsonPath("$.totalPages").value(totalPages),
                         jsonPath("$.totalElements").value(expectedSize),
                         jsonPath("$.first").value(true),
-                        jsonPath("$.last").value(true),
+                        jsonPath("$.last").value(last),
                         jsonPath("$.size").value(TEST_PAGE_SIZE),
                         jsonPath("$.empty").value(false),
                         jsonPath("$.sort", notNullValue()),
@@ -217,7 +235,7 @@ class AuthorControllerTest {
                         jsonPath("$.sort.sorted").value(true),
                         jsonPath("$.sort.unsorted").value(false),
                         jsonPath("$.number").value(0),
-                        jsonPath("$.numberOfElements").value(expectedSize)
+                        jsonPath("$.numberOfElements").value(TEST_PAGE_SIZE)
                 )
                 .andReturn()
                 .getResponse()
