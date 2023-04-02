@@ -3,7 +3,8 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
-import mr.cookie.spring6udemy.services.constants.Constant;
+import mr.cookie.spring6udemy.services.utils.Constant;
+import mr.cookie.spring6udemy.services.utils.MvcResponseWithPublisherContent;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -16,16 +17,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,6 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class PublisherControllerTest {
+
+    private static final int TEST_PAGE_SIZE = 25;
 
     private static final Supplier<PublisherDto> PUBLISHER_DTO_SUPPLIER = () -> PublisherDto.builder()
             .name("Penguin Random House")
@@ -61,14 +66,63 @@ class PublisherControllerTest {
     @Rollback
     @Transactional
     void shouldGetAllPublishers() {
-        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
-        var createdPublisher = this.createPublisher(publisherDto);
+        var createdPublishers = IntStream.range(0, TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+                        .name(RandomStringUtils.randomAlphabetic(25))
+                        .address(RandomStringUtils.randomAlphabetic(25))
+                        .state(RandomStringUtils.randomAlphabetic(25))
+                        .city(RandomStringUtils.randomAlphabetic(25))
+                        .zipCode(RandomStringUtils.randomAlphabetic(25))
+                        .build())
+                .map(this::createPublisher)
+                .toList();
 
-        var result = this.getAllPublishers();
+        var result = this.getAllPublishers(createdPublishers.size(), true, 1);
 
         assertThat(result)
                 .isNotNull()
-                .containsOnly(createdPublisher);
+                .containsAll(createdPublishers);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetFirstPageOfPublishers() {
+        var createdPublishers = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+                        .name(RandomStringUtils.randomAlphabetic(25))
+                        .address(RandomStringUtils.randomAlphabetic(25))
+                        .state(RandomStringUtils.randomAlphabetic(25))
+                        .city(RandomStringUtils.randomAlphabetic(25))
+                        .zipCode(RandomStringUtils.randomAlphabetic(25))
+                        .build())
+                .map(this::createPublisher)
+                .toList();
+
+        var result = this.getAllPublishers(createdPublishers.size(), false, 2);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdPublishers.subList(0, TEST_PAGE_SIZE));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetSecondPageOfPublishers() {
+        var createdPublishers = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+                        .name(RandomStringUtils.randomAlphabetic(25))
+                        .address(RandomStringUtils.randomAlphabetic(25))
+                        .state(RandomStringUtils.randomAlphabetic(25))
+                        .city(RandomStringUtils.randomAlphabetic(25))
+                        .zipCode(RandomStringUtils.randomAlphabetic(25))
+                        .build())
+                .map(this::createPublisher)
+                .toList();
+
+        var result = this.getSecondPageOPublishers(createdPublishers.size(), false, 3);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdPublishers.subList(TEST_PAGE_SIZE, TEST_PAGE_SIZE));
     }
 
     @Test
@@ -200,19 +254,65 @@ class PublisherControllerTest {
         this.deletePublisherAndExpect404(publisherId);
     }
 
+    @NotNull
+    private List<PublisherDto> getAllPublishers(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetPublishers(
+                get("/publisher"), expectedSize, last, totalPages, 0, true, 0
+        );
+    }
+
+    @NotNull
+    private List<PublisherDto> getSecondPageOPublishers(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetPublishers(
+                get("/publisher").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
+        );
+    }
+
     @SneakyThrows
     @NotNull
-    private List<PublisherDto> getAllPublishers() {
-        var strPublishers = this.mockMvc.perform(get("/publisher"))
-                .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$").isArray())
+    private List<PublisherDto> validateResponseAndGetPublishers(
+            @NotNull MockHttpServletRequestBuilder builder,
+            int expectedSize,
+            boolean last,
+            int totalPages,
+            int offset,
+            boolean first,
+            int number
+    ) {
+        var mockMvcResult = this.mockMvc.perform(builder)
+                .andExpectAll(
+                        status().isOk(),
+                        header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
+                        jsonPath("$", notNullValue()),
+                        jsonPath("$.content").isArray(),
+                        jsonPath("$.pageable", notNullValue()),
+                        jsonPath("$.pageable.sort.empty").value(false),
+                        jsonPath("$.pageable.sort.sorted").value(true),
+                        jsonPath("$.pageable.sort.unsorted").value(false),
+                        jsonPath("$.pageable.offset").value(offset),
+                        jsonPath("$.pageable.pageNumber").value(number),
+                        jsonPath("$.pageable.pageSize").value(TEST_PAGE_SIZE),
+                        jsonPath("$.pageable.paged").value(true),
+                        jsonPath("$.pageable.unpaged").value(false),
+                        jsonPath("$.totalPages").value(totalPages),
+                        jsonPath("$.totalElements").value(expectedSize),
+                        jsonPath("$.first").value(first),
+                        jsonPath("$.last").value(last),
+                        jsonPath("$.size").value(TEST_PAGE_SIZE),
+                        jsonPath("$.empty").value(false),
+                        jsonPath("$.sort", notNullValue()),
+                        jsonPath("$.sort.empty").value(false),
+                        jsonPath("$.sort.sorted").value(true),
+                        jsonPath("$.sort.unsorted").value(false),
+                        jsonPath("$.number").value(number),
+                        jsonPath("$.numberOfElements").value(TEST_PAGE_SIZE)
+                )
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        var arrayPublishers = this.objectMapper.readValue(strPublishers, PublisherDto[].class);
-        return Arrays.asList(arrayPublishers);
+        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithPublisherContent.class)
+                .content();
     }
 
     @SneakyThrows

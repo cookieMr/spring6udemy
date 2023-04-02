@@ -1,23 +1,23 @@
 package mr.cookie.spring6udemy.services;
 
-import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.repository.CrudRepository;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class PublisherServiceImpl implements PublisherService {
+
+    private final int defaultPageSize;
 
     @NotNull
     private final PublisherMapper publisherMapper;
@@ -25,13 +25,22 @@ public class PublisherServiceImpl implements PublisherService {
     @NotNull
     private final PublisherRepository publisherRepository;
 
+    public PublisherServiceImpl(
+            @Value("${app.pagination.default-page-size:25}") int defaultPageSize,
+            @NotNull PublisherMapper publisherMapper,
+            @NotNull PublisherRepository publisherRepository
+    ) {
+        this.defaultPageSize = validateDefaultPageSize(defaultPageSize);
+        this.publisherMapper = publisherMapper;
+        this.publisherRepository = publisherRepository;
+    }
+
     @NotNull
     @Override
-    public List<PublisherDto> findAll() {
-        return Optional.of(this.publisherRepository)
-                .map(CrudRepository::findAll)
-                .map(this.publisherMapper::mapToModel)
-                .orElse(Collections.emptyList());
+    public Page<PublisherDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
+        var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
+        return this.publisherRepository.findAll(pageRequest)
+                .map(this.publisherMapper::map);
     }
 
     @Override

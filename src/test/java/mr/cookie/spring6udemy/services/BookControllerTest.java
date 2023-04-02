@@ -3,7 +3,8 @@ package mr.cookie.spring6udemy.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
-import mr.cookie.spring6udemy.services.constants.Constant;
+import mr.cookie.spring6udemy.services.utils.Constant;
+import mr.cookie.spring6udemy.services.utils.MvcResponseWithBookContent;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -16,16 +17,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,9 +40,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("SameParameterValue")
-@SpringBootTest
+@SpringBootTest(
+        properties = "app.pagination.default-page-size=" + BookControllerTest.TEST_PAGE_SIZE
+)
 @AutoConfigureMockMvc
 class BookControllerTest {
+
+    public static final int TEST_PAGE_SIZE = 7;
 
     private static final Supplier<BookDto> BOOK_DTO_SUPPLIER = () -> BookDto.builder()
             .title("Warbreaker")
@@ -58,14 +65,63 @@ class BookControllerTest {
     @Rollback
     @Transactional
     void shouldGetAllBooks() {
-        var bookDto = BOOK_DTO_SUPPLIER.get();
-        var createdBook = this.createBook(bookDto);
+        var createdBooks = IntStream.range(0, TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
+                        .build())
+                .map(this::createBook)
+                .toList();
 
-        var result = this.getAllBooks();
+        var result = this.getAllBooks(TEST_PAGE_SIZE, true, 1);
 
         assertThat(result)
                 .isNotNull()
-                .containsOnly(createdBook);
+                .containsAll(createdBooks);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetFirstPageOfBooks() {
+        var createdBooks = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
+                        .build())
+                .map(this::createBook)
+                .toList();
+
+        var result = this.getAllBooks(createdBooks.size(), false, 2);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdBooks.subList(0, TEST_PAGE_SIZE));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetSecondPageOfBooks() {
+        var createdBooks = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
+                        .build())
+                .map(this::createBook)
+                .toList();
+
+        var result = this.getSecondPageOfBooks(createdBooks.size(), false, 3);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdBooks.subList(TEST_PAGE_SIZE, TEST_PAGE_SIZE));
     }
 
     @Test
@@ -182,19 +238,65 @@ class BookControllerTest {
         this.deleteBookAndExpect404(bookId);
     }
 
+    @NotNull
+    private List<BookDto> getAllBooks(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetBooks(
+                get("/book"), expectedSize, last, totalPages, 0, true, 0
+        );
+    }
+
+    @NotNull
+    private List<BookDto> getSecondPageOfBooks(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetBooks(
+                get("/book").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
+        );
+    }
+
     @SneakyThrows
     @NotNull
-    private List<BookDto> getAllBooks() {
-        var strBooks = this.mockMvc.perform(get("/book"))
-                .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$").isArray())
+    private List<BookDto> validateResponseAndGetBooks(
+            @NotNull MockHttpServletRequestBuilder builder,
+            int expectedSize,
+            boolean last,
+            int totalPages,
+            int offset,
+            boolean first,
+            int number
+    ) {
+        var mockMvcResult = this.mockMvc.perform(builder)
+                .andExpectAll(
+                        status().isOk(),
+                        header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
+                        jsonPath("$", notNullValue()),
+                        jsonPath("$.content").isArray(),
+                        jsonPath("$.pageable", notNullValue()),
+                        jsonPath("$.pageable.sort.empty").value(false),
+                        jsonPath("$.pageable.sort.sorted").value(true),
+                        jsonPath("$.pageable.sort.unsorted").value(false),
+                        jsonPath("$.pageable.offset").value(offset),
+                        jsonPath("$.pageable.pageNumber").value(number),
+                        jsonPath("$.pageable.pageSize").value(TEST_PAGE_SIZE),
+                        jsonPath("$.pageable.paged").value(true),
+                        jsonPath("$.pageable.unpaged").value(false),
+                        jsonPath("$.totalPages").value(totalPages),
+                        jsonPath("$.totalElements").value(expectedSize),
+                        jsonPath("$.first").value(first),
+                        jsonPath("$.last").value(last),
+                        jsonPath("$.size").value(TEST_PAGE_SIZE),
+                        jsonPath("$.empty").value(false),
+                        jsonPath("$.sort", notNullValue()),
+                        jsonPath("$.sort.empty").value(false),
+                        jsonPath("$.sort.sorted").value(true),
+                        jsonPath("$.sort.unsorted").value(false),
+                        jsonPath("$.number").value(number),
+                        jsonPath("$.numberOfElements").value(TEST_PAGE_SIZE)
+                )
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        var arrayBooks = this.objectMapper.readValue(strBooks, BookDto[].class);
-        return Arrays.asList(arrayBooks);
+        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithBookContent.class)
+                .content();
     }
 
     @SneakyThrows

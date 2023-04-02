@@ -1,23 +1,23 @@
 package mr.cookie.spring6udemy.services;
 
-import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.repository.CrudRepository;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
+
+    private final int defaultPageSize;
 
     @NotNull
     private final BookMapper bookMapper;
@@ -25,13 +25,22 @@ public class BookServiceImpl implements BookService {
     @NotNull
     private final BookRepository bookRepository;
 
+    public BookServiceImpl(
+            @Value("${app.pagination.default-page-size:25}") int defaultPageSize,
+            @NotNull BookMapper bookMapper,
+            @NotNull BookRepository bookRepository
+    ) {
+        this.defaultPageSize = validateDefaultPageSize(defaultPageSize);
+        this.bookMapper = bookMapper;
+        this.bookRepository = bookRepository;
+    }
+
     @NotNull
     @Override
-    public List<BookDto> findAll() {
-        return Optional.of(this.bookRepository)
-                .map(CrudRepository::findAll)
-                .map(this.bookMapper::mapToModel)
-                .orElse(Collections.emptyList());
+    public Page<BookDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
+        var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
+        return this.bookRepository.findAll(pageRequest)
+                .map(this.bookMapper::map);
     }
 
     @Override

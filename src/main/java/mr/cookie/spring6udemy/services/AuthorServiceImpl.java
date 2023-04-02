@@ -1,23 +1,23 @@
 package mr.cookie.spring6udemy.services;
 
-import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.repository.CrudRepository;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class AuthorServiceImpl implements AuthorService {
+
+    private final int defaultPageSize;
 
     @NotNull
     private final AuthorMapper authorMapper;
@@ -25,13 +25,21 @@ public class AuthorServiceImpl implements AuthorService {
     @NotNull
     private final AuthorRepository authorRepository;
 
+    public AuthorServiceImpl(
+            @Value("${app.pagination.default-page-size:25}") int defaultPageSize,
+            @NotNull AuthorMapper authorMapper,
+            @NotNull AuthorRepository authorRepository) {
+        this.defaultPageSize = validateDefaultPageSize(defaultPageSize);
+        this.authorMapper = authorMapper;
+        this.authorRepository = authorRepository;
+    }
+
     @NotNull
     @Override
-    public List<AuthorDto> findAll() {
-        return Optional.of(this.authorRepository)
-                .map(CrudRepository::findAll)
-                .map(this.authorMapper::mapToModel)
-                .orElse(Collections.emptyList());
+    public Page<AuthorDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
+        var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
+        return this.authorRepository.findAll(pageRequest)
+                .map(this.authorMapper::map);
     }
 
     @Override

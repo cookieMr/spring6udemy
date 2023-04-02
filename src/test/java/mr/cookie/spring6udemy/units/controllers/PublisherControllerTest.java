@@ -10,8 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,15 +39,17 @@ class PublisherControllerTest {
 
     @Test
     void shouldGetAllPublishers() {
-        when(this.publisherService.findAll()).thenReturn(Collections.singletonList(PUBLISHER_DTO));
+        var pagePublisher = new PageImpl<>(List.of(PUBLISHER_DTO));
 
-        var result = this.publisherController.getAllPublishers();
+        when(this.publisherService.findAll(null, null))
+                .thenReturn(pagePublisher);
+
+        var result = this.publisherController.getAllPublishers(null, null);
 
         assertThat(result)
-                .isNotNull()
-                .containsOnly(PUBLISHER_DTO);
+                .isSameAs(pagePublisher);
 
-        verify(this.publisherService).findAll();
+        verify(this.publisherService).findAll(null, null);
         verifyNoMoreInteractions(this.publisherService);
     }
 

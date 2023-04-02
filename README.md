@@ -54,8 +54,8 @@ curl -f http://localhost:8080/api/actuator/health && echo -e
 ```
 
 ## Useful Internal Links
-* [H2 Console](http://localhost:8080/h2-console)
-* [Swagger - OpenAPI v3](http://localhost:8080/api/swagger-ui/index.html)
+* [H2 Console](http://[::1]:8080/h2-console) (available only with H2, by default config points to MySQL)
+* [Swagger - OpenAPI v3](http://[::1]:8080/api/swagger-ui/index.html)
 
 ## Useful External Links
 * [Set up VS Code for Java + Spring projects](https://www.youtube.com/watch?v=rsr6X5M6-6M)

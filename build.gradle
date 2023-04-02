@@ -29,6 +29,7 @@ ext {
     mysqlConnectorVersion = "8.0.32"
     snakeyamlVersion = "2.0"
     springDocVersion = "2.0.4"
+    springFrameworkVersion = "6.0.7"
 }
 
 dependencies {
@@ -44,6 +45,8 @@ dependencies {
 
     // transitive dep
     implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
+    implementation "org.springframework:spring-expression:${springFrameworkVersion}"
+    implementation "org.springframework:spring-webmvc:${springFrameworkVersion}"
 
     runtimeOnly "com.h2database:h2"
 

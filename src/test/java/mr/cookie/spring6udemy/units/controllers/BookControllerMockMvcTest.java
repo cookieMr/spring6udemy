@@ -6,24 +6,26 @@ import mr.cookie.spring6udemy.controllers.BookController;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
-import org.hamcrest.core.Is;
+import mr.cookie.spring6udemy.services.utils.MvcResponseWithBookContent;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -60,15 +62,16 @@ class BookControllerMockMvcTest {
 
     @Test
     void shouldGetAllBooks() {
-        given(this.bookService.findAll()).willReturn(Collections.singletonList(BOOK_DTO));
+        given(this.bookService.findAll(anyInt(), anyInt()))
+                .willReturn(new PageImpl<>(List.of(BOOK_DTO)));
 
-        var result = this.getAllBooks();
+        var result = this.getAllBooks(1);
 
         assertThat(result)
                 .isNotNull()
                 .containsOnly(BOOK_DTO);
 
-        verify(this.bookService).findAll();
+        verify(this.bookService).findAll(0, 13);
         verifyNoMoreInteractions(this.bookService);
     }
 
@@ -158,18 +161,33 @@ class BookControllerMockMvcTest {
 
     @SneakyThrows
     @NotNull
-    private List<BookDto> getAllBooks() {
-        var strBooks = this.mockMvc.perform(get("/book"))
-                .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()", Is.is(1)))
+    private List<BookDto> getAllBooks(int expectedSize) {
+        var mockMvcResult = this.mockMvc.perform(get("/book")
+                        .param("pageNumber", "0")
+                        .param("pageSize", "13")
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
+                        jsonPath("$", notNullValue()),
+                        jsonPath("$.content").isArray(),
+                        jsonPath("$.pageable").value(Pageable.unpaged().toString()),
+                        jsonPath("$.totalPages").value(1),
+                        jsonPath("$.totalElements").value(expectedSize),
+                        jsonPath("$.first").value(true),
+                        jsonPath("$.last").value(true),
+                        jsonPath("$.size").value(expectedSize),
+                        jsonPath("$.empty").value(false),
+                        jsonPath("$.sort", notNullValue()),
+                        jsonPath("$.number").value(0),
+                        jsonPath("$.numberOfElements").value(expectedSize)
+                )
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        var arrayBooks = this.objectMapper.readValue(strBooks, BookDto[].class);
-        return Arrays.asList(arrayBooks);
+        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithBookContent.class)
+                .content();
     }
 
     @SneakyThrows
