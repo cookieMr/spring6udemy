@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.units.services;
 
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
+import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -47,7 +50,7 @@ class AuthorServiceImplTest {
     @Captor
     private ArgumentCaptor<AuthorEntity> authorDtoArgumentCaptor;
 
-    private AuthorMapperImpl authorMapper;
+    private AuthorMapper authorMapper;
     private AuthorRepository authorRepository;
     private AuthorServiceImpl authorService;
 
@@ -65,6 +68,15 @@ class AuthorServiceImplTest {
     @AfterEach
     void cleanUp() {
         reset(this.authorRepository, this.authorMapper);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -42})
+    void shouldFailInitializationWithInvalidPageSize(int invalidPageSize) {
+        assertThatThrownBy(() -> new AuthorServiceImpl(invalidPageSize, this.authorMapper, this.authorRepository))
+                .isNotNull()
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The default pageSize should be greater than zero.");
     }
 
     @Test

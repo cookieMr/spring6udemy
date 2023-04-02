@@ -11,6 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,6 +69,15 @@ class BookServiceImplTest {
     @AfterEach
     void cleanUp() {
         reset(this.bookRepository, this.bookMapper);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -42})
+    void shouldFailInitializationWithInvalidPageSize(int invalidPageSize) {
+        assertThatThrownBy(() -> new BookServiceImpl(invalidPageSize, this.bookMapper, this.bookRepository))
+                .isNotNull()
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The default pageSize should be greater than zero.");
     }
 
     @Test
