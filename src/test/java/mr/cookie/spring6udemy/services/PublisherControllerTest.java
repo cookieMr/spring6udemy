@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -101,6 +102,27 @@ class PublisherControllerTest {
         assertThat(result)
                 .isNotNull()
                 .containsAll(createdPublishers.subList(0, TEST_PAGE_SIZE));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetSecondPageOfPublishers() {
+        var createdPublishers = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+                        .name(RandomStringUtils.randomAlphabetic(25))
+                        .address(RandomStringUtils.randomAlphabetic(25))
+                        .state(RandomStringUtils.randomAlphabetic(25))
+                        .city(RandomStringUtils.randomAlphabetic(25))
+                        .zipCode(RandomStringUtils.randomAlphabetic(25))
+                        .build())
+                .map(this::createPublisher)
+                .toList();
+
+        var result = this.getSecondPageOPublishers(createdPublishers.size(), false, 3);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdPublishers.subList(TEST_PAGE_SIZE, TEST_PAGE_SIZE));
     }
 
     @Test
@@ -232,10 +254,32 @@ class PublisherControllerTest {
         this.deletePublisherAndExpect404(publisherId);
     }
 
-    @SneakyThrows
     @NotNull
     private List<PublisherDto> getAllPublishers(int expectedSize, boolean last, int totalPages) {
-        var mockMvcResult = this.mockMvc.perform(get("/publisher"))
+        return validateResponseAndGetPublishers(
+                get("/publisher"), expectedSize, last, totalPages, 0, true, 0
+        );
+    }
+
+    @NotNull
+    private List<PublisherDto> getSecondPageOPublishers(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetPublishers(
+                get("/publisher").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
+        );
+    }
+
+    @SneakyThrows
+    @NotNull
+    private List<PublisherDto> validateResponseAndGetPublishers(
+            @NotNull MockHttpServletRequestBuilder builder,
+            int expectedSize,
+            boolean last,
+            int totalPages,
+            int offset,
+            boolean first,
+            int number
+    ) {
+        var mockMvcResult = this.mockMvc.perform(builder)
                 .andExpectAll(
                         status().isOk(),
                         header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
@@ -245,14 +289,14 @@ class PublisherControllerTest {
                         jsonPath("$.pageable.sort.empty").value(false),
                         jsonPath("$.pageable.sort.sorted").value(true),
                         jsonPath("$.pageable.sort.unsorted").value(false),
-                        jsonPath("$.pageable.offset").value(0),
-                        jsonPath("$.pageable.pageNumber").value(0),
+                        jsonPath("$.pageable.offset").value(offset),
+                        jsonPath("$.pageable.pageNumber").value(number),
                         jsonPath("$.pageable.pageSize").value(TEST_PAGE_SIZE),
                         jsonPath("$.pageable.paged").value(true),
                         jsonPath("$.pageable.unpaged").value(false),
                         jsonPath("$.totalPages").value(totalPages),
                         jsonPath("$.totalElements").value(expectedSize),
-                        jsonPath("$.first").value(true),
+                        jsonPath("$.first").value(first),
                         jsonPath("$.last").value(last),
                         jsonPath("$.size").value(TEST_PAGE_SIZE),
                         jsonPath("$.empty").value(false),
@@ -260,7 +304,7 @@ class PublisherControllerTest {
                         jsonPath("$.sort.empty").value(false),
                         jsonPath("$.sort.sorted").value(true),
                         jsonPath("$.sort.unsorted").value(false),
-                        jsonPath("$.number").value(0),
+                        jsonPath("$.number").value(number),
                         jsonPath("$.numberOfElements").value(TEST_PAGE_SIZE)
                 )
                 .andReturn()

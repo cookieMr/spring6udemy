@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -100,6 +101,27 @@ class BookControllerTest {
         assertThat(result)
                 .isNotNull()
                 .containsAll(createdBooks.subList(0, TEST_PAGE_SIZE));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void shouldGetSecondPageOfBooks() {
+        var createdBooks = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
+                        .build())
+                .map(this::createBook)
+                .toList();
+
+        var result = this.getSecondPageOfBooks(createdBooks.size(), false, 3);
+
+        assertThat(result)
+                .isNotNull()
+                .containsAll(createdBooks.subList(TEST_PAGE_SIZE, TEST_PAGE_SIZE));
     }
 
     @Test
@@ -216,10 +238,32 @@ class BookControllerTest {
         this.deleteBookAndExpect404(bookId);
     }
 
-    @SneakyThrows
     @NotNull
     private List<BookDto> getAllBooks(int expectedSize, boolean last, int totalPages) {
-        var mockMvcResult = this.mockMvc.perform(get("/book"))
+        return validateResponseAndGetBooks(
+                get("/book"), expectedSize, last, totalPages, 0, true, 0
+        );
+    }
+
+    @NotNull
+    private List<BookDto> getSecondPageOfBooks(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetBooks(
+                get("/book").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
+        );
+    }
+
+    @SneakyThrows
+    @NotNull
+    private List<BookDto> validateResponseAndGetBooks(
+            @NotNull MockHttpServletRequestBuilder builder,
+            int expectedSize,
+            boolean last,
+            int totalPages,
+            int offset,
+            boolean first,
+            int number
+    ) {
+        var mockMvcResult = this.mockMvc.perform(builder)
                 .andExpectAll(
                         status().isOk(),
                         header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
@@ -229,14 +273,14 @@ class BookControllerTest {
                         jsonPath("$.pageable.sort.empty").value(false),
                         jsonPath("$.pageable.sort.sorted").value(true),
                         jsonPath("$.pageable.sort.unsorted").value(false),
-                        jsonPath("$.pageable.offset").value(0),
-                        jsonPath("$.pageable.pageNumber").value(0),
+                        jsonPath("$.pageable.offset").value(offset),
+                        jsonPath("$.pageable.pageNumber").value(number),
                         jsonPath("$.pageable.pageSize").value(TEST_PAGE_SIZE),
                         jsonPath("$.pageable.paged").value(true),
                         jsonPath("$.pageable.unpaged").value(false),
                         jsonPath("$.totalPages").value(totalPages),
                         jsonPath("$.totalElements").value(expectedSize),
-                        jsonPath("$.first").value(true),
+                        jsonPath("$.first").value(first),
                         jsonPath("$.last").value(last),
                         jsonPath("$.size").value(TEST_PAGE_SIZE),
                         jsonPath("$.empty").value(false),
@@ -244,7 +288,7 @@ class BookControllerTest {
                         jsonPath("$.sort.empty").value(false),
                         jsonPath("$.sort.sorted").value(true),
                         jsonPath("$.sort.unsorted").value(false),
-                        jsonPath("$.number").value(0),
+                        jsonPath("$.number").value(number),
                         jsonPath("$.numberOfElements").value(TEST_PAGE_SIZE)
                 )
                 .andReturn()
