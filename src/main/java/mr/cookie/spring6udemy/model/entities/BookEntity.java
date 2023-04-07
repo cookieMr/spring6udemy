@@ -66,9 +66,11 @@ public class BookEntity {
     private PublisherEntity publisher;
 
     @Version
+    @Column(nullable = false)
     private Integer version;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
