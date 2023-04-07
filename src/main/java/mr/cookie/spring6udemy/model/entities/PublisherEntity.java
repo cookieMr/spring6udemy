@@ -67,9 +67,11 @@ public class PublisherEntity {
     private Set<BookEntity> books = new HashSet<>();
 
     @Version
+    @Column(nullable = false)
     private Integer version;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
