@@ -36,6 +36,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @NotNull
     @Override
+    @Transactional(readOnly = true)
     public Page<AuthorDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
         var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
         return this.authorRepository.findAll(pageRequest)
@@ -43,6 +44,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<AuthorDto> findById(@NotNull UUID id) {
         return this.authorRepository.findById(id)
                 .map(this.authorMapper::map);
