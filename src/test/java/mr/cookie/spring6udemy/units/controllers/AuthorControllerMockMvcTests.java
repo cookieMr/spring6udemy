@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SuppressWarnings("SameParameterValue")
 @WebMvcTest(AuthorController.class)
-class AuthorControllerMockMvcTest {
+class AuthorControllerMockMvcTests {
 
     private static final UUID AUTHOR_ID = UUID.randomUUID();
     private static final AuthorDto AUTHOR_DTO = AuthorDto.builder()

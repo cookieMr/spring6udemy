@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
-class PublisherRepositoryTest {
+class PublisherRepositoryTests {
 
     private static final Supplier<PublisherEntity> PUBLISHER_SUPPLIER = () -> PublisherEntity.builder()
             .name("DragonSteel Books")

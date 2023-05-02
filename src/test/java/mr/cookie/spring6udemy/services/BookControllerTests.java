@@ -2,9 +2,9 @@ package mr.cookie.spring6udemy.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import mr.cookie.spring6udemy.model.dtos.AuthorDto;
+import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.utils.Constant;
-import mr.cookie.spring6udemy.services.utils.MvcResponseWithAuthorContent;
+import mr.cookie.spring6udemy.services.utils.MvcResponseWithBookContent;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -41,16 +41,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SuppressWarnings("SameParameterValue")
 @SpringBootTest(
-        properties = "app.pagination.default-page-size=" + AuthorControllerTest.TEST_PAGE_SIZE
+        properties = "app.pagination.default-page-size=" + BookControllerTests.TEST_PAGE_SIZE
 )
 @AutoConfigureMockMvc
-class AuthorControllerTest {
+class BookControllerTests {
 
-    public static final int TEST_PAGE_SIZE = 13;
+    public static final int TEST_PAGE_SIZE = 7;
 
-    private static final Supplier<AuthorDto> AUTHOR_DTO_SUPPLIER = () -> AuthorDto.builder()
-            .firstName("JRR")
-            .lastName("Tolkien")
+    private static final Supplier<BookDto> BOOK_DTO_SUPPLIER = () -> BookDto.builder()
+            .title("Warbreaker")
+            .isbn("978-0765360038")
             .build();
 
     @NotNull
@@ -64,113 +64,124 @@ class AuthorControllerTest {
     @Test
     @Rollback
     @Transactional
-    void shouldGetAllAuthors() {
-        var createdAuthors = IntStream.range(0, TEST_PAGE_SIZE).mapToObj($ -> AuthorDto.builder()
-                        .firstName(RandomStringUtils.randomAlphabetic(25))
-                        .lastName(RandomStringUtils.randomAlphabetic(25))
+    void shouldGetAllBooks() {
+        var createdBooks = IntStream.range(0, TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
                         .build())
-                .map(this::createAuthor)
+                .map(this::createBook)
                 .toList();
 
-        var result = this.getAllAuthors(TEST_PAGE_SIZE, true, 1);
+        var result = this.getAllBooks(TEST_PAGE_SIZE, true, 1);
 
         assertThat(result)
                 .isNotNull()
-                .containsAll(createdAuthors);
+                .containsAll(createdBooks);
     }
 
     @Test
     @Rollback
     @Transactional
-    void shouldGetFirstPageOfAuthors() {
-        var createdAuthors = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> AuthorDto.builder()
-                        .firstName(RandomStringUtils.randomAlphabetic(25))
-                        .lastName(RandomStringUtils.randomAlphabetic(25))
+    void shouldGetFirstPageOfBooks() {
+        var createdBooks = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
                         .build())
-                .map(this::createAuthor)
+                .map(this::createBook)
                 .toList();
 
-        var result = this.getAllAuthors(createdAuthors.size(), false, 2);
+        var result = this.getAllBooks(createdBooks.size(), false, 2);
 
         assertThat(result)
                 .isNotNull()
-                .containsAll(createdAuthors.subList(0, TEST_PAGE_SIZE));
+                .containsAll(createdBooks.subList(0, TEST_PAGE_SIZE));
     }
 
     @Test
     @Rollback
     @Transactional
-    void shouldGetSecondPageOfAuthors() {
-        var createdAuthors = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> AuthorDto.builder()
-                        .firstName(RandomStringUtils.randomAlphabetic(25))
-                        .lastName(RandomStringUtils.randomAlphabetic(25))
+    void shouldGetSecondPageOfBooks() {
+        var createdBooks = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> BookDto.builder()
+                        .title(RandomStringUtils.randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(
+                                RandomStringUtils.randomNumeric(3),
+                                RandomStringUtils.randomNumeric(10)
+                        ))
                         .build())
-                .map(this::createAuthor)
+                .map(this::createBook)
                 .toList();
 
-        var result = this.getSecondPageOfAuthors(createdAuthors.size(), false, 3);
+        var result = this.getSecondPageOfBooks(createdBooks.size(), false, 3);
 
         assertThat(result)
                 .isNotNull()
-                .containsAll(createdAuthors.subList(TEST_PAGE_SIZE, TEST_PAGE_SIZE));
+                .containsAll(createdBooks.subList(TEST_PAGE_SIZE, TEST_PAGE_SIZE));
     }
 
     @Test
     @Rollback
     @Transactional
-    void shouldCreateAndThenGetAuthorById() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+    void shouldCreateAndThenGetBookById() {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var authorId = this.createAuthor(authorDto).getId();
-        var result = this.getAuthorById(authorId);
+        var bookId = this.createBook(bookDto).getId();
+        var result = this.getBookById(bookId);
 
         assertThat(result)
                 .isNotNull()
-                .matches(dto -> authorId.equals(dto.getId()))
-                .returns(authorId, AuthorDto::getId)
-                .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
-                .returns(authorDto.getLastName(), AuthorDto::getLastName);
+                .matches(dto -> bookId.equals(dto.getId()))
+                .returns(bookDto.getTitle(), BookDto::getTitle)
+                .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
 
-    static Stream<Consumer<AuthorDto>> authorModifiers() {
+    static Stream<Consumer<BookDto>> bookModifiers() {
         return Stream.of(
-                author -> author.setFirstName(null),
-                author -> author.setFirstName(Constant.BLANK_STRING),
-                author -> author.setFirstName(RandomStringUtils.random(65)),
-                author -> author.setLastName(null),
-                author -> author.setLastName(Constant.BLANK_STRING),
-                author -> author.setLastName(RandomStringUtils.random(65))
+                book -> book.setTitle(null),
+                book -> book.setTitle(Constant.BLANK_STRING),
+                book -> book.setTitle(RandomStringUtils.random(129)),
+                book -> book.setIsbn(null),
+                book -> book.setIsbn(Constant.BLANK_STRING),
+                book -> book.setIsbn(RandomStringUtils.random(12)),
+                book -> book.setIsbn(RandomStringUtils.random(13)),
+                book -> book.setIsbn(RandomStringUtils.random(14)),
+                book -> book.setIsbn(RandomStringUtils.random(15))
         );
     }
 
     @ParameterizedTest
-    @MethodSource("authorModifiers")
-    void shouldFailToCreateAuthor(@NotNull Consumer<AuthorDto> authorModifier) {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        authorModifier.accept(authorDto);
+    @MethodSource("bookModifiers")
+    void shouldFailToCreateBook(@NotNull Consumer<BookDto> bookModifier) {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        bookModifier.accept(bookDto);
 
-        this.createAuthorAndExpect400(authorDto);
+        this.createBookAndExpect400(bookDto);
     }
 
     @Test
-    void shouldReturn404WhenAuthorIsNotFound() {
-        var authorId = UUID.randomUUID();
-        this.getAuthorByIdAndExpect404(authorId);
+    void shouldReturn404WhenBookIsNotFound() {
+        var bookId = UUID.randomUUID();
+        this.getBookByIdAndExpect404(bookId);
     }
 
     @Test
     @Rollback
     @Transactional
-    void shouldCreateAuthor() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+    void shouldCreateBook() {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var result = this.createAuthor(authorDto);
+        var result = this.createBook(bookDto);
 
         assertThat(result).isNotNull();
         assertAll(
                 () -> assertThat(result)
-                        .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
-                        .returns(authorDto.getLastName(), AuthorDto::getLastName),
+                        .returns(bookDto.getTitle(), BookDto::getTitle)
+                        .returns(bookDto.getIsbn(), BookDto::getIsbn),
                 () -> assertThat(result.getId())
                         .isNotNull()
         );
@@ -179,69 +190,71 @@ class AuthorControllerTest {
     @Test
     @Rollback
     @Transactional
-    void shouldUpdateAuthor() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var createdAuthor = this.createAuthor(authorDto);
+    void shouldUpdateBook() {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        var createdBook = this.createBook(bookDto);
 
-        var result = this.updateAuthor(createdAuthor);
+        var result = this.updateBook(createdBook);
 
         assertThat(result)
                 .isNotNull()
-                .matches(dto -> dto.getId().equals(createdAuthor.getId()))
-                .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
-                .returns(authorDto.getLastName(), AuthorDto::getLastName);
+                .matches(dto -> dto.getId().equals(createdBook.getId()))
+                .returns(bookDto.getTitle(), BookDto::getTitle)
+                .returns(bookDto.getIsbn(), BookDto::getIsbn);
     }
 
+    @Rollback
+    @Transactional
     @ParameterizedTest
-    @MethodSource("authorModifiers")
-    void shouldFailToUpdateAuthor(@NotNull Consumer<AuthorDto> authorModifier) {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var createdAuthor = this.createAuthor(authorDto);
-        authorModifier.accept(createdAuthor);
+    @MethodSource("bookModifiers")
+    void shouldFailToUpdateBook(@NotNull Consumer<BookDto> bookModifier) {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        var createdBook = this.createBook(bookDto);
+        bookModifier.accept(createdBook);
 
-        this.updateAuthorAndExpect400(createdAuthor);
+        this.updateBookAndExpect400(createdBook);
     }
 
     @Test
-    void shouldReturn404WhenUpdatingAuthorIsNotFound() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var authorId = UUID.randomUUID();
-        this.updateAuthorAndExpect404(authorId, authorDto);
+    void shouldReturn404WhenUpdatingBookIsNotFound() {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
+        var bookId = UUID.randomUUID();
+        this.updateBookAndExpect404(bookId, bookDto);
     }
 
     @Test
     @Rollback
     @Transactional
-    void shouldDeleteExistingAuthor() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+    void shouldDeleteExistingBook() {
+        var bookDto = BOOK_DTO_SUPPLIER.get();
 
-        var authorId = this.createAuthor(authorDto).getId();
-        this.deleteAuthorById(authorId);
+        var bookId = this.createBook(bookDto).getId();
+        this.deleteBookById(bookId);
     }
 
     @Test
-    void shouldReturn404WhenDeletingAuthorIsNotFound() {
-        var authorId = UUID.randomUUID();
-        this.deleteAuthorAndExpect404(authorId);
+    void shouldReturn404WhenDeletingBookIsNotFound() {
+        var bookId = UUID.randomUUID();
+        this.deleteBookAndExpect404(bookId);
     }
 
     @NotNull
-    private List<AuthorDto> getAllAuthors(int expectedSize, boolean last, int totalPages) {
-        return validateResponseAndGetAuthors(
-                get("/author"), expectedSize, last, totalPages, 0, true, 0
+    private List<BookDto> getAllBooks(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetBooks(
+                get("/book"), expectedSize, last, totalPages, 0, true, 0
         );
     }
 
     @NotNull
-    private List<AuthorDto> getSecondPageOfAuthors(int expectedSize, boolean last, int totalPages) {
-        return validateResponseAndGetAuthors(
-                get("/author").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
+    private List<BookDto> getSecondPageOfBooks(int expectedSize, boolean last, int totalPages) {
+        return validateResponseAndGetBooks(
+                get("/book").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
         );
     }
 
     @SneakyThrows
     @NotNull
-    private List<AuthorDto> validateResponseAndGetAuthors(
+    private List<BookDto> validateResponseAndGetBooks(
             @NotNull MockHttpServletRequestBuilder builder,
             int expectedSize,
             boolean last,
@@ -282,111 +295,111 @@ class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithAuthorContent.class)
+        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithBookContent.class)
                 .content();
     }
 
     @SneakyThrows
     @NotNull
-    private AuthorDto createAuthor(@NotNull AuthorDto authorDto) {
-        var strAuthor = this.mockMvc.perform(post("/author")
+    private BookDto createBook(@NotNull BookDto bookDto) {
+        var strBook = this.mockMvc.perform(post("/book")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.firstName").value(authorDto.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(authorDto.getLastName()))
+                .andExpect(jsonPath("$.title").value(bookDto.getTitle()))
+                .andExpect(jsonPath("$.isbn").value(bookDto.getIsbn()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
-    private void createAuthorAndExpect400(@NotNull AuthorDto authorDto) {
-        this.mockMvc.perform(post("/author")
+    private void createBookAndExpect400(@NotNull BookDto bookDto) {
+        this.mockMvc.perform(post("/book")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows
     @NotNull
-    private AuthorDto getAuthorById(@NotNull UUID authorId) {
-        var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
+    private BookDto getBookById(@NotNull UUID bookId) {
+        var strBook = this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").value(authorId.toString()))
+                .andExpect(jsonPath("$.id").value(bookId.toString()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
-    private void getAuthorByIdAndExpect404(@NotNull UUID authorId) {
-        this.mockMvc.perform(get("/author/{id}", authorId))
+    private void getBookByIdAndExpect404(@NotNull UUID bookId) {
+        this.mockMvc.perform(get("/book/{id}", bookId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
-    private AuthorDto updateAuthor(@NotNull AuthorDto authorDto) {
-        var strAuthor = this.mockMvc.perform(put("/author/{id}", authorDto.getId())
+    private BookDto updateBook(@NotNull BookDto bookDto) {
+        var strBook = this.mockMvc.perform(put("/book/{id}", bookDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").value(authorDto.getId().toString()))
-                .andExpect(jsonPath("$.firstName").value(authorDto.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(authorDto.getLastName()))
+                .andExpect(jsonPath("$.id").value(bookDto.getId().toString()))
+                .andExpect(jsonPath("$.title").value(bookDto.getTitle()))
+                .andExpect(jsonPath("$.isbn").value(bookDto.getIsbn()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+        return this.objectMapper.readValue(strBook, BookDto.class);
     }
 
     @SneakyThrows
-    private void updateAuthorAndExpect400(@NotNull AuthorDto authorDto) {
-        this.mockMvc.perform(put("/author/{id}", authorDto.getId())
+    private void updateBookAndExpect400(@NotNull BookDto bookDto) {
+        this.mockMvc.perform(put("/book/{id}", bookDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows
-    private void updateAuthorAndExpect404(@NotNull UUID authorId, @NotNull AuthorDto authorDto) {
-        this.mockMvc.perform(put("/author/{id}", authorId)
+    private void updateBookAndExpect404(@NotNull UUID bookId, @NotNull BookDto bookDto) {
+        this.mockMvc.perform(put("/book/{id}", bookId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(this.objectMapper.writeValueAsString(bookDto))
                 )
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
-    private void deleteAuthorById(@NotNull UUID authorId) {
-        this.mockMvc.perform(delete("/author/{id}", authorId))
+    private void deleteBookById(@NotNull UUID bookId) {
+        this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
-    private void deleteAuthorAndExpect404(@NotNull UUID authorId) {
-        this.mockMvc.perform(delete("/author/{id}", authorId))
+    private void deleteBookAndExpect404(@NotNull UUID bookId) {
+        this.mockMvc.perform(delete("/book/{id}", bookId))
                 .andExpect(status().isNotFound());
     }
 

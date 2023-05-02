@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AuthorServiceImplTest {
+class AuthorServiceImplTests {
 
     private static final UUID AUTHOR_ID = UUID.randomUUID();
     private static final AuthorDto AUTHOR_DTO = AuthorDto.builder()

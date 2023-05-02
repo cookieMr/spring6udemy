@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-class BookEntityTest {
+class BookEntityTests {
 
     @Test
     void booksWithDifferentIdsAndTheSameTitleHaveDifferentHashCode() {

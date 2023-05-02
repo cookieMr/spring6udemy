@@ -37,6 +37,7 @@ public class BookServiceImpl implements BookService {
 
     @NotNull
     @Override
+    @Transactional(readOnly = true)
     public Page<BookDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
         var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
         return this.bookRepository.findAll(pageRequest)
@@ -44,6 +45,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<BookDto> findById(@NotNull UUID id) {
         return this.bookRepository.findById(id)
                 .map(this.bookMapper::map);

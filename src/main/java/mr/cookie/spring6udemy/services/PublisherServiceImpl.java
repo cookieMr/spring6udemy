@@ -37,6 +37,7 @@ public class PublisherServiceImpl implements PublisherService {
 
     @NotNull
     @Override
+    @Transactional(readOnly = true)
     public Page<PublisherDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
         var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
         return this.publisherRepository.findAll(pageRequest)
@@ -44,6 +45,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<PublisherDto> findById(@NotNull UUID id) {
         return this.publisherRepository.findById(id)
                 .map(this.publisherMapper::map);

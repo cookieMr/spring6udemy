@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
-class BookRepositoryTest {
+class BookRepositoryTests {
 
     private static final Supplier<BookEntity> BOOK_SUPPLIER = () -> BookEntity.builder()
             .title("Warbreaker")

@@ -21,15 +21,15 @@ repositories {
 ext {
     apacheCollectionsVersion = "4.4"
     assertjVersion = "3.24.2"
-    checkstyleVersion = "0.0.35"
-    flywayVersion = "9.16.1"
+    checkstyleVersion = "0.0.38"
+    flywayVersion = "9.17.0"
     jetBrainsAnnotationVersion = "24.0.1"
     lombokVersion = "1.18.26"
-    mapStructVersion = "1.5.3.Final"
-    mysqlConnectorVersion = "8.0.32"
+    mapStructVersion = "1.5.5.Final"
+    mysqlConnectorVersion = "8.0.33"
     snakeyamlVersion = "2.0"
-    springDocVersion = "2.0.4"
-    springFrameworkVersion = "6.0.7"
+    springDocVersion = "2.1.0"
+    springFrameworkVersion = "6.0.8"
 }
 
 dependencies {
@@ -79,7 +79,7 @@ jacocoTestReport {
     }
 }
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "0.8.10"
 }
 
 sonarqube {
@@ -95,7 +95,7 @@ tasks.withType(Checkstyle).configureEach {
     exclude "**/sources/**"
 }
 checkstyle {
-    toolVersion '10.7.0'
+    toolVersion '10.10.0'
     configFile file("config/checkstyle/checkstyle.xml")
 }
 checkstyleMain {

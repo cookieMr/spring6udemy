@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SuppressWarnings("SameParameterValue")
 @SpringBootTest
 @AutoConfigureMockMvc
-class PublisherControllerTest {
+class PublisherControllerTests {
 
     private static final int TEST_PAGE_SIZE = 25;
 

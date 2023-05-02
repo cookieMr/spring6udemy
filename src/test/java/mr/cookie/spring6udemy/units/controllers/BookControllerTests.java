@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BookControllerTest {
+class BookControllerTests {
 
     private static final UUID BOOK_ID = UUID.randomUUID();
     private static final BookDto BOOK_DTO = BookDto.builder()
