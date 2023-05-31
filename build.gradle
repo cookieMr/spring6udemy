@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'org.springframework.boot' version '3.0.5'
+    id 'org.springframework.boot' version '3.0.7'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.sonarqube' version '4.0.0.2929'
     id 'io.freefair.lombok' version '8.0.1'
@@ -22,14 +22,14 @@ ext {
     apacheCollectionsVersion = "4.4"
     assertjVersion = "3.24.2"
     checkstyleVersion = "0.0.38"
-    flywayVersion = "9.17.0"
+    flywayVersion = "9.19.1"
     jetBrainsAnnotationVersion = "24.0.1"
-    lombokVersion = "1.18.26"
+    lombokVersion = "1.18.28"
     mapStructVersion = "1.5.5.Final"
     mysqlConnectorVersion = "8.0.33"
     snakeyamlVersion = "2.0"
     springDocVersion = "2.1.0"
-    springFrameworkVersion = "6.0.8"
+    springFrameworkVersion = "6.0.9"
 }
 
 dependencies {
