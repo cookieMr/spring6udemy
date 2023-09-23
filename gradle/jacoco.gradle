@@ -24,7 +24,7 @@ jacocoTestReport {
     }
 
     reports {
-        xml.enabled false
+        xml.enabled true
         csv.enabled false
         html.enabled true
         html.destination file("${buildDir}/reports/jacocoHtml")
@@ -34,6 +34,9 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+    check.dependsOn it
+    dependsOn jacocoTestReport
+
     executionData.setFrom fileTree(buildDir) {
         include '**/reports/jacoco/*.exec'
         exclude '**/jacoco/test.exec'
@@ -72,8 +75,6 @@ jacocoTestCoverageVerification {
             }
         }
     }
-
-    check.dependsOn it
 }
 
 [unitTest, integrationTest].each {
