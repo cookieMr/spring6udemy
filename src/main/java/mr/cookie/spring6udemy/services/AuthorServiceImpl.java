@@ -66,10 +66,9 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public AuthorDto update(@NotNull UUID id, @NotNull AuthorDto author) {
         var existingDto = authorRepository.findById(id)
-                .orElseThrow(NotFoundEntityException::new);
-
-        existingDto.setFirstName(author.getFirstName());
-        existingDto.setLastName(author.getLastName());
+                .orElseThrow(NotFoundEntityException::new)
+                .setFirstName(author.getFirstName())
+                .setLastName(author.getLastName());
 
         return Optional.of(existingDto)
                 .map(authorRepository::save)

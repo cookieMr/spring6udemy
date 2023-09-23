@@ -22,8 +22,8 @@ class BookEntityTest {
         var id = UUID.randomUUID();
 
         var book1 = buildBook(id);
-        var book2 = buildBook(id);
-        book2.setIsbn("1250899656");
+        var book2 = buildBook(id)
+                .setIsbn("1250899656");
 
         Assertions.assertThat(book1)
                 .hasSameHashCodeAs(book2);
@@ -43,8 +43,8 @@ class BookEntityTest {
         var id = UUID.randomUUID();
 
         var book1 = buildBook(id);
-        var book2 = buildBook(id);
-        book2.setIsbn("1250899656");
+        var book2 = buildBook(id)
+                .setIsbn("1250899656");
 
         Assertions.assertThat(book1)
                 .isEqualTo(book2);

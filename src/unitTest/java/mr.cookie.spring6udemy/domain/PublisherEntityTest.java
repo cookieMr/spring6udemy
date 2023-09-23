@@ -22,8 +22,8 @@ class PublisherEntityTest {
         var id = UUID.randomUUID();
 
         var publisher1 = buildPublisher(id);
-        var publisher2 = buildPublisher(id);
-        publisher2.setState("FL");
+        var publisher2 = buildPublisher(id)
+                .setState("FL");
 
         Assertions.assertThat(publisher1)
                 .hasSameHashCodeAs(publisher2);
@@ -43,8 +43,8 @@ class PublisherEntityTest {
         var id = UUID.randomUUID();
 
         var publisher1 = buildPublisher(id);
-        var publisher2 = buildPublisher(id);
-        publisher2.setState("FL");
+        var publisher2 = buildPublisher(id)
+                .setState("FL");
 
         Assertions.assertThat(publisher1)
                 .isEqualTo(publisher2);
