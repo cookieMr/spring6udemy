@@ -1,11 +1,10 @@
 package mr.cookie.spring6udemy.domain;
 
+import java.util.UUID;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 class PublisherEntityTest {
 

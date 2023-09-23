@@ -1,12 +1,11 @@
 package mr.cookie.spring6udemy.exceptions;
 
+import java.util.UUID;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.UUID;
 
 @ControllerAdvice
 @NoArgsConstructor

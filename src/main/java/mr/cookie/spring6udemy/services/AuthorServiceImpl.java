@@ -1,18 +1,17 @@
 package mr.cookie.spring6udemy.services;
 
-import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
-import mr.cookie.spring6udemy.model.dtos.AuthorDto;
-import mr.cookie.spring6udemy.repositories.AuthorRepository;
+import java.util.Optional;
+import java.util.UUID;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.model.dtos.AuthorDto;
+import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
+import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -38,16 +37,16 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     @Transactional(readOnly = true)
     public Page<AuthorDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
-        var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
-        return this.authorRepository.findAll(pageRequest)
-                .map(this.authorMapper::map);
+        var pageRequest = createPageRequest(pageNumber, pageSize, defaultPageSize);
+        return authorRepository.findAll(pageRequest)
+                .map(authorMapper::map);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<AuthorDto> findById(@NotNull UUID id) {
-        return this.authorRepository.findById(id)
-                .map(this.authorMapper::map);
+        return authorRepository.findById(id)
+                .map(authorMapper::map);
     }
 
     @NotNull
@@ -55,9 +54,9 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public AuthorDto create(@NotNull AuthorDto author) {
         return Optional.of(author)
-                .map(this.authorMapper::map)
-                .map(this.authorRepository::save)
-                .map(this.authorMapper::map)
+                .map(authorMapper::map)
+                .map(authorRepository::save)
+                .map(authorMapper::map)
                 .orElseThrow();
         // TODO: return conflict when publisher exists
     }
@@ -66,25 +65,25 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     @Transactional
     public AuthorDto update(@NotNull UUID id, @NotNull AuthorDto author) {
-        var existingDto = this.authorRepository.findById(id)
+        var existingDto = authorRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
         existingDto.setFirstName(author.getFirstName());
         existingDto.setLastName(author.getLastName());
 
         return Optional.of(existingDto)
-                .map(this.authorRepository::save)
-                .map(this.authorMapper::map)
+                .map(authorRepository::save)
+                .map(authorMapper::map)
                 .orElseThrow();
     }
 
     @Override
     @Transactional
     public boolean deleteById(@NotNull UUID id) {
-        var doesAuthorExist = this.authorRepository.existsById(id);
+        var doesAuthorExist = authorRepository.existsById(id);
 
         if (doesAuthorExist) {
-            this.authorRepository.deleteById(id);
+            authorRepository.deleteById(id);
         }
 
         return doesAuthorExist;

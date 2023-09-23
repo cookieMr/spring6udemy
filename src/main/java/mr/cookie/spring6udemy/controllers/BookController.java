@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("book")
@@ -74,7 +73,8 @@ public class BookController {
     @Operation(
             description = "Creates a new book and persists it.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Book was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "201",
+                            description = "Book was created and is returned in a response body."),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -92,7 +92,8 @@ public class BookController {
     @Operation(
             description = "Updates a book by ID.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Book was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "200",
+                            description = "Book was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }

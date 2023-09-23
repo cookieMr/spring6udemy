@@ -11,9 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles(profiles = {"test"})
 class Spring6WebAppApplicationTest {
 
-	@Test
-	void contextLoads(@NotNull ApplicationContext context) {
-		Assertions.assertThat(context).isNotNull();
-	}
+    @Test
+    void contextLoads(@NotNull ApplicationContext context) {
+        Assertions.assertThat(context).isNotNull();
+    }
 
 }

@@ -1,6 +1,24 @@
 package mr.cookie.spring6udemy.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import mr.cookie.spring6udemy.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
@@ -19,25 +37,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("SameParameterValue")
 @SpringBootTest
@@ -66,7 +65,7 @@ public class PublisherControllerTest {
     @Rollback
     @Transactional
     public void shouldGetAllPublishers() {
-        var createdPublishers = IntStream.range(0, TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+        var createdPublishers = IntStream.range(0, TEST_PAGE_SIZE).mapToObj(ignore -> PublisherDto.builder()
                         .name(RandomStringUtils.randomAlphabetic(25))
                         .address(RandomStringUtils.randomAlphabetic(25))
                         .state(RandomStringUtils.randomAlphabetic(25))
@@ -87,7 +86,7 @@ public class PublisherControllerTest {
     @Rollback
     @Transactional
     public void shouldGetFirstPageOfPublishers() {
-        var createdPublishers = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+        var createdPublishers = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj(ignore -> PublisherDto.builder()
                         .name(RandomStringUtils.randomAlphabetic(25))
                         .address(RandomStringUtils.randomAlphabetic(25))
                         .state(RandomStringUtils.randomAlphabetic(25))
@@ -108,7 +107,7 @@ public class PublisherControllerTest {
     @Rollback
     @Transactional
     public void shouldGetSecondPageOfPublishers() {
-        var createdPublishers = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj($ -> PublisherDto.builder()
+        var createdPublishers = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj(ignore -> PublisherDto.builder()
                         .name(RandomStringUtils.randomAlphabetic(25))
                         .address(RandomStringUtils.randomAlphabetic(25))
                         .state(RandomStringUtils.randomAlphabetic(25))
@@ -118,7 +117,7 @@ public class PublisherControllerTest {
                 .map(this::createPublisher)
                 .toList();
 
-        var result = this.getSecondPageOPublishers(createdPublishers.size(), false, 3);
+        var result = this.getSecondPageOfPublishers(createdPublishers.size(), false, 3);
 
         assertThat(result)
                 .isNotNull()
@@ -262,7 +261,7 @@ public class PublisherControllerTest {
     }
 
     @NotNull
-    private List<PublisherDto> getSecondPageOPublishers(int expectedSize, boolean last, int totalPages) {
+    private List<PublisherDto> getSecondPageOfPublishers(int expectedSize, boolean last, int totalPages) {
         return validateResponseAndGetPublishers(
                 get("/publisher").param("pageNumber", "1"), expectedSize, last, totalPages, TEST_PAGE_SIZE, false, 1
         );
