@@ -30,7 +30,7 @@ docker run --publish 3306:3306 \
   --health-retries 4 \
   --health-start-period 10s \
   --health-cmd 'mysqladmin ping mysql' \
-  --detach mysql:latest
+  --detach mysql:8.1.0
 ```
 
 ### Run Local App (with necessary dockers)
@@ -38,6 +38,7 @@ First of all run the local MySQL as a Docker Container.
 
 And then run the Gradle task:
 ```bash
+./gradlew clean build test check
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 
@@ -58,5 +59,4 @@ curl -f http://localhost:8080/api/actuator/health && echo -e
 * [Swagger - OpenAPI v3](http://[::1]:8080/api/swagger-ui/index.html)
 
 ## Useful External Links
-* [Set up VS Code for Java + Spring projects](https://www.youtube.com/watch?v=rsr6X5M6-6M)
 * [Lazydocker](https://github.com/jesseduffield/lazydocker)

@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -21,9 +20,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 @Getter
@@ -36,21 +35,20 @@ import org.hibernate.type.SqlTypes;
 public class BookEntity {
 
     @Id
-    @GeneratedValue(generator = Constant.UUID_NAME)
-    @GenericGenerator(name = Constant.UUID_NAME, strategy = Constant.UUID_GENERATOR_STRATEGY)
-    @JdbcTypeCode(SqlTypes.CHAR)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @UuidGenerator
     @Column(
-            columnDefinition = "varchar(36)", length = 36,
+            columnDefinition = "varchar", length = 36,
             unique = true, nullable = false, insertable = false, updatable = false
     )
     private UUID id;
 
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @Column(columnDefinition = "varchar(128)", length = 128, nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(columnDefinition = "varchar", length = 128, nullable = false)
     private String title;
 
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @Column(columnDefinition = "varchar(14)", length = 14, unique = true, nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(columnDefinition = "varchar", length = 14, unique = true, nullable = false)
     private String isbn;
 
     @ManyToMany
