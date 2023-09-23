@@ -28,6 +28,3 @@ tasks.register('integrationTest', Test) {
         events "skipped", "failed"
     }
 }
-
-test.dependsOn integrationTest
-jacocoTestReport.dependsOn integrationTest

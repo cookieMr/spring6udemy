@@ -1,0 +1,87 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.10'
+}
+
+tasks.withType(Test).each { testTask ->
+    testTask.jacoco {
+        enabled = testTask.name != 'test'
+        destinationFile = layout.buildDirectory
+                .file("reports/jacoco/${testTask.name}.exec")
+                .get()
+                .asFile
+    }
+}
+
+jacocoTestReport {
+    group = 'Reporting'
+    description = 'Generates a Combined Jacoco Code Coverage Report.'
+
+    executionData.setFrom fileTree(buildDir) {
+        include '**/reports/jacoco/*.exec'
+        exclude '**/jacoco/test.exec'
+    }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+        html.destination file("${buildDir}/reports/jacocoHtml")
+    }
+
+    dependsOn test
+}
+
+jacocoTestCoverageVerification {
+    executionData.setFrom fileTree(buildDir) {
+        include '**/reports/jacoco/*.exec'
+        exclude '**/jacoco/test.exec'
+    }
+
+    violationRules {
+        failOnViolation = true
+
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.5
+            }
+        }
+        rule {
+            limit {
+                counter = 'CLASS'
+                value = 'MISSEDCOUNT'
+                maximum = 0
+            }
+        }
+        rule {
+            element = 'METHOD'
+            limit {
+                counter = 'COMPLEXITY'
+                value = 'TOTALCOUNT'
+                maximum = 3
+            }
+        }
+    }
+
+    check.dependsOn it
+}
+
+[unitTest, integrationTest].each {
+    test.dependsOn it
+    jacocoTestReport.dependsOn it
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
