@@ -31,7 +31,7 @@ class AuthorRepositoryTest {
     void saveAuthor() {
         var author = AUTHOR_SUPPLIER.get();
 
-        var result = this.authorRepository.save(author);
+        var result = authorRepository.save(author);
 
         assertThat(result)
                 .isNotNull()
@@ -53,8 +53,8 @@ class AuthorRepositoryTest {
         var author = AUTHOR_SUPPLIER.get();
         authorModifier.accept(author);
 
-        this.authorRepository.save(author);
-        assertThatThrownBy(this.authorRepository::flush)
+        authorRepository.save(author);
+        assertThatThrownBy(authorRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessageContaining("could not execute statement [NULL not allowed for column");

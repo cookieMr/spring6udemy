@@ -75,7 +75,7 @@ public class PublisherControllerTest {
                 .map(this::createPublisher)
                 .toList();
 
-        var result = this.getAllPublishers(createdPublishers.size(), true, 1);
+        var result = getAllPublishers(createdPublishers.size(), true, 1);
 
         assertThat(result)
                 .isNotNull()
@@ -96,7 +96,7 @@ public class PublisherControllerTest {
                 .map(this::createPublisher)
                 .toList();
 
-        var result = this.getAllPublishers(createdPublishers.size(), false, 2);
+        var result = getAllPublishers(createdPublishers.size(), false, 2);
 
         assertThat(result)
                 .isNotNull()
@@ -117,7 +117,7 @@ public class PublisherControllerTest {
                 .map(this::createPublisher)
                 .toList();
 
-        var result = this.getSecondPageOfPublishers(createdPublishers.size(), false, 3);
+        var result = getSecondPageOfPublishers(createdPublishers.size(), false, 3);
 
         assertThat(result)
                 .isNotNull()
@@ -130,8 +130,8 @@ public class PublisherControllerTest {
     public void shouldCreateAndThenGetPublisherById() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var publisherId = this.createPublisher(publisherDto).getId();
-        var result = this.getPublisherById(publisherId);
+        var publisherId = createPublisher(publisherDto).getId();
+        var result = getPublisherById(publisherId);
 
         assertThat(result)
                 .isNotNull()
@@ -169,13 +169,13 @@ public class PublisherControllerTest {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
         publisherModifier.accept(publisherDto);
 
-        this.createPublisherAndExpect400(publisherDto);
+        createPublisherAndExpect400(publisherDto);
     }
 
     @Test
     void shouldReturn404WhenPublisherIsNotFound() {
         var publisherId = UUID.randomUUID();
-        this.getPublisherByIdAndExpect404(publisherId);
+        getPublisherByIdAndExpect404(publisherId);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class PublisherControllerTest {
     public void shouldCreatePublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var result = this.createPublisher(publisherDto);
+        var result = createPublisher(publisherDto);
 
         assertThat(result).isNotNull();
         assertAll(
@@ -204,9 +204,9 @@ public class PublisherControllerTest {
     @Transactional
     public void shouldUpdatePublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
-        var createdPublisher = this.createPublisher(publisherDto);
+        var createdPublisher = createPublisher(publisherDto);
 
-        var result = this.updatePublisher(createdPublisher);
+        var result = updatePublisher(createdPublisher);
 
         assertThat(result)
                 .isNotNull()
@@ -224,17 +224,17 @@ public class PublisherControllerTest {
     @MethodSource("publisherModifiers")
     public void shouldFailToUpdatePublisher(@NotNull Consumer<PublisherDto> publisherModifier) {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
-        var createdPublisher = this.createPublisher(publisherDto);
+        var createdPublisher = createPublisher(publisherDto);
         publisherModifier.accept(createdPublisher);
 
-        this.updatePublisherAndExpect400(createdPublisher);
+        updatePublisherAndExpect400(createdPublisher);
     }
 
     @Test
     void shouldReturn404WhenUpdatingPublisherIsNotFound() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
         var publisherId = UUID.randomUUID();
-        this.updatePublisherAndExpect404(publisherId, publisherDto);
+        updatePublisherAndExpect404(publisherId, publisherDto);
     }
 
     @Test
@@ -243,14 +243,14 @@ public class PublisherControllerTest {
     public void shouldDeleteExistingPublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
-        var publisherId = this.createPublisher(publisherDto).getId();
-        this.deletePublisherById(publisherId);
+        var publisherId = createPublisher(publisherDto).getId();
+        deletePublisherById(publisherId);
     }
 
     @Test
     void shouldReturn404WhenDeletingPublisherIsNotFound() {
         var publisherId = UUID.randomUUID();
-        this.deletePublisherAndExpect404(publisherId);
+        deletePublisherAndExpect404(publisherId);
     }
 
     @NotNull
@@ -278,7 +278,7 @@ public class PublisherControllerTest {
             boolean first,
             int number
     ) {
-        var mockMvcResult = this.mockMvc.perform(builder)
+        var mockMvcResult = mockMvc.perform(builder)
                 .andExpectAll(
                         status().isOk(),
                         header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
@@ -310,17 +310,17 @@ public class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithPublisherContent.class)
+        return objectMapper.readValue(mockMvcResult, MvcResponseWithPublisherContent.class)
                 .content();
     }
 
     @SneakyThrows
     @NotNull
     private PublisherDto createPublisher(@NotNull PublisherDto publisherDto) {
-        var strPublisher = this.mockMvc.perform(post("/publisher")
+        var strPublisher = mockMvc.perform(post("/publisher")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                        .content(objectMapper.writeValueAsString(publisherDto))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -334,15 +334,15 @@ public class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strPublisher, PublisherDto.class);
+        return objectMapper.readValue(strPublisher, PublisherDto.class);
     }
 
     @SneakyThrows
     private void createPublisherAndExpect400(@NotNull PublisherDto publisherDto) {
-        this.mockMvc.perform(post("/publisher")
+        mockMvc.perform(post("/publisher")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                        .content(objectMapper.writeValueAsString(publisherDto))
                 )
                 .andExpect(status().isBadRequest());
     }
@@ -350,7 +350,7 @@ public class PublisherControllerTest {
     @SneakyThrows
     @NotNull
     private PublisherDto getPublisherById(@NotNull UUID publisherId) {
-        var strPublisher = this.mockMvc.perform(get("/publisher/{id}", publisherId))
+        var strPublisher = mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
@@ -359,22 +359,22 @@ public class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strPublisher, PublisherDto.class);
+        return objectMapper.readValue(strPublisher, PublisherDto.class);
     }
 
     @SneakyThrows
     private void getPublisherByIdAndExpect404(@NotNull UUID publisherId) {
-        this.mockMvc.perform(get("/publisher/{id}", publisherId))
+        mockMvc.perform(get("/publisher/{id}", publisherId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
     private PublisherDto updatePublisher(@NotNull PublisherDto publisherDto) {
-        var strPublisher = this.mockMvc.perform(put("/publisher/{id}", publisherDto.getId())
+        var strPublisher = mockMvc.perform(put("/publisher/{id}", publisherDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                        .content(objectMapper.writeValueAsString(publisherDto))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -389,38 +389,38 @@ public class PublisherControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strPublisher, PublisherDto.class);
+        return objectMapper.readValue(strPublisher, PublisherDto.class);
     }
 
     @SneakyThrows
     private void updatePublisherAndExpect400(@NotNull PublisherDto publisherDto) {
-        this.mockMvc.perform(put("/publisher/{id}", publisherDto.getId())
+        mockMvc.perform(put("/publisher/{id}", publisherDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                        .content(objectMapper.writeValueAsString(publisherDto))
                 )
                 .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows
     private void updatePublisherAndExpect404(@NotNull UUID publisherId, @NotNull PublisherDto publisherDto) {
-        this.mockMvc.perform(put("/publisher/{id}", publisherId)
+        mockMvc.perform(put("/publisher/{id}", publisherId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(publisherDto))
+                        .content(objectMapper.writeValueAsString(publisherDto))
                 )
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     private void deletePublisherById(@NotNull UUID publisherId) {
-        this.mockMvc.perform(delete("/publisher/{id}", publisherId))
+        mockMvc.perform(delete("/publisher/{id}", publisherId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
     private void deletePublisherAndExpect404(@NotNull UUID publisherId) {
-        this.mockMvc.perform(delete("/publisher/{id}", publisherId))
+        mockMvc.perform(delete("/publisher/{id}", publisherId))
                 .andExpect(status().isNotFound());
     }
 

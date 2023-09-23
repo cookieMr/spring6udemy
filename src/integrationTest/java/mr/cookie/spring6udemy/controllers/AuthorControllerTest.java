@@ -71,7 +71,7 @@ public class AuthorControllerTest {
                 .map(this::createAuthor)
                 .toList();
 
-        var result = this.getAllAuthors(TEST_PAGE_SIZE, true, 1);
+        var result = getAllAuthors(TEST_PAGE_SIZE, true, 1);
 
         assertThat(result)
                 .isNotNull()
@@ -89,7 +89,7 @@ public class AuthorControllerTest {
                 .map(this::createAuthor)
                 .toList();
 
-        var result = this.getAllAuthors(createdAuthors.size(), false, 2);
+        var result = getAllAuthors(createdAuthors.size(), false, 2);
 
         assertThat(result)
                 .isNotNull()
@@ -107,7 +107,7 @@ public class AuthorControllerTest {
                 .map(this::createAuthor)
                 .toList();
 
-        var result = this.getSecondPageOfAuthors(createdAuthors.size(), false, 3);
+        var result = getSecondPageOfAuthors(createdAuthors.size(), false, 3);
 
         assertThat(result)
                 .isNotNull()
@@ -120,8 +120,8 @@ public class AuthorControllerTest {
     public void shouldCreateAndThenGetAuthorById() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
-        var authorId = this.createAuthor(authorDto).getId();
-        var result = this.getAuthorById(authorId);
+        var authorId = createAuthor(authorDto).getId();
+        var result = getAuthorById(authorId);
 
         assertThat(result)
                 .isNotNull()
@@ -148,13 +148,13 @@ public class AuthorControllerTest {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
         authorModifier.accept(authorDto);
 
-        this.createAuthorAndExpect400(authorDto);
+        createAuthorAndExpect400(authorDto);
     }
 
     @Test
     void shouldReturn404WhenAuthorIsNotFound() {
         var authorId = UUID.randomUUID();
-        this.getAuthorByIdAndExpect404(authorId);
+        getAuthorByIdAndExpect404(authorId);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class AuthorControllerTest {
     public void shouldCreateAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
-        var result = this.createAuthor(authorDto);
+        var result = createAuthor(authorDto);
 
         assertThat(result).isNotNull();
         assertAll(
@@ -180,9 +180,9 @@ public class AuthorControllerTest {
     @Transactional
     public void shouldUpdateAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var createdAuthor = this.createAuthor(authorDto);
+        var createdAuthor = createAuthor(authorDto);
 
-        var result = this.updateAuthor(createdAuthor);
+        var result = updateAuthor(createdAuthor);
 
         assertThat(result)
                 .isNotNull()
@@ -195,17 +195,17 @@ public class AuthorControllerTest {
     @MethodSource("authorModifiers")
     void shouldFailToUpdateAuthor(@NotNull Consumer<AuthorDto> authorModifier) {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
-        var createdAuthor = this.createAuthor(authorDto);
+        var createdAuthor = createAuthor(authorDto);
         authorModifier.accept(createdAuthor);
 
-        this.updateAuthorAndExpect400(createdAuthor);
+        updateAuthorAndExpect400(createdAuthor);
     }
 
     @Test
     void shouldReturn404WhenUpdatingAuthorIsNotFound() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
         var authorId = UUID.randomUUID();
-        this.updateAuthorAndExpect404(authorId, authorDto);
+        updateAuthorAndExpect404(authorId, authorDto);
     }
 
     @Test
@@ -214,14 +214,14 @@ public class AuthorControllerTest {
     public void shouldDeleteExistingAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
-        var authorId = this.createAuthor(authorDto).getId();
-        this.deleteAuthorById(authorId);
+        var authorId = createAuthor(authorDto).getId();
+        deleteAuthorById(authorId);
     }
 
     @Test
     void shouldReturn404WhenDeletingAuthorIsNotFound() {
         var authorId = UUID.randomUUID();
-        this.deleteAuthorAndExpect404(authorId);
+        deleteAuthorAndExpect404(authorId);
     }
 
     @NotNull
@@ -249,7 +249,7 @@ public class AuthorControllerTest {
             boolean first,
             int number
     ) {
-        var mockMvcResult = this.mockMvc.perform(builder)
+        var mockMvcResult = mockMvc.perform(builder)
                 .andExpectAll(
                         status().isOk(),
                         header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE),
@@ -281,17 +281,17 @@ public class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(mockMvcResult, MvcResponseWithAuthorContent.class)
+        return objectMapper.readValue(mockMvcResult, MvcResponseWithAuthorContent.class)
                 .content();
     }
 
     @SneakyThrows
     @NotNull
     private AuthorDto createAuthor(@NotNull AuthorDto authorDto) {
-        var strAuthor = this.mockMvc.perform(post("/author")
+        var strAuthor = mockMvc.perform(post("/author")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(objectMapper.writeValueAsString(authorDto))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -302,15 +302,15 @@ public class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+        return objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
     private void createAuthorAndExpect400(@NotNull AuthorDto authorDto) {
-        this.mockMvc.perform(post("/author")
+        mockMvc.perform(post("/author")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(objectMapper.writeValueAsString(authorDto))
                 )
                 .andExpect(status().isBadRequest());
     }
@@ -318,7 +318,7 @@ public class AuthorControllerTest {
     @SneakyThrows
     @NotNull
     private AuthorDto getAuthorById(@NotNull UUID authorId) {
-        var strAuthor = this.mockMvc.perform(get("/author/{id}", authorId))
+        var strAuthor = mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").exists())
@@ -327,22 +327,22 @@ public class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+        return objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
     private void getAuthorByIdAndExpect404(@NotNull UUID authorId) {
-        this.mockMvc.perform(get("/author/{id}", authorId))
+        mockMvc.perform(get("/author/{id}", authorId))
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     @NotNull
     private AuthorDto updateAuthor(@NotNull AuthorDto authorDto) {
-        var strAuthor = this.mockMvc.perform(put("/author/{id}", authorDto.getId())
+        var strAuthor = mockMvc.perform(put("/author/{id}", authorDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(objectMapper.writeValueAsString(authorDto))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -354,38 +354,38 @@ public class AuthorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        return this.objectMapper.readValue(strAuthor, AuthorDto.class);
+        return objectMapper.readValue(strAuthor, AuthorDto.class);
     }
 
     @SneakyThrows
     private void updateAuthorAndExpect400(@NotNull AuthorDto authorDto) {
-        this.mockMvc.perform(put("/author/{id}", authorDto.getId())
+        mockMvc.perform(put("/author/{id}", authorDto.getId())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(objectMapper.writeValueAsString(authorDto))
                 )
                 .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows
     private void updateAuthorAndExpect404(@NotNull UUID authorId, @NotNull AuthorDto authorDto) {
-        this.mockMvc.perform(put("/author/{id}", authorId)
+        mockMvc.perform(put("/author/{id}", authorId)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .content(this.objectMapper.writeValueAsString(authorDto))
+                        .content(objectMapper.writeValueAsString(authorDto))
                 )
                 .andExpect(status().isNotFound());
     }
 
     @SneakyThrows
     private void deleteAuthorById(@NotNull UUID authorId) {
-        this.mockMvc.perform(delete("/author/{id}", authorId))
+        mockMvc.perform(delete("/author/{id}", authorId))
                 .andExpect(status().isNoContent());
     }
 
     @SneakyThrows
     private void deleteAuthorAndExpect404(@NotNull UUID authorId) {
-        this.mockMvc.perform(delete("/author/{id}", authorId))
+        mockMvc.perform(delete("/author/{id}", authorId))
                 .andExpect(status().isNotFound());
     }
 

@@ -54,7 +54,7 @@ public class BookController {
             )
             @RequestParam(required = false) Integer pageSize
     ) {
-        return this.bookService.findAll(pageNumber, pageSize);
+        return bookService.findAll(pageNumber, pageSize);
     }
 
     @Operation(description = "Returns all books (or an empty page).")
@@ -66,7 +66,7 @@ public class BookController {
     public BookDto getBookById(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return this.bookService.findById(id)
+        return bookService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
@@ -85,7 +85,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
     public BookDto createBook(@Validated @RequestBody BookDto book) {
-        return this.bookService.create(book);
+        return bookService.create(book);
         // TODO: conflict status
     }
 
@@ -108,7 +108,7 @@ public class BookController {
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody BookDto book
     ) {
-        return this.bookService.update(id, book);
+        return bookService.update(id, book);
     }
 
     @Operation(
@@ -123,7 +123,7 @@ public class BookController {
     public void deleteBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!this.bookService.deleteById(id)) {
+        if (!bookService.deleteById(id)) {
             throw new NotFoundEntityException(id, BookDto.class);
         }
     }

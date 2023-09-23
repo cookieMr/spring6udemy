@@ -8,7 +8,10 @@ checkstyle {
 }
 
 tasks.withType(Checkstyle).configureEach {
-    exclude "**/generated/**", "**/sources/**"
+    excludes = [
+            "**/generated/**",
+            "**/sources/**"
+    ]
 }
 
 sonarqube {

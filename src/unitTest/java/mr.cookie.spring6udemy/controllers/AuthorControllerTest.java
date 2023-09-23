@@ -40,106 +40,106 @@ class AuthorControllerTest {
     void shouldGetAllAuthors() {
         var pageAuthor = new PageImpl<>(List.of(AUTHOR_DTO));
 
-        when(this.authorService.findAll(anyInt(), anyInt()))
+        when(authorService.findAll(anyInt(), anyInt()))
                 .thenReturn(pageAuthor);
 
-        var result = this.authorController.getAllAuthors(1, 2);
+        var result = authorController.getAllAuthors(1, 2);
 
         assertThat(result).isSameAs(pageAuthor);
 
-        verify(this.authorService).findAll(1, 2);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).findAll(1, 2);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldGetAuthorById() {
-        when(this.authorService.findById(any(UUID.class))).thenReturn(Optional.of(AUTHOR_DTO));
+        when(authorService.findById(any(UUID.class))).thenReturn(Optional.of(AUTHOR_DTO));
 
-        var result = this.authorController.getAuthorById(AUTHOR_ID);
+        var result = authorController.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(AUTHOR_DTO);
 
-        verify(this.authorService).findById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(this.authorService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(authorService.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.authorController.getAuthorById(AUTHOR_ID))
+        assertThatThrownBy(() -> authorController.getAuthorById(AUTHOR_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(this.authorService).findById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldCreateNewAuthor() {
-        when(this.authorService.create(any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+        when(authorService.create(any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
 
-        var result = this.authorController.createAuthor(AUTHOR_DTO);
+        var result = authorController.createAuthor(AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
                 .isSameAs(AUTHOR_DTO);
 
-        verify(this.authorService).create(AUTHOR_DTO);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).create(AUTHOR_DTO);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldUpdateExistingAuthor() {
-        when(this.authorService.update(any(UUID.class), any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+        when(authorService.update(any(UUID.class), any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
 
-        var result = this.authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
+        var result = authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
                 .isSameAs(AUTHOR_DTO);
 
-        verify(this.authorService).update(AUTHOR_ID, AUTHOR_DTO);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).update(AUTHOR_ID, AUTHOR_DTO);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.authorService.update(any(UUID.class), any(AuthorDto.class)))
+        when(authorService.update(any(UUID.class), any(AuthorDto.class)))
                 .thenThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
-        assertThatThrownBy(() -> this.authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO))
+        assertThatThrownBy(() -> authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
 
-        verify(this.authorService).update(AUTHOR_ID, AUTHOR_DTO);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).update(AUTHOR_ID, AUTHOR_DTO);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(this.authorService.deleteById(any(UUID.class))).thenReturn(true);
+        when(authorService.deleteById(any(UUID.class))).thenReturn(true);
 
-        this.authorController.deleteAuthor(AUTHOR_ID);
+        authorController.deleteAuthor(AUTHOR_ID);
 
-        verify(this.authorService).deleteById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(this.authorService.deleteById(any(UUID.class))).thenReturn(false);
+        when(authorService.deleteById(any(UUID.class))).thenReturn(false);
 
-        assertThatThrownBy(() -> this.authorController.deleteAuthor(AUTHOR_ID))
+        assertThatThrownBy(() -> authorController.deleteAuthor(AUTHOR_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
 
-        verify(this.authorService).deleteById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorService);
+        verify(authorService).deleteById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorService);
     }
 
 }

@@ -55,7 +55,7 @@ public class AuthorController {
             )
             @RequestParam(required = false) Integer pageSize
     ) {
-        return this.authorService.findAll(pageNumber, pageSize);
+        return authorService.findAll(pageNumber, pageSize);
     }
 
     @Operation(
@@ -73,7 +73,7 @@ public class AuthorController {
     public AuthorDto getAuthorById(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return this.authorService.findById(id)
+        return authorService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
@@ -92,7 +92,7 @@ public class AuthorController {
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
     public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
-        return this.authorService.create(author);
+        return authorService.create(author);
         // TODO: conflict status
     }
 
@@ -115,7 +115,7 @@ public class AuthorController {
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody AuthorDto author
     ) {
-        return this.authorService.update(id, author);
+        return authorService.update(id, author);
     }
 
     @Operation(
@@ -130,7 +130,7 @@ public class AuthorController {
     public void deleteAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!this.authorService.deleteById(id)) {
+        if (!authorService.deleteById(id)) {
             throw new NotFoundEntityException(id, AuthorDto.class);
         }
     }

@@ -55,7 +55,7 @@ public class PublisherController {
             )
             @RequestParam(required = false) Integer pageSize
     ) {
-        return this.publisherService.findAll(pageNumber, pageSize);
+        return publisherService.findAll(pageNumber, pageSize);
     }
 
     @Operation(
@@ -73,7 +73,7 @@ public class PublisherController {
     public PublisherDto getPublisherById(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return this.publisherService.findById(id)
+        return publisherService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
@@ -92,7 +92,7 @@ public class PublisherController {
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
     public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
-        return this.publisherService.create(publisher);
+        return publisherService.create(publisher);
         // TODO: conflict status
     }
 
@@ -115,7 +115,7 @@ public class PublisherController {
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody PublisherDto publisher
     ) {
-        return this.publisherService.update(id, publisher);
+        return publisherService.update(id, publisher);
     }
 
     @Operation(
@@ -130,7 +130,7 @@ public class PublisherController {
     public void deletePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!this.publisherService.deleteById(id)) {
+        if (!publisherService.deleteById(id)) {
             throw new NotFoundEntityException(id, PublisherDto.class);
         }
     }

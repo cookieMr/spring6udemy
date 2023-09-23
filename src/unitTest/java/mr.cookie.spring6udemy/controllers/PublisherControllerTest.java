@@ -39,107 +39,107 @@ class PublisherControllerTest {
     void shouldGetAllPublishers() {
         var pagePublisher = new PageImpl<>(List.of(PUBLISHER_DTO));
 
-        when(this.publisherService.findAll(null, null))
+        when(publisherService.findAll(null, null))
                 .thenReturn(pagePublisher);
 
-        var result = this.publisherController.getAllPublishers(null, null);
+        var result = publisherController.getAllPublishers(null, null);
 
         assertThat(result)
                 .isSameAs(pagePublisher);
 
-        verify(this.publisherService).findAll(null, null);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).findAll(null, null);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldGetPublisherById() {
-        when(this.publisherService.findById(any(UUID.class))).thenReturn(Optional.of(PUBLISHER_DTO));
+        when(publisherService.findById(any(UUID.class))).thenReturn(Optional.of(PUBLISHER_DTO));
 
-        var result = this.publisherController.getPublisherById(PUBLISHER_ID);
+        var result = publisherController.getPublisherById(PUBLISHER_ID);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(PUBLISHER_DTO);
 
-        verify(this.publisherService).findById(PUBLISHER_ID);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).findById(PUBLISHER_ID);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(this.publisherService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(publisherService.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.publisherController.getPublisherById(PUBLISHER_ID))
+        assertThatThrownBy(() -> publisherController.getPublisherById(PUBLISHER_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(this.publisherService).findById(PUBLISHER_ID);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).findById(PUBLISHER_ID);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldCreateNewPublisher() {
-        when(this.publisherService.create(any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
+        when(publisherService.create(any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
 
-        var result = this.publisherController.createPublisher(PUBLISHER_DTO);
+        var result = publisherController.createPublisher(PUBLISHER_DTO);
 
         assertThat(result)
                 .isNotNull()
                 .isSameAs(PUBLISHER_DTO);
 
-        verify(this.publisherService).create(PUBLISHER_DTO);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).create(PUBLISHER_DTO);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldUpdateExistingPublisher() {
-        when(this.publisherService.update(any(UUID.class), any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
+        when(publisherService.update(any(UUID.class), any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
 
-        var result = this.publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO);
+        var result = publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO);
 
         assertThat(result)
                 .isNotNull()
                 .isSameAs(PUBLISHER_DTO);
 
-        verify(this.publisherService).update(PUBLISHER_ID, PUBLISHER_DTO);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).update(PUBLISHER_ID, PUBLISHER_DTO);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.publisherService.update(any(UUID.class), any(PublisherDto.class)))
+        when(publisherService.update(any(UUID.class), any(PublisherDto.class)))
                 .thenThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class));
 
-        assertThatThrownBy(() -> this.publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO))
+        assertThatThrownBy(() -> publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, PublisherDto.class.getSimpleName(), PUBLISHER_ID);
 
-        verify(this.publisherService).update(PUBLISHER_ID, PUBLISHER_DTO);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).update(PUBLISHER_ID, PUBLISHER_DTO);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldDeleteExistingPublisher() {
-        when(this.publisherService.deleteById(any(UUID.class))).thenReturn(true);
+        when(publisherService.deleteById(any(UUID.class))).thenReturn(true);
 
-        this.publisherController.deletePublisher(PUBLISHER_ID);
+        publisherController.deletePublisher(PUBLISHER_ID);
 
-        verify(this.publisherService).deleteById(PUBLISHER_ID);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).deleteById(PUBLISHER_ID);
+        verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(this.publisherService.deleteById(any(UUID.class))).thenReturn(false);
+        when(publisherService.deleteById(any(UUID.class))).thenReturn(false);
 
-        assertThatThrownBy(() -> this.publisherController.deletePublisher(PUBLISHER_ID))
+        assertThatThrownBy(() -> publisherController.deletePublisher(PUBLISHER_ID))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, PublisherDto.class.getSimpleName(), PUBLISHER_ID);
 
-        verify(this.publisherService).deleteById(PUBLISHER_ID);
-        verifyNoMoreInteractions(this.publisherService);
+        verify(publisherService).deleteById(PUBLISHER_ID);
+        verifyNoMoreInteractions(publisherService);
     }
 
 }
