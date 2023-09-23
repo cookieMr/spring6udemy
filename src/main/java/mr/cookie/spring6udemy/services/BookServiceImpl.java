@@ -67,10 +67,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookDto update(@NotNull UUID id, @NotNull BookDto book) {
         var existingDto = bookRepository.findById(id)
-                .orElseThrow(NotFoundEntityException::new);
-
-        existingDto.setTitle(book.getTitle());
-        existingDto.setIsbn(book.getIsbn());
+                .orElseThrow(NotFoundEntityException::new)
+                .setTitle(book.getTitle())
+                .setIsbn(book.getIsbn());
 
         return Optional.of(existingDto)
                 .map(bookRepository::save)

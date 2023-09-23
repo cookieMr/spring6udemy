@@ -22,8 +22,8 @@ class AuthorEntityTest {
         var id = UUID.randomUUID();
 
         var author1 = buildAuthor(id);
-        var author2 = buildAuthor(id);
-        author2.setFirstName("CookieMr");
+        var author2 = buildAuthor(id)
+                .setFirstName("CookieMr");
 
         Assertions.assertThat(author1)
                 .hasSameHashCodeAs(author2);
@@ -43,8 +43,8 @@ class AuthorEntityTest {
         var id = UUID.randomUUID();
 
         var author1 = buildAuthor(id);
-        var author2 = buildAuthor(id);
-        author2.setFirstName("CookieMr");
+        var author2 = buildAuthor(id)
+                .setFirstName("CookieMr");
 
         Assertions.assertThat(author1)
                 .isEqualTo(author2);

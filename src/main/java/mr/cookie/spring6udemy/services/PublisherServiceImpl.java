@@ -65,13 +65,12 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional
     public @NotNull PublisherDto update(@NotNull UUID id, @NotNull PublisherDto publisher) {
         var existingDto = publisherRepository.findById(id)
-                .orElseThrow(NotFoundEntityException::new);
-
-        existingDto.setName(publisher.getName());
-        existingDto.setAddress(publisher.getAddress());
-        existingDto.setCity(publisher.getCity());
-        existingDto.setState(publisher.getState());
-        existingDto.setZipCode(publisher.getZipCode());
+                .orElseThrow(NotFoundEntityException::new)
+                .setName(publisher.getName())
+                .setAddress(publisher.getAddress())
+                .setCity(publisher.getCity())
+                .setState(publisher.getState())
+                .setZipCode(publisher.getZipCode());
 
         return Optional.of(existingDto)
                 .map(publisherRepository::save)
