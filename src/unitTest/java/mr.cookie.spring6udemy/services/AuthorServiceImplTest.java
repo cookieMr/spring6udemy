@@ -1,11 +1,26 @@
 package mr.cookie.spring6udemy.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Supplier;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
-import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,22 +33,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Supplier;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorServiceImplTest {
@@ -55,24 +54,20 @@ class AuthorServiceImplTest {
 
     @BeforeEach
     void setupBeforeEach() {
-        this.authorRepository = mock(AuthorRepository.class);
-        this.authorMapper = spy(new AuthorMapperImpl());
-        this.authorService = new AuthorServiceImpl(
-                25,
-                this.authorMapper,
-                this.authorRepository
-        );
+        authorRepository = mock(AuthorRepository.class);
+        authorMapper = spy(new AuthorMapperImpl());
+        authorService = new AuthorServiceImpl(25, authorMapper, authorRepository);
     }
 
     @AfterEach
     void cleanUp() {
-        reset(this.authorRepository, this.authorMapper);
+        reset(authorRepository, authorMapper);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -42})
     void shouldFailInitializationWithInvalidPageSize(int invalidPageSize) {
-        assertThatThrownBy(() -> new AuthorServiceImpl(invalidPageSize, this.authorMapper, this.authorRepository))
+        assertThatThrownBy(() -> new AuthorServiceImpl(invalidPageSize, authorMapper, authorRepository))
                 .isNotNull()
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The default pageSize should be greater than zero.");
@@ -83,27 +78,28 @@ class AuthorServiceImplTest {
         var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
         var authorPage = new PageImpl<>(List.of(authorEntity));
 
-        when(this.authorRepository.findAll(any(Pageable.class)))
+        when(authorRepository.findAll(any(Pageable.class)))
                 .thenReturn(authorPage);
 
-        var result = this.authorService.findAll(null, null);
+        var result = authorService.findAll(null, null);
 
         assertThat(result)
                 .isNotNull()
                 .hasSize(1);
 
-        verify(this.authorRepository).findAll(any(PageRequest.class));
-        verify(this.authorMapper).map(authorEntity);
-        verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+        verify(authorRepository).findAll(any(PageRequest.class));
+        verify(authorMapper).map(authorEntity);
+        verifyNoMoreInteractions(authorRepository, authorMapper);
     }
 
     @Test
     void shouldReturnAuthorById() {
         var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
 
-        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(authorEntity));
+        when(authorRepository.findById(any(UUID.class)))
+                .thenReturn(Optional.of(authorEntity));
 
-        var result = this.authorService.findById(AUTHOR_ID);
+        var result = authorService.findById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
@@ -111,42 +107,42 @@ class AuthorServiceImplTest {
                 .get()
                 .returns(AUTHOR_ID, AuthorDto::getId);
 
-        verify(this.authorRepository).findById(AUTHOR_ID);
-        verify(this.authorMapper).map(authorEntity);
-        verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+        verify(authorRepository).findById(AUTHOR_ID);
+        verify(authorMapper).map(authorEntity);
+        verifyNoMoreInteractions(authorRepository, authorMapper);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        var result = this.authorService.findById(AUTHOR_ID);
+        var result = authorService.findById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
                 .isEmpty();
 
-        verify(this.authorRepository).findById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorRepository);
-        verifyNoInteractions(this.authorMapper);
+        verify(authorRepository).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorRepository);
+        verifyNoInteractions(authorMapper);
     }
 
     @Test
     void shouldCreateNewAuthor() {
         var authorEntity = AUTHOR_ENTITY_SUPPLIER.get();
 
-        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
+        when(authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
 
-        var result = this.authorService.create(AUTHOR_DTO);
+        var result = authorService.create(AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
                 .returns(AUTHOR_ID, AuthorDto::getId);
 
-        verify(this.authorRepository).save(authorEntity);
-        verify(this.authorMapper).map(authorEntity);
-        verify(this.authorMapper).map(AUTHOR_DTO);
-        verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+        verify(authorRepository).save(authorEntity);
+        verify(authorMapper).map(authorEntity);
+        verify(authorMapper).map(AUTHOR_DTO);
+        verifyNoMoreInteractions(authorRepository, authorMapper);
     }
 
     @Test
@@ -157,10 +153,10 @@ class AuthorServiceImplTest {
                 .lastName("Sanderson")
                 .build();
 
-        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(authorEntity));
-        when(this.authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
+        when(authorRepository.findById(any(UUID.class))).thenReturn(Optional.of(authorEntity));
+        when(authorRepository.save(any(AuthorEntity.class))).thenReturn(authorEntity);
 
-        var result = this.authorService.update(AUTHOR_ID, updatedAuthorDto);
+        var result = authorService.update(AUTHOR_ID, updatedAuthorDto);
 
         assertThat(result)
                 .isNotNull()
@@ -168,12 +164,12 @@ class AuthorServiceImplTest {
                 .returns(updatedAuthorDto.getFirstName(), AuthorDto::getFirstName)
                 .returns(updatedAuthorDto.getLastName(), AuthorDto::getLastName);
 
-        verify(this.authorRepository).findById(AUTHOR_ID);
-        verify(this.authorRepository).save(this.authorDtoArgumentCaptor.capture());
-        verify(this.authorMapper).map(authorEntity);
-        verifyNoMoreInteractions(this.authorRepository, this.authorMapper);
+        verify(authorRepository).findById(AUTHOR_ID);
+        verify(authorRepository).save(authorDtoArgumentCaptor.capture());
+        verify(authorMapper).map(authorEntity);
+        verifyNoMoreInteractions(authorRepository, authorMapper);
 
-        assertThat(this.authorDtoArgumentCaptor.getValue())
+        assertThat(authorDtoArgumentCaptor.getValue())
                 .isNotNull()
                 .returns(AUTHOR_ID, AuthorEntity::getId)
                 .returns(updatedAuthorDto.getFirstName(), AuthorEntity::getFirstName)
@@ -182,42 +178,42 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(this.authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(authorRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.authorService.update(AUTHOR_ID, AUTHOR_DTO))
+        assertThatThrownBy(() -> authorService.update(AUTHOR_ID, AUTHOR_DTO))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(this.authorRepository).findById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorRepository);
-        verifyNoInteractions(this.authorMapper);
+        verify(authorRepository).findById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorRepository);
+        verifyNoInteractions(authorMapper);
     }
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(this.authorRepository.existsById(any(UUID.class))).thenReturn(true);
+        when(authorRepository.existsById(any(UUID.class))).thenReturn(true);
 
-        var result = this.authorService.deleteById(AUTHOR_ID);
+        var result = authorService.deleteById(AUTHOR_ID);
 
         assertThat(result).isTrue();
 
-        verify(this.authorRepository).deleteById(AUTHOR_ID);
-        verify(this.authorRepository).existsById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorRepository);
-        verifyNoInteractions(this.authorMapper);
+        verify(authorRepository).deleteById(AUTHOR_ID);
+        verify(authorRepository).existsById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorRepository);
+        verifyNoInteractions(authorMapper);
     }
 
     @Test
     void shouldNotDeleteNotExistingAuthor() {
-        when(this.authorRepository.existsById(any(UUID.class))).thenReturn(false);
+        when(authorRepository.existsById(any(UUID.class))).thenReturn(false);
 
-        var result = this.authorService.deleteById(AUTHOR_ID);
+        var result = authorService.deleteById(AUTHOR_ID);
 
         assertThat(result).isFalse();
 
-        verify(this.authorRepository).existsById(AUTHOR_ID);
-        verifyNoMoreInteractions(this.authorRepository);
-        verifyNoInteractions(this.authorMapper);
+        verify(authorRepository).existsById(AUTHOR_ID);
+        verifyNoMoreInteractions(authorRepository);
+        verifyNoInteractions(authorMapper);
     }
 
 }

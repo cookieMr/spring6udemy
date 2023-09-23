@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("book")
@@ -55,7 +54,7 @@ public class BookController {
             )
             @RequestParam(required = false) Integer pageSize
     ) {
-        return this.bookService.findAll(pageNumber, pageSize);
+        return bookService.findAll(pageNumber, pageSize);
     }
 
     @Operation(description = "Returns all books (or an empty page).")
@@ -67,14 +66,15 @@ public class BookController {
     public BookDto getBookById(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return this.bookService.findById(id)
+        return bookService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
     @Operation(
             description = "Creates a new book and persists it.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Book was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "201",
+                            description = "Book was created and is returned in a response body."),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -85,14 +85,15 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
     public BookDto createBook(@Validated @RequestBody BookDto book) {
-        return this.bookService.create(book);
+        return bookService.create(book);
         // TODO: conflict status
     }
 
     @Operation(
             description = "Updates a book by ID.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Book was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "200",
+                            description = "Book was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
@@ -107,7 +108,7 @@ public class BookController {
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody BookDto book
     ) {
-        return this.bookService.update(id, book);
+        return bookService.update(id, book);
     }
 
     @Operation(
@@ -122,7 +123,7 @@ public class BookController {
     public void deleteBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!this.bookService.deleteById(id)) {
+        if (!bookService.deleteById(id)) {
             throw new NotFoundEntityException(id, BookDto.class);
         }
     }

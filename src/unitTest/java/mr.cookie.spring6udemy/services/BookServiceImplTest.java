@@ -1,11 +1,26 @@
 package mr.cookie.spring6udemy.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Supplier;
+import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
-import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.repositories.BookRepository;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,22 +33,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Supplier;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
@@ -56,24 +55,20 @@ class BookServiceImplTest {
 
     @BeforeEach
     void setupBeforeEach() {
-        this.bookRepository = mock(BookRepository.class);
-        this.bookMapper = spy(new BookMapperImpl());
-        this.bookService = new BookServiceImpl(
-                25,
-                this.bookMapper,
-                this.bookRepository
-        );
+        bookRepository = mock(BookRepository.class);
+        bookMapper = spy(new BookMapperImpl());
+        bookService = new BookServiceImpl(25, bookMapper, bookRepository);
     }
 
     @AfterEach
     void cleanUp() {
-        reset(this.bookRepository, this.bookMapper);
+        reset(bookRepository, bookMapper);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -42})
     void shouldFailInitializationWithInvalidPageSize(int invalidPageSize) {
-        assertThatThrownBy(() -> new BookServiceImpl(invalidPageSize, this.bookMapper, this.bookRepository))
+        assertThatThrownBy(() -> new BookServiceImpl(invalidPageSize, bookMapper, bookRepository))
                 .isNotNull()
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The default pageSize should be greater than zero.");
@@ -84,27 +79,27 @@ class BookServiceImplTest {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
         var bookPage = new PageImpl<>(List.of(bookEntity));
 
-        when(this.bookRepository.findAll(any(Pageable.class)))
+        when(bookRepository.findAll(any(Pageable.class)))
                 .thenReturn(bookPage);
 
-        var result = this.bookService.findAll(null, null);
+        var result = bookService.findAll(null, null);
 
         assertThat(result)
                 .isNotNull()
                 .hasSize(1);
 
-        verify(this.bookRepository).findAll(any(PageRequest.class));
-        verify(this.bookMapper).map(bookEntity);
-        verifyNoMoreInteractions(this.bookRepository, this.bookMapper);
+        verify(bookRepository).findAll(any(PageRequest.class));
+        verify(bookMapper).map(bookEntity);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
     void shouldFindBookById() {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
 
-        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
+        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
 
-        var result = this.bookService.findById(BOOK_ID);
+        var result = bookService.findById(BOOK_ID);
 
         assertThat(result)
                 .isNotNull()
@@ -112,42 +107,42 @@ class BookServiceImplTest {
                 .get()
                 .returns(BOOK_ID, BookDto::getId);
 
-        verify(this.bookRepository).findById(BOOK_ID);
-        verify(this.bookMapper).map(bookEntity);
-        verifyNoMoreInteractions(this.bookRepository, this.bookMapper);
+        verify(bookRepository).findById(BOOK_ID);
+        verify(bookMapper).map(bookEntity);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        var result = this.bookService.findById(BOOK_ID);
+        var result = bookService.findById(BOOK_ID);
 
         assertThat(result)
                 .isNotNull()
                 .isEmpty();
 
-        verify(this.bookRepository).findById(BOOK_ID);
-        verifyNoMoreInteractions(this.bookRepository);
-        verifyNoInteractions(this.bookMapper);
+        verify(bookRepository).findById(BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
+        verifyNoInteractions(bookMapper);
     }
 
     @Test
     void shouldCreateNewBook() {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
 
-        when(this.bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
+        when(bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
 
-        var result = this.bookService.create(BOOK);
+        var result = bookService.create(BOOK);
 
         assertThat(result)
                 .isNotNull()
                 .returns(BOOK_ID, BookDto::getId);
 
-        verify(this.bookRepository).save(bookEntity);
-        verify(this.bookMapper).map(bookEntity);
-        verify(this.bookMapper).map(BOOK);
-        verifyNoMoreInteractions(this.bookRepository, this.bookMapper);
+        verify(bookRepository).save(bookEntity);
+        verify(bookMapper).map(bookEntity);
+        verify(bookMapper).map(BOOK);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
@@ -158,10 +153,10 @@ class BookServiceImplTest {
                 .isbn("978-0765350374")
                 .build();
 
-        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
-        when(this.bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
+        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
+        when(bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
 
-        var result = this.bookService.update(BOOK_ID, updatedBookDto);
+        var result = bookService.update(BOOK_ID, updatedBookDto);
 
         assertThat(result)
                 .isNotNull()
@@ -169,12 +164,12 @@ class BookServiceImplTest {
                 .returns(updatedBookDto.getTitle(), BookDto::getTitle)
                 .returns(updatedBookDto.getIsbn(), BookDto::getIsbn);
 
-        verify(this.bookRepository).findById(BOOK_ID);
-        verify(this.bookRepository).save(this.bookDtoArgumentCaptor.capture());
-        verify(this.bookMapper).map(bookEntity);
-        verifyNoMoreInteractions(this.bookRepository, this.bookMapper);
+        verify(bookRepository).findById(BOOK_ID);
+        verify(bookRepository).save(bookDtoArgumentCaptor.capture());
+        verify(bookMapper).map(bookEntity);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
 
-        assertThat(this.bookDtoArgumentCaptor.getValue())
+        assertThat(bookDtoArgumentCaptor.getValue())
                 .isNotNull()
                 .returns(BOOK_ID, BookEntity::getId)
                 .returns(updatedBookDto.getTitle(), BookEntity::getTitle)
@@ -183,42 +178,42 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        when(this.bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.bookService.update(BOOK_ID, BOOK))
+        assertThatThrownBy(() -> bookService.update(BOOK_ID, BOOK))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(this.bookRepository).findById(BOOK_ID);
-        verifyNoMoreInteractions(this.bookRepository);
-        verifyNoInteractions(this.bookMapper);
+        verify(bookRepository).findById(BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
+        verifyNoInteractions(bookMapper);
     }
 
     @Test
     void shouldDeleteExistingBook() {
-        when(this.bookRepository.existsById(any(UUID.class))).thenReturn(true);
+        when(bookRepository.existsById(any(UUID.class))).thenReturn(true);
 
-        var result = this.bookService.deleteById(BOOK_ID);
+        var result = bookService.deleteById(BOOK_ID);
 
         assertThat(result).isTrue();
 
-        verify(this.bookRepository).deleteById(BOOK_ID);
-        verify(this.bookRepository).existsById(BOOK_ID);
-        verifyNoMoreInteractions(this.bookRepository);
-        verifyNoInteractions(this.bookMapper);
+        verify(bookRepository).deleteById(BOOK_ID);
+        verify(bookRepository).existsById(BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
+        verifyNoInteractions(bookMapper);
     }
 
     @Test
     void shouldNotDeleteNotExistingBook() {
-        when(this.bookRepository.existsById(any(UUID.class))).thenReturn(false);
+        when(bookRepository.existsById(any(UUID.class))).thenReturn(false);
 
-        var result = this.bookService.deleteById(BOOK_ID);
+        var result = bookService.deleteById(BOOK_ID);
 
         assertThat(result).isFalse();
 
-        verify(this.bookRepository).existsById(BOOK_ID);
-        verifyNoMoreInteractions(this.bookRepository);
-        verifyNoInteractions(this.bookMapper);
+        verify(bookRepository).existsById(BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
+        verifyNoInteractions(bookMapper);
     }
 
 }

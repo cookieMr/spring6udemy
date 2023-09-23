@@ -1,11 +1,10 @@
 package mr.cookie.spring6udemy.domain;
 
+import java.util.UUID;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 class AuthorEntityTest {
 
@@ -15,7 +14,7 @@ class AuthorEntityTest {
         var author2 = buildAuthor(UUID.randomUUID());
 
         Assertions.assertThat(author1)
-            .doesNotHaveSameHashCodeAs(author2);
+                .doesNotHaveSameHashCodeAs(author2);
     }
 
     @Test
@@ -27,7 +26,7 @@ class AuthorEntityTest {
         author2.setFirstName("CookieMr");
 
         Assertions.assertThat(author1)
-            .hasSameHashCodeAs(author2);
+                .hasSameHashCodeAs(author2);
     }
 
     @Test
@@ -36,7 +35,7 @@ class AuthorEntityTest {
         var author2 = buildAuthor(UUID.randomUUID());
 
         Assertions.assertThat(author1)
-            .isNotEqualTo(author2);
+                .isNotEqualTo(author2);
     }
 
     @Test
@@ -48,16 +47,16 @@ class AuthorEntityTest {
         author2.setFirstName("CookieMr");
 
         Assertions.assertThat(author1)
-            .isEqualTo(author2);
+                .isEqualTo(author2);
     }
 
     @NotNull
     private AuthorEntity buildAuthor(@NotNull UUID id) {
         return AuthorEntity.builder()
-            .id(id)
-            .firstName("Brandon")
-            .lastName("Sanderson")
-            .build();
+                .id(id)
+                .firstName("Brandon")
+                .lastName("Sanderson")
+                .build();
     }
 
 }

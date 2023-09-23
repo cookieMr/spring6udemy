@@ -1,5 +1,11 @@
 package mr.cookie.spring6udemy.repositories;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,12 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @ActiveProfiles(profiles = {"test"})
@@ -34,7 +34,7 @@ class PublisherRepositoryTest {
     void savePublisher() {
         var publisher = PUBLISHER_SUPPLIER.get();
 
-        var result = this.publisherRepository.save(publisher);
+        var result = publisherRepository.save(publisher);
 
         assertThat(result)
                 .isNotNull()
@@ -59,8 +59,8 @@ class PublisherRepositoryTest {
         var publisher = PUBLISHER_SUPPLIER.get();
         publisherModifier.accept(publisher);
 
-        this.publisherRepository.save(publisher);
-        assertThatThrownBy(this.publisherRepository::flush)
+        publisherRepository.save(publisher);
+        assertThatThrownBy(publisherRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessageContaining("could not execute statement [NULL not allowed for column");

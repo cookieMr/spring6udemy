@@ -9,12 +9,12 @@ plugins {
 }
 
 group = 'mr.cookie'
-version = '0.0.1'
+version = '0.0.2'
 sourceCompatibility = '17'
 
-apply plugin: 'checkstyle'
 apply from: "$rootDir/gradle/unitTest.gradle"
 apply from: "$rootDir/gradle/integrationTest.gradle"
+apply from: "$rootDir/gradle/quality.gradle"
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ repositories {
 ext {
     apacheCollectionsVersion = "4.4"
     assertjVersion = "3.24.2"
-    checkstyleVersion = "0.0.39"
+    checkstyleVersion = "10.12.3"
     flywayVersion = "9.22.2"
     jetBrainsAnnotationVersion = "24.0.1"
     lombokVersion = "1.18.30"
@@ -55,7 +55,7 @@ dependencies {
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${checkstyleVersion}"
+    checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
@@ -82,24 +82,4 @@ jacocoTestReport {
 }
 jacoco {
     toolVersion = "0.8.10"
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "cookieMr_spring6udemy"
-        property "sonar.organization", "cookiemr-github"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
-}
-
-tasks.withType(Checkstyle).configureEach {
-    exclude "**/generated/**"
-    exclude "**/sources/**"
-}
-checkstyle {
-    toolVersion '10.10.0'
-    configFile file("config/checkstyle/checkstyle.xml")
-}
-checkstyleMain {
-    source = 'src/main/java'
 }

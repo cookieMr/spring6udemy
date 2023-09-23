@@ -1,14 +1,13 @@
 package mr.cookie.spring6udemy.services;
 
+import java.util.Optional;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 public interface CrudService<T> {
 
@@ -32,6 +31,7 @@ public interface CrudService<T> {
 
     /**
      * Returns {@code true} if en entity with provided ID was removed, {@code false} otherwise.
+     *
      * @param id id of an entity to remove
      * @return {@code true} if an entity was removed, {@code false} otherwise
      */

@@ -1,18 +1,17 @@
 package mr.cookie.spring6udemy.services;
 
-import mr.cookie.spring6udemy.model.mappers.BookMapper;
-import mr.cookie.spring6udemy.model.dtos.BookDto;
-import mr.cookie.spring6udemy.repositories.BookRepository;
+import java.util.Optional;
+import java.util.UUID;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.model.dtos.BookDto;
+import mr.cookie.spring6udemy.model.mappers.BookMapper;
+import mr.cookie.spring6udemy.repositories.BookRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -39,16 +38,16 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public Page<BookDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
-        var pageRequest = createPageRequest(pageNumber, pageSize, this.defaultPageSize);
-        return this.bookRepository.findAll(pageRequest)
-                .map(this.bookMapper::map);
+        var pageRequest = createPageRequest(pageNumber, pageSize, defaultPageSize);
+        return bookRepository.findAll(pageRequest)
+                .map(bookMapper::map);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<BookDto> findById(@NotNull UUID id) {
-        return this.bookRepository.findById(id)
-                .map(this.bookMapper::map);
+        return bookRepository.findById(id)
+                .map(bookMapper::map);
     }
 
     @NotNull
@@ -56,9 +55,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookDto create(@NotNull BookDto book) {
         return Optional.of(book)
-                .map(this.bookMapper::map)
-                .map(this.bookRepository::save)
-                .map(this.bookMapper::map)
+                .map(bookMapper::map)
+                .map(bookRepository::save)
+                .map(bookMapper::map)
                 .orElseThrow();
         // TODO: return conflict when publisher exists
     }
@@ -67,25 +66,25 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto update(@NotNull UUID id, @NotNull BookDto book) {
-        var existingDto = this.bookRepository.findById(id)
+        var existingDto = bookRepository.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
 
         existingDto.setTitle(book.getTitle());
         existingDto.setIsbn(book.getIsbn());
 
         return Optional.of(existingDto)
-                .map(this.bookRepository::save)
-                .map(this.bookMapper::map)
+                .map(bookRepository::save)
+                .map(bookMapper::map)
                 .orElseThrow();
     }
 
     @Override
     @Transactional
     public boolean deleteById(@NotNull UUID id) {
-        var doesBookExist = this.bookRepository.existsById(id);
+        var doesBookExist = bookRepository.existsById(id);
 
         if (doesBookExist) {
-            this.bookRepository.deleteById(id);
+            bookRepository.deleteById(id);
         }
 
         return doesBookExist;

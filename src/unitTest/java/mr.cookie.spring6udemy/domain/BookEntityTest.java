@@ -1,11 +1,10 @@
 package mr.cookie.spring6udemy.domain;
 
+import java.util.UUID;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 class BookEntityTest {
 
@@ -15,7 +14,7 @@ class BookEntityTest {
         var book2 = buildBook(UUID.randomUUID());
 
         Assertions.assertThat(book1)
-            .doesNotHaveSameHashCodeAs(book2);
+                .doesNotHaveSameHashCodeAs(book2);
     }
 
     @Test
@@ -27,7 +26,7 @@ class BookEntityTest {
         book2.setIsbn("1250899656");
 
         Assertions.assertThat(book1)
-            .hasSameHashCodeAs(book2);
+                .hasSameHashCodeAs(book2);
     }
 
     @Test
@@ -36,7 +35,7 @@ class BookEntityTest {
         var book2 = buildBook(UUID.randomUUID());
 
         Assertions.assertThat(book1)
-            .isNotEqualTo(book2);
+                .isNotEqualTo(book2);
     }
 
     @Test
@@ -48,16 +47,16 @@ class BookEntityTest {
         book2.setIsbn("1250899656");
 
         Assertions.assertThat(book1)
-            .isEqualTo(book2);
+                .isEqualTo(book2);
     }
 
     @NotNull
     private BookEntity buildBook(@NotNull UUID id) {
         return BookEntity.builder()
-            .id(id)
-            .title("Tress of Emerald See")
-            .isbn("978-1250899651")
-            .build();
+                .id(id)
+                .title("Tress of Emerald See")
+                .isbn("978-1250899651")
+                .build();
     }
 
 }

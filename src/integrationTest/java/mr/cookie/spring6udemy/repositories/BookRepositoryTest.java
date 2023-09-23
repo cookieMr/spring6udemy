@@ -1,5 +1,11 @@
 package mr.cookie.spring6udemy.repositories;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,12 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @ActiveProfiles(profiles = {"test"})
@@ -31,7 +31,7 @@ class BookRepositoryTest {
     void saveBook() {
         var book = BOOK_SUPPLIER.get();
 
-        var result = this.bookRepository.save(book);
+        var result = bookRepository.save(book);
 
         assertThat(result)
                 .isNotNull()
@@ -53,8 +53,8 @@ class BookRepositoryTest {
         var book = BOOK_SUPPLIER.get();
         bookModifier.accept(book);
 
-        this.bookRepository.save(book);
-        assertThatThrownBy(this.bookRepository::flush)
+        bookRepository.save(book);
+        assertThatThrownBy(bookRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessageContaining("could not execute statement [NULL not allowed for column");

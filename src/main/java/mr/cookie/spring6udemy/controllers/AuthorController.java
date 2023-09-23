@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("author")
@@ -56,7 +55,7 @@ public class AuthorController {
             )
             @RequestParam(required = false) Integer pageSize
     ) {
-        return this.authorService.findAll(pageNumber, pageSize);
+        return authorService.findAll(pageNumber, pageSize);
     }
 
     @Operation(
@@ -74,14 +73,15 @@ public class AuthorController {
     public AuthorDto getAuthorById(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return this.authorService.findById(id)
+        return authorService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
     @Operation(
             description = "Creates a new author and persists it.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Author was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "201",
+                            description = "Author was created and is returned in a response body."),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -92,14 +92,15 @@ public class AuthorController {
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
     public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
-        return this.authorService.create(author);
+        return authorService.create(author);
         // TODO: conflict status
     }
 
     @Operation(
             description = "Updates an author by ID.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Author was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "200",
+                            description = "Author was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
@@ -114,7 +115,7 @@ public class AuthorController {
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody AuthorDto author
     ) {
-        return this.authorService.update(id, author);
+        return authorService.update(id, author);
     }
 
     @Operation(
@@ -129,7 +130,7 @@ public class AuthorController {
     public void deleteAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!this.authorService.deleteById(id)) {
+        if (!authorService.deleteById(id)) {
             throw new NotFoundEntityException(id, AuthorDto.class);
         }
     }

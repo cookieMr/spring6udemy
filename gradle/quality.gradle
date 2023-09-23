@@ -1,0 +1,23 @@
+apply plugin: 'checkstyle'
+
+checkstyle {
+    toolVersion = "10.12.3"
+    configFile = file("$rootDir/config/google_checks.xml")
+    ignoreFailures = false
+    group = 'verification'
+}
+
+tasks.withType(Checkstyle).configureEach {
+    excludes = [
+            "**/generated/**",
+            "**/sources/**"
+    ]
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "cookieMr_spring6udemy"
+        property "sonar.organization", "cookiemr-github"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}

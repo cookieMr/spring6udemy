@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("publisher")
@@ -56,7 +55,7 @@ public class PublisherController {
             )
             @RequestParam(required = false) Integer pageSize
     ) {
-        return this.publisherService.findAll(pageNumber, pageSize);
+        return publisherService.findAll(pageNumber, pageSize);
     }
 
     @Operation(
@@ -74,14 +73,15 @@ public class PublisherController {
     public PublisherDto getPublisherById(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return this.publisherService.findById(id)
+        return publisherService.findById(id)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
     @Operation(
             description = "Creates a new publisher and persists it.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Publisher was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "201",
+                            description = "Publisher was created and is returned in a response body."),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -92,14 +92,15 @@ public class PublisherController {
     @ResponseStatus(HttpStatus.CREATED)
     @NotNull
     public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
-        return this.publisherService.create(publisher);
+        return publisherService.create(publisher);
         // TODO: conflict status
     }
 
     @Operation(
             description = "Updates a publisher by ID.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Publisher was updated and is returned in a response body."),
+                    @ApiResponse(responseCode = "200",
+                            description = "Publisher was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
@@ -114,7 +115,7 @@ public class PublisherController {
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody PublisherDto publisher
     ) {
-        return this.publisherService.update(id, publisher);
+        return publisherService.update(id, publisher);
     }
 
     @Operation(
@@ -129,7 +130,7 @@ public class PublisherController {
     public void deletePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!this.publisherService.deleteById(id)) {
+        if (!publisherService.deleteById(id)) {
             throw new NotFoundEntityException(id, PublisherDto.class);
         }
     }

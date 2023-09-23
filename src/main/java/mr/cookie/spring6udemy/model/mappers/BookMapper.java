@@ -1,13 +1,12 @@
 package mr.cookie.spring6udemy.model.mappers;
 
-import mr.cookie.spring6udemy.model.entities.BookEntity;
+import java.util.List;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.jetbrains.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-
-import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookMapper {
