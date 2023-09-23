@@ -1,0 +1,32 @@
+sourceSets {
+    unitTest {
+        java.srcDir file("$rootDir/unitTest/java")
+
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+configurations {
+    unitTestImplementation.extendsFrom testImplementation
+    unitTestCompileOnly.extendsFrom testCompileOnly
+    unitTestRuntimeOnly.extendsFrom testRuntimeOnly
+    unitTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+}
+
+tasks.register('unitTest', Test) {
+    description = 'Runs Unit Tests with Mockito.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging {
+        events "skipped", "failed"
+    }
+}
+
+test.dependsOn unitTest
+jacocoTestReport.dependsOn unitTest

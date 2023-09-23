@@ -1,0 +1,33 @@
+sourceSets {
+    integrationTest {
+        java.srcDir file("$rootDir/integrationTest/java")
+        resources.srcDir file("$rootDir/integrationTest/resources")
+
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestCompileOnly.extendsFrom testCompileOnly
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+    integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs Integration Tests with H2 Database.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging {
+        events "skipped", "failed"
+    }
+}
+
+test.dependsOn integrationTest
+jacocoTestReport.dependsOn integrationTest
