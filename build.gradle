@@ -15,6 +15,7 @@ sourceCompatibility = '17'
 apply from: "$rootDir/gradle/unitTest.gradle"
 apply from: "$rootDir/gradle/integrationTest.gradle"
 apply from: "$rootDir/gradle/quality.gradle"
+apply from: "$rootDir/gradle/jacoco.gradle"
 
 repositories {
     mavenCentral()
@@ -60,26 +61,4 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
     testImplementation "com.h2database:h2"
-}
-
-test {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
-}
-tasks.withType(Test).configureEach {
-    testLogging {
-        events "skipped", "failed"
-    }
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        xml.required = true
-        csv.required = false
-        html.required = true
-    }
-}
-jacoco {
-    toolVersion = "0.8.10"
 }

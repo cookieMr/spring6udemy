@@ -27,6 +27,3 @@ tasks.register('unitTest', Test) {
         events "skipped", "failed"
     }
 }
-
-test.dependsOn unitTest
-jacocoTestReport.dependsOn unitTest
