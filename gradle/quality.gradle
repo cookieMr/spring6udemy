@@ -14,10 +14,13 @@ tasks.withType(Checkstyle).configureEach {
     ]
 }
 
-sonarqube {
+sonar {
     properties {
         property "sonar.projectKey", "cookieMr_spring6udemy"
         property "sonar.organization", "cookiemr-github"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.sources", "src/main"
+        property "sonar.tests", "src/unitTest,src/integrationTest"
+        property "sonar.sourceEncoding", "UTF-8"
     }
 }
