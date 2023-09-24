@@ -24,9 +24,9 @@ jacocoTestReport {
     }
 
     reports {
-        xml.enabled true
-        csv.enabled false
-        html.enabled false
+        xml.required = true
+        csv.required = false
+        html.required = false
     }
 
     dependsOn test
