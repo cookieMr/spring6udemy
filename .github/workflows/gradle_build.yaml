@@ -24,7 +24,7 @@ jobs:
         with:
           gradle-version: 7.6.1
       - name: Run Gradle Build Command
-        run: ./gradlew build -x test -x check
+        run: ./gradlew build -x test -x check --scan
 
   test:
     name: Test Project with Gradle
