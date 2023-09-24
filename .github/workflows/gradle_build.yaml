@@ -67,7 +67,9 @@ jobs:
           gradle-version: 7.6.1
       - name: Run Gradle Check Command
         run: ./gradlew check
-      - uses: actions/upload-artifact@v3
+      - name: Upload HTML Reports as Artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           name: quality-reports-artifacts
           path: |
