@@ -17,8 +17,10 @@ public interface CrudService<T> {
     int DEFAULT_PAGE_NUMBER = 0;
 
     @NotNull
+    @Transactional(readOnly = true)
     Page<T> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize);
 
+    @Transactional(readOnly = true)
     Optional<T> findById(@NotNull UUID id);
 
     @NotNull

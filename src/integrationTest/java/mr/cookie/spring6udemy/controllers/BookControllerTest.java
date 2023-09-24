@@ -33,15 +33,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(properties = "app.pagination.default-page-size=" + BookControllerTest.TEST_PAGE_SIZE)
 @SuppressWarnings("SameParameterValue")
 @IntegrationTest
-public class BookControllerTest {
+class BookControllerTest {
 
     static final int TEST_PAGE_SIZE = 7;
 
@@ -60,8 +60,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetAllBooks() {
+    @DirtiesContext
+    void shouldGetAllBooks() {
         var createdBooks = IntStream.range(0, TEST_PAGE_SIZE).mapToObj(ignore -> BookDto.builder()
                         .title(RandomStringUtils.randomAlphabetic(25))
                         .isbn("%s-%s".formatted(
@@ -81,8 +81,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetFirstPageOfBooks() {
+    @DirtiesContext
+    void shouldGetFirstPageOfBooks() {
         var createdBooks = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj(ignore -> BookDto.builder()
                         .title(RandomStringUtils.randomAlphabetic(25))
                         .isbn("%s-%s".formatted(
@@ -102,8 +102,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetSecondPageOfBooks() {
+    @DirtiesContext
+    void shouldGetSecondPageOfBooks() {
         var createdBooks = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj(ignore -> BookDto.builder()
                         .title(RandomStringUtils.randomAlphabetic(25))
                         .isbn("%s-%s".formatted(
@@ -123,8 +123,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldCreateAndThenGetBookById() {
+    @DirtiesContext
+    void shouldCreateAndThenGetBookById() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
         var bookId = createBook(bookDto).getId();
@@ -168,8 +168,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldCreateBook() {
+    @DirtiesContext
+    void shouldCreateBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
         var result = createBook(bookDto);
@@ -186,8 +186,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldUpdateBook() {
+    @DirtiesContext
+    void shouldUpdateBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
         var createdBook = createBook(bookDto);
 
@@ -201,10 +201,10 @@ public class BookControllerTest {
     }
 
     @Rollback
-    @Transactional
+    @DirtiesContext
     @ParameterizedTest
     @MethodSource("bookModifiers")
-    public void shouldFailToUpdateBook(@NotNull Consumer<BookDto> bookModifier) {
+    void shouldFailToUpdateBook(@NotNull Consumer<BookDto> bookModifier) {
         var bookDto = BOOK_DTO_SUPPLIER.get();
         var createdBook = createBook(bookDto);
         bookModifier.accept(createdBook);
@@ -221,8 +221,8 @@ public class BookControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldDeleteExistingBook() {
+    @DirtiesContext
+    void shouldDeleteExistingBook() {
         var bookDto = BOOK_DTO_SUPPLIER.get();
 
         var bookId = createBook(bookDto).getId();

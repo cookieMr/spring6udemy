@@ -33,17 +33,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("SameParameterValue")
-@SpringBootTest(
-        properties = "app.pagination.default-page-size=" + AuthorControllerTest.TEST_PAGE_SIZE
-)
+@SpringBootTest(properties = "app.pagination.default-page-size=" + AuthorControllerTest.TEST_PAGE_SIZE)
 @IntegrationTest
-public class AuthorControllerTest {
+class AuthorControllerTest {
 
     static final int TEST_PAGE_SIZE = 13;
 
@@ -62,8 +60,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetAllAuthors() {
+    @DirtiesContext
+    void shouldGetAllAuthors() {
         var createdAuthors = IntStream.range(0, TEST_PAGE_SIZE).mapToObj(ignore -> AuthorDto.builder()
                         .firstName(RandomStringUtils.randomAlphabetic(25))
                         .lastName(RandomStringUtils.randomAlphabetic(25))
@@ -80,8 +78,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetFirstPageOfAuthors() {
+    @DirtiesContext
+    void shouldGetFirstPageOfAuthors() {
         var createdAuthors = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj(ignore -> AuthorDto.builder()
                         .firstName(RandomStringUtils.randomAlphabetic(25))
                         .lastName(RandomStringUtils.randomAlphabetic(25))
@@ -98,8 +96,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetSecondPageOfAuthors() {
+    @DirtiesContext
+    void shouldGetSecondPageOfAuthors() {
         var createdAuthors = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj(ignore -> AuthorDto.builder()
                         .firstName(RandomStringUtils.randomAlphabetic(25))
                         .lastName(RandomStringUtils.randomAlphabetic(25))
@@ -116,8 +114,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldCreateAndThenGetAuthorById() {
+    @DirtiesContext
+    void shouldCreateAndThenGetAuthorById() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
         var authorId = createAuthor(authorDto).getId();
@@ -159,8 +157,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldCreateAuthor() {
+    @DirtiesContext
+    void shouldCreateAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
         var result = createAuthor(authorDto);
@@ -177,8 +175,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldUpdateAuthor() {
+    @DirtiesContext
+    void shouldUpdateAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
         var createdAuthor = createAuthor(authorDto);
 
@@ -210,8 +208,8 @@ public class AuthorControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldDeleteExistingAuthor() {
+    @DirtiesContext
+    void shouldDeleteExistingAuthor() {
         var authorDto = AUTHOR_DTO_SUPPLIER.get();
 
         var authorId = createAuthor(authorDto).getId();
