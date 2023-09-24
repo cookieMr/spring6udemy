@@ -33,15 +33,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("SameParameterValue")
 @SpringBootTest
 @IntegrationTest
-public class PublisherControllerTest {
+class PublisherControllerTest {
 
     private static final int TEST_PAGE_SIZE = 25;
 
@@ -63,8 +63,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetAllPublishers() {
+    @DirtiesContext
+    void shouldGetAllPublishers() {
         var createdPublishers = IntStream.range(0, TEST_PAGE_SIZE).mapToObj(ignore -> PublisherDto.builder()
                         .name(RandomStringUtils.randomAlphabetic(25))
                         .address(RandomStringUtils.randomAlphabetic(25))
@@ -84,8 +84,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetFirstPageOfPublishers() {
+    @DirtiesContext
+    void shouldGetFirstPageOfPublishers() {
         var createdPublishers = IntStream.range(0, 2 * TEST_PAGE_SIZE).mapToObj(ignore -> PublisherDto.builder()
                         .name(RandomStringUtils.randomAlphabetic(25))
                         .address(RandomStringUtils.randomAlphabetic(25))
@@ -105,8 +105,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldGetSecondPageOfPublishers() {
+    @DirtiesContext
+    void shouldGetSecondPageOfPublishers() {
         var createdPublishers = IntStream.range(0, 3 * TEST_PAGE_SIZE).mapToObj(ignore -> PublisherDto.builder()
                         .name(RandomStringUtils.randomAlphabetic(25))
                         .address(RandomStringUtils.randomAlphabetic(25))
@@ -126,8 +126,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldCreateAndThenGetPublisherById() {
+    @DirtiesContext
+    void shouldCreateAndThenGetPublisherById() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
         var publisherId = createPublisher(publisherDto).getId();
@@ -180,8 +180,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldCreatePublisher() {
+    @DirtiesContext
+    void shouldCreatePublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
         var result = createPublisher(publisherDto);
@@ -201,8 +201,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldUpdatePublisher() {
+    @DirtiesContext
+    void shouldUpdatePublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
         var createdPublisher = createPublisher(publisherDto);
 
@@ -219,10 +219,10 @@ public class PublisherControllerTest {
     }
 
     @Rollback
-    @Transactional
+    @DirtiesContext
     @ParameterizedTest
     @MethodSource("publisherModifiers")
-    public void shouldFailToUpdatePublisher(@NotNull Consumer<PublisherDto> publisherModifier) {
+    void shouldFailToUpdatePublisher(@NotNull Consumer<PublisherDto> publisherModifier) {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
         var createdPublisher = createPublisher(publisherDto);
         publisherModifier.accept(createdPublisher);
@@ -239,8 +239,8 @@ public class PublisherControllerTest {
 
     @Test
     @Rollback
-    @Transactional
-    public void shouldDeleteExistingPublisher() {
+    @DirtiesContext
+    void shouldDeleteExistingPublisher() {
         var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
 
         var publisherId = createPublisher(publisherDto).getId();
