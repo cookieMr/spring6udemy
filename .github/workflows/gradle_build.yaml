@@ -66,7 +66,16 @@ jobs:
         with:
           gradle-version: 7.6.1
       - name: Run Gradle Check Command
-        run: ./gradlew check
+        run: ./gradlew check -x test
+      - name: Upload HTML Reports as Artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ github.ref == 'refs/heads/master' }}
+        with:
+          name: quality-reports-artifacts
+          path: |
+            build/reports/checkstyle/*.html
+            build/reports/spotbugs/*.html
+            build/reports/dependency-check-report.html
 
   sonar:
     name: Sends Test Reports to SonarCloud
