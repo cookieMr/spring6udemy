@@ -24,7 +24,7 @@ jobs:
         with:
           gradle-version: 7.6.1
       - name: Run Gradle Build Command
-        run: ./gradlew build -x test -x check --scan
+        run: ./gradlew build -x test -x check
 
   test:
     name: Test Project with Gradle
@@ -67,6 +67,13 @@ jobs:
           gradle-version: 7.6.1
       - name: Run Gradle Check Command
         run: ./gradlew check
+      - uses: actions/upload-artifact@v3
+        with:
+          name: quality-reports-artifacts
+          path: |
+            build/reports/checkstyle/*.html
+            build/reports/spotbugs/*.html
+            build/reports/dependency-check-report.html
 
   sonar:
     name: Sends Test Reports to SonarCloud
