@@ -1,0 +1,217 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 20230924-2022-create-authors-table
+      author: cookieMr
+      comment: Creates authors table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - createTable:
+            tableName: authors
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: int
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 20230924-2023-create-books-table
+      author: cookieMr
+      comment: Creates books table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - createTable:
+            tableName: books
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: isbn
+                  type: varchar(14)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: title
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: publisher_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: int
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 20230924-2025-create-publishers-table
+      author: cookieMr
+      comment: Creates publishers table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - createTable:
+            tableName: publishers
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: city
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: state
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: zip_code
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: int
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 20230924-2028-create-author-book-association-table
+      author: cookieMr
+      comment: Creates author_book association table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - createTable:
+            tableName: author_book
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: book_id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: author_id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+  - changeSet:
+      id: 20230924-2040-add-foreign-key-author-book-author-id
+      author: cookieMr
+      comment: Creates foreign key on author_book table for author_id
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: author_book
+            baseColumnNames: author_id
+            baseTableSchemaName: cosmere
+            referencedTableName: authors
+            referencedColumnNames: id
+            referencedTableSchemaName: cosmere
+            constraintName: fk_author_id_48c59c52163c
+
+  - changeSet:
+      id: 20230924-2040-add-foreign-key-author-book-book-id
+      author: cookieMr
+      comment: Creates foreign key on author_book table for book_id
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: author_book
+            baseColumnNames: book_id
+            baseTableSchemaName: cosmere
+            referencedTableName: books
+            referencedColumnNames: id
+            referencedTableSchemaName: cosmere
+            constraintName: fk_book_id_c62b4dc8f6db
+
+  - changeSet:
+      id: 20230924-2045-add-foreign-key-books-publisher-id
+      author: cookieMr
+      comment: Creates foreign key on book table for publisher_id
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: books
+            baseColumnNames: publisher_id
+            baseTableSchemaName: cosmere
+            referencedTableName: publishers
+            referencedColumnNames: id
+            referencedTableSchemaName: cosmere
+            constraintName: fk_book_publisher_id_48c59c52163c

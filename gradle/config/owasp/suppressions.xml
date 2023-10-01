@@ -4,6 +4,9 @@
         <cve>CVE-2018-14335</cve>
     </suppress>
     <suppress until="2023-12-01Z">
+        <cve>CVE-2022-0839</cve>
+    </suppress>
+    <suppress until="2023-12-01Z">
         <cve>CVE-2022-45868</cve>
     </suppress>
     <suppress until="2023-12-01Z">

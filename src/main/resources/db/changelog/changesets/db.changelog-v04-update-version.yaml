@@ -1,0 +1,43 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 20231001-1234-update-authors-version-constrain
+      author: cookieMr
+      comment: Changes Version Column to be Non Null for Author Table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - addNotNullConstraint:
+            tableName: authors
+            schemaName: cosmere
+            columnName: version
+            defaultNullValue: 0
+            columnDataType: int
+
+  - changeSet:
+      id: 20231001-1234-update-books-version-constrain
+      author: cookieMr
+      comment: Changes Version Column to be Non Null for Book Table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - addNotNullConstraint:
+            tableName: books
+            schemaName: cosmere
+            columnName: version
+            defaultNullValue: 0
+            columnDataType: int
+
+  - changeSet:
+      id: 20231001-1234-update-publishers-version-constrain
+      author: cookieMr
+      comment: Changes Version Column to be Non Null for Publisher Table
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - addNotNullConstraint:
+            tableName: publishers
+            schemaName: cosmere
+            columnName: version
+            defaultNullValue: 0
+            columnDataType: int

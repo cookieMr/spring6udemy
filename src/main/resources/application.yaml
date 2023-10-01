@@ -8,23 +8,21 @@ spring:
     url: jdbc:mysql://docker-mysql:3306/cosmere?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      pool-name: cosmere-pool
+      pool-name: cosmere-db-pool
       maximum-pool-size: 5
-
-  flyway:
-    default-schema: cosmere
-    driver-class-name: ${spring.datasource.driver-class-name}
-    placeholders:
-      alter-column: MODIFY
 
   jpa:
     database: mysql
     open-in-view: false
     properties:
       hibernate:
+        default_schema: cosmere
         dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: validate
+
+  liquibase:
+    default-schema: cosmere
 
 server:
   servlet:

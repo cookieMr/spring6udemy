@@ -1,0 +1,112 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 20231001-1118-insert-author-brandon-sanderson
+      author: cookieMr
+      comment: Creates an author record for Brandon Sanderson
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: authors
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  value: e25691eb-89f4-409b-b6ef-42aeb3b9e4af
+              - column:
+                  name: first_name
+                  value: Brandon
+              - column:
+                  name: last_name
+                  value: Sanderson
+              - column:
+                  name: created_date
+                  value: now()
+              - column:
+                  name: update_date
+                  value: now()
+
+  - changeSet:
+      id: 20231001-1123-insert-publisher-dragonsteel
+      author: cookieMr
+      comment: Creates a publisher record for DragonSteel
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: publishers
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  value: 3fca38ef-8d31-4ccd-aca4-ec2e4570262a
+              - column:
+                  name: name
+                  value: DragonSteel Books
+              - column:
+                  name: address
+                  value: PO Box 698
+              - column:
+                  name: state
+                  value: UT
+              - column:
+                  name: city
+                  value: American Fork
+              - column:
+                  name: zip_code
+                  value: 84003
+              - column:
+                  name: created_date
+                  value: now()
+              - column:
+                  name: update_date
+                  value: now()
+
+  - changeSet:
+      id: 20231001-1142-insert-book-the-way-of-kings
+      author: cookieMr
+      comment: Creates a book record for The Way of Kings
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: books
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  value: 187a65fb-1bef-4b6a-8093-a4c38228cf59
+              - column:
+                  name: isbn
+                  value: 978-0765326355
+              - column:
+                  name: title
+                  value: The Way of Kings
+              - column:
+                  name: publisher_id
+                  value: 3fca38ef-8d31-4ccd-aca4-ec2e4570262a
+              - column:
+                  name: created_date
+                  value: now()
+              - column:
+                  name: update_date
+                  value: now()
+
+  - changeSet:
+      id: 20231001-1144-insert-author-book-relationship
+      author: cookieMr
+      comment: Creates an author-book relationship
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: author_book
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: book_id
+                  value: 187a65fb-1bef-4b6a-8093-a4c38228cf59
+              - column:
+                  name: author_id
+                  value: e25691eb-89f4-409b-b6ef-42aeb3b9e4af
