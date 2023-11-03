@@ -2,8 +2,6 @@ package mr.cookie.spring6udemy.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -11,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
@@ -20,7 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorControllerTest {
@@ -38,28 +38,27 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAllAuthors() {
-        var pageAuthor = new PageImpl<>(List.of(AUTHOR_DTO));
+        when(authorService.findAll())
+                .thenReturn(Stream.of(AUTHOR_DTO));
 
-        when(authorService.findAll(anyInt(), anyInt()))
-                .thenReturn(pageAuthor);
+        var result = authorController.getAllAuthors();
 
-        var result = authorController.getAllAuthors(1, 2);
+        assertThat(result)
+                .isEqualTo(ResponseEntity.ok(List.of(AUTHOR_DTO)));
 
-        assertThat(result).isSameAs(pageAuthor);
-
-        verify(authorService).findAll(1, 2);
+        verify(authorService).findAll();
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldGetAuthorById() {
-        when(authorService.findById(any(UUID.class))).thenReturn(Optional.of(AUTHOR_DTO));
+        when(authorService.findById(AUTHOR_ID)).thenReturn(Optional.of(AUTHOR_DTO));
 
         var result = authorController.getAuthorById(AUTHOR_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(AUTHOR_DTO);
+                .isEqualTo(ResponseEntity.ok(AUTHOR_DTO));
 
         verify(authorService).findById(AUTHOR_ID);
         verifyNoMoreInteractions(authorService);
@@ -67,7 +66,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(authorService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(authorService.findById(AUTHOR_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> authorController.getAuthorById(AUTHOR_ID))
                 .isNotNull()
@@ -79,13 +78,13 @@ class AuthorControllerTest {
 
     @Test
     void shouldCreateNewAuthor() {
-        when(authorService.create(any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+        when(authorService.create(AUTHOR_DTO)).thenReturn(AUTHOR_DTO);
 
         var result = authorController.createAuthor(AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isSameAs(AUTHOR_DTO);
+                .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(AUTHOR_DTO));
 
         verify(authorService).create(AUTHOR_DTO);
         verifyNoMoreInteractions(authorService);
@@ -93,13 +92,13 @@ class AuthorControllerTest {
 
     @Test
     void shouldUpdateExistingAuthor() {
-        when(authorService.update(any(UUID.class), any(AuthorDto.class))).thenReturn(AUTHOR_DTO);
+        when(authorService.update(AUTHOR_ID, AUTHOR_DTO)).thenReturn(AUTHOR_DTO);
 
         var result = authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
 
         assertThat(result)
                 .isNotNull()
-                .isSameAs(AUTHOR_DTO);
+                .isEqualTo(ResponseEntity.ok(AUTHOR_DTO));
 
         verify(authorService).update(AUTHOR_ID, AUTHOR_DTO);
         verifyNoMoreInteractions(authorService);
@@ -107,7 +106,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(authorService.update(any(UUID.class), any(AuthorDto.class)))
+        when(authorService.update(AUTHOR_ID, AUTHOR_DTO))
                 .thenThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
 
         assertThatThrownBy(() -> authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO))
@@ -121,7 +120,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(authorService.deleteById(any(UUID.class))).thenReturn(true);
+        when(authorService.deleteById(AUTHOR_ID)).thenReturn(true);
 
         authorController.deleteAuthor(AUTHOR_ID);
 
@@ -131,7 +130,7 @@ class AuthorControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(authorService.deleteById(any(UUID.class))).thenReturn(false);
+        when(authorService.deleteById(AUTHOR_ID)).thenReturn(false);
 
         assertThatThrownBy(() -> authorController.deleteAuthor(AUTHOR_ID))
                 .isNotNull()

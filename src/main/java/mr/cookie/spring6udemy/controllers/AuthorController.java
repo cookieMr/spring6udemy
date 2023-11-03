@@ -2,8 +2,8 @@ package mr.cookie.spring6udemy.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
@@ -11,9 +11,9 @@ import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,40 +22,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("author")
+@RequestMapping(path = "/author")
 @RequiredArgsConstructor
 public class AuthorController {
 
     private static final String PATH_AUTHOR_ID_DESCRIPTION = "Author's ID";
+    private static final String RESPONSE_400_DESCRIPTION = "Author has invalid values as fields.";
     private static final String RESPONSE_404_DESCRIPTION = "Author was not found by ID.";
     private static final String RESPONSE_409_DESCRIPTION = "Author with provided attributes already exists";
 
     @NotNull
     private final AuthorService authorService;
 
-    @Operation(description = "Returns all authors (or an empty page).")
+    @Operation(description = "Returns all authors (or an empty collection).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public Page<AuthorDto> getAllAuthors(
-            @Parameter(
-                    description = "A zero-based index of a page (defaulted to 0).",
-                    in = ParameterIn.QUERY,
-                    example = "0"
-            )
-            @RequestParam(required = false) Integer pageNumber,
-            @Parameter(
-                    description = "A page size of elements to be fetched.",
-                    in = ParameterIn.QUERY,
-                    example = "25"
-            )
-            @RequestParam(required = false) Integer pageSize
-    ) {
-        return authorService.findAll(pageNumber, pageSize);
+    public ResponseEntity<List<AuthorDto>> getAllAuthors() {
+        return ResponseEntity.ok(authorService.findAll().toList());
     }
 
     @Operation(
@@ -66,14 +53,15 @@ public class AuthorController {
             }
     )
     @GetMapping(
-            path = "{id}",
+            path = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public AuthorDto getAuthorById(
+    public ResponseEntity<AuthorDto> getAuthorById(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         return authorService.findById(id)
+                .map(ResponseEntity::ok)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
@@ -82,6 +70,7 @@ public class AuthorController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Author was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -89,10 +78,11 @@ public class AuthorController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
-        return authorService.create(author);
+    public ResponseEntity<AuthorDto> createAuthor(@Validated @RequestBody AuthorDto author) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authorService.create(author));
+
         // TODO: conflict status
     }
 
@@ -101,21 +91,21 @@ public class AuthorController {
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Author was updated and is returned in a response body."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
             }
     )
     @PutMapping(
-            path = "{id}",
+            path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public AuthorDto updateAuthor(
+    public ResponseEntity<AuthorDto> updateAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody AuthorDto author
     ) {
-        return authorService.update(id, author);
+        return ResponseEntity.ok(authorService.update(id, author));
     }
 
     @Operation(
@@ -125,7 +115,7 @@ public class AuthorController {
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
             }
     )
-    @DeleteMapping(path = "{id}")
+    @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id

@@ -2,21 +2,19 @@ package mr.cookie.spring6udemy.services;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PublisherServiceImpl implements PublisherService {
-
-    private final int defaultPageSize;
 
     @NotNull
     private final PublisherMapper publisherMapper;
@@ -24,22 +22,12 @@ public class PublisherServiceImpl implements PublisherService {
     @NotNull
     private final PublisherRepository publisherRepository;
 
-    public PublisherServiceImpl(
-            @Value("${app.pagination.default-page-size:25}") int defaultPageSize,
-            @NotNull PublisherMapper publisherMapper,
-            @NotNull PublisherRepository publisherRepository
-    ) {
-        this.defaultPageSize = validateDefaultPageSize(defaultPageSize);
-        this.publisherMapper = publisherMapper;
-        this.publisherRepository = publisherRepository;
-    }
-
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public Page<PublisherDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
-        var pageRequest = createPageRequest(pageNumber, pageSize, defaultPageSize);
-        return publisherRepository.findAll(pageRequest)
+    public Stream<PublisherDto> findAll() {
+        return publisherRepository.findAll()
+                .stream()
                 .map(publisherMapper::map);
     }
 

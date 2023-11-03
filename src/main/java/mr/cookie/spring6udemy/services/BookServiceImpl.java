@@ -2,21 +2,19 @@ package mr.cookie.spring6udemy.services;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
-
-    private final int defaultPageSize;
 
     @NotNull
     private final BookMapper bookMapper;
@@ -24,22 +22,12 @@ public class BookServiceImpl implements BookService {
     @NotNull
     private final BookRepository bookRepository;
 
-    public BookServiceImpl(
-            @Value("${app.pagination.default-page-size:25}") int defaultPageSize,
-            @NotNull BookMapper bookMapper,
-            @NotNull BookRepository bookRepository
-    ) {
-        this.defaultPageSize = validateDefaultPageSize(defaultPageSize);
-        this.bookMapper = bookMapper;
-        this.bookRepository = bookRepository;
-    }
-
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public Page<BookDto> findAll(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
-        var pageRequest = createPageRequest(pageNumber, pageSize, defaultPageSize);
-        return bookRepository.findAll(pageRequest)
+    public Stream<BookDto> findAll() {
+        return bookRepository.findAll()
+                .stream()
                 .map(bookMapper::map);
     }
 

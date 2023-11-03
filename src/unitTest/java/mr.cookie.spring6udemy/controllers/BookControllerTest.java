@@ -2,8 +2,6 @@ package mr.cookie.spring6udemy.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -11,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
@@ -40,23 +39,21 @@ class BookControllerTest {
 
     @Test
     void shoutGetAllBooks() {
-        var pageBook = new PageImpl<>(List.of(BOOK_DTO));
+        when(bookService.findAll())
+                .thenReturn(Stream.of(BOOK_DTO));
 
-        when(bookService.findAll(anyInt(), anyInt()))
-                .thenReturn(pageBook);
-
-        var result = bookController.getAllBooks(3, 4);
+        var result = bookController.getAllBooks();
 
         assertThat(result)
-                .isSameAs(pageBook);
+                .isEqualTo(ResponseEntity.ok(List.of(BOOK_DTO)));
 
-        verify(bookService).findAll(3, 4);
+        verify(bookService).findAll();
         verifyNoMoreInteractions(bookService);
     }
 
     @Test
     void shouldGetBookById() {
-        when(bookService.findById(any(UUID.class))).thenReturn(Optional.of(BOOK_DTO));
+        when(bookService.findById(BOOK_ID)).thenReturn(Optional.of(BOOK_DTO));
 
         var result = bookController.getBookById(BOOK_ID);
 
@@ -70,7 +67,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        when(bookService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(bookService.findById(BOOK_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookController.getBookById(BOOK_ID))
                 .isNotNull()
@@ -82,7 +79,7 @@ class BookControllerTest {
 
     @Test
     void shouldCreateNewBook() {
-        when(bookService.create(any(BookDto.class))).thenReturn(BOOK_DTO);
+        when(bookService.create(BOOK_DTO)).thenReturn(BOOK_DTO);
 
         var result = bookController.createBook(BOOK_DTO);
 
@@ -96,7 +93,7 @@ class BookControllerTest {
 
     @Test
     void shouldUpdateExistingBook() {
-        when(bookService.update(any(UUID.class), any(BookDto.class))).thenReturn(BOOK_DTO);
+        when(bookService.update(BOOK_ID, BOOK_DTO)).thenReturn(BOOK_DTO);
 
         var result = bookController.updateBook(BOOK_ID, BOOK_DTO);
 
@@ -110,7 +107,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        when(bookService.update(any(UUID.class), any(BookDto.class)))
+        when(bookService.update(BOOK_ID, BOOK_DTO))
                 .thenThrow(new NotFoundEntityException(BOOK_ID, BookDto.class));
 
         assertThatThrownBy(() -> bookController.updateBook(BOOK_ID, BOOK_DTO))
@@ -124,7 +121,7 @@ class BookControllerTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        when(bookService.deleteById(any(UUID.class))).thenReturn(true);
+        when(bookService.deleteById(BOOK_ID)).thenReturn(true);
 
         bookController.deleteBook(BOOK_ID);
 
@@ -134,7 +131,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteBookById() {
-        when(bookService.deleteById(any(UUID.class))).thenReturn(false);
+        when(bookService.deleteById(BOOK_ID)).thenReturn(false);
 
         assertThatThrownBy(() -> bookController.deleteBook(BOOK_ID))
                 .isNotNull()

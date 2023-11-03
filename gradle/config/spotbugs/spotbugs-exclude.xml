@@ -8,10 +8,14 @@
     </Match>
     <Match>
         <Or>
+            <Class name="mr.cookie.spring6udemy.controllers.AuthorControllerIntegrationTest"/>
             <Class name="mr.cookie.spring6udemy.controllers.AuthorControllerTest"/>
             <Class name="mr.cookie.spring6udemy.controllers.BookControllerTest"/>
             <Class name="mr.cookie.spring6udemy.controllers.PublisherControllerTest"/>
         </Or>
-        <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+        <Or>
+            <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+            <Bug pattern="NP_NONNULL_PARAM_VIOLATION"/>
+        </Or>
     </Match>
 </FindBugsFilter>

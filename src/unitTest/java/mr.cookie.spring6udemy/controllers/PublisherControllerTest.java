@@ -2,7 +2,6 @@ package mr.cookie.spring6udemy.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -10,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.services.PublisherService;
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class PublisherControllerTest {
@@ -37,23 +37,21 @@ class PublisherControllerTest {
 
     @Test
     void shouldGetAllPublishers() {
-        var pagePublisher = new PageImpl<>(List.of(PUBLISHER_DTO));
+        when(publisherService.findAll())
+                .thenReturn(Stream.of(PUBLISHER_DTO));
 
-        when(publisherService.findAll(null, null))
-                .thenReturn(pagePublisher);
-
-        var result = publisherController.getAllPublishers(null, null);
+        var result = publisherController.getAllPublishers();
 
         assertThat(result)
-                .isSameAs(pagePublisher);
+                .isEqualTo(ResponseEntity.ok(List.of(PUBLISHER_DTO)));
 
-        verify(publisherService).findAll(null, null);
+        verify(publisherService).findAll();
         verifyNoMoreInteractions(publisherService);
     }
 
     @Test
     void shouldGetPublisherById() {
-        when(publisherService.findById(any(UUID.class))).thenReturn(Optional.of(PUBLISHER_DTO));
+        when(publisherService.findById(PUBLISHER_ID)).thenReturn(Optional.of(PUBLISHER_DTO));
 
         var result = publisherController.getPublisherById(PUBLISHER_ID);
 
@@ -67,7 +65,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(publisherService.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(publisherService.findById(PUBLISHER_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> publisherController.getPublisherById(PUBLISHER_ID))
                 .isNotNull()
@@ -79,7 +77,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldCreateNewPublisher() {
-        when(publisherService.create(any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
+        when(publisherService.create(PUBLISHER_DTO)).thenReturn(PUBLISHER_DTO);
 
         var result = publisherController.createPublisher(PUBLISHER_DTO);
 
@@ -93,7 +91,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldUpdateExistingPublisher() {
-        when(publisherService.update(any(UUID.class), any(PublisherDto.class))).thenReturn(PUBLISHER_DTO);
+        when(publisherService.update(PUBLISHER_ID, PUBLISHER_DTO)).thenReturn(PUBLISHER_DTO);
 
         var result = publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO);
 
@@ -107,7 +105,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(publisherService.update(any(UUID.class), any(PublisherDto.class)))
+        when(publisherService.update(PUBLISHER_ID, PUBLISHER_DTO))
                 .thenThrow(new NotFoundEntityException(PUBLISHER_ID, PublisherDto.class));
 
         assertThatThrownBy(() -> publisherController.updatePublisher(PUBLISHER_ID, PUBLISHER_DTO))
@@ -121,7 +119,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
-        when(publisherService.deleteById(any(UUID.class))).thenReturn(true);
+        when(publisherService.deleteById(PUBLISHER_ID)).thenReturn(true);
 
         publisherController.deletePublisher(PUBLISHER_ID);
 
@@ -131,7 +129,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(publisherService.deleteById(any(UUID.class))).thenReturn(false);
+        when(publisherService.deleteById(PUBLISHER_ID)).thenReturn(false);
 
         assertThatThrownBy(() -> publisherController.deletePublisher(PUBLISHER_ID))
                 .isNotNull()
