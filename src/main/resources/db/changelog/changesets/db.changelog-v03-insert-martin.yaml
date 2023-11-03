@@ -1,0 +1,112 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: dcc44b8c-be92-40ca-aff7-b114e28dca73
+      author: cookieMr
+      comment: Creates an author record for George R.R. Martin
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: authors
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  value: f96172bd-01fe-4a33-b515-458c6b6b1872
+              - column:
+                  name: first_name
+                  value: George R.R.
+              - column:
+                  name: last_name
+                  value: Martin
+              - column:
+                  name: created_date
+                  value: now()
+              - column:
+                  name: update_date
+                  value: now()
+
+  - changeSet:
+      id: 00ad3886-a002-4f7b-965b-bf47899436de
+      author: cookieMr
+      comment: Creates a publisher record for Penguin Random House
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: publishers
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  value: 71521505-7286-4a1c-babd-2dea2ad72f99
+              - column:
+                  name: name
+                  value: Penguin Random House
+              - column:
+                  name: address
+                  value: 1745 Broadway
+              - column:
+                  name: state
+                  value: NY
+              - column:
+                  name: city
+                  value: New York
+              - column:
+                  name: zip_code
+                  value: "10019"
+              - column:
+                  name: created_date
+                  value: now()
+              - column:
+                  name: update_date
+                  value: now()
+
+  - changeSet:
+      id: fd027d8b-9e72-41cc-8e55-51915d648c0d
+      author: cookieMr
+      comment: Creates a book record for A Game of Thrones
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: books
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: id
+                  value: a652a514-4876-418f-99e5-882933d1ead5
+              - column:
+                  name: isbn
+                  value: 978-0553593716
+              - column:
+                  name: title
+                  value: A Game of Thrones
+              - column:
+                  name: publisher_id
+                  value: 71521505-7286-4a1c-babd-2dea2ad72f99
+              - column:
+                  name: created_date
+                  value: now()
+              - column:
+                  name: update_date
+                  value: now()
+
+  - changeSet:
+      id: 49229025-8eef-485c-a694-8fa1df81aa38
+      author: cookieMr
+      comment: Creates an author-book relationship
+      preConditions:
+        - onFail: MARK_RAN
+      changes:
+        - insert:
+            tableName: author_book
+            schemaName: cosmere
+            columns:
+              - column:
+                  name: book_id
+                  value: a652a514-4876-418f-99e5-882933d1ead5
+              - column:
+                  name: author_id
+                  value: f96172bd-01fe-4a33-b515-458c6b6b1872

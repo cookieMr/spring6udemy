@@ -28,7 +28,7 @@ docker run --publish 3306:3306 \
   --health-retries 4 \
   --health-start-period 10s \
   --health-cmd 'mysqladmin ping mysql' \
-  --detach mysql:8.1.0
+  --detach mysql:latest
 ```
 
 ### Run Local App (with necessary dockers)
@@ -57,4 +57,4 @@ curl -f http://localhost:8080/api/actuator/health && echo -e
 * [Swagger - OpenAPI v3](http://[::1]:8080/api/swagger-ui/index.html)
 
 ## Useful External Links
-* [Lazydocker](https://github.com/jesseduffield/lazydocker)
+* [LazyDocker](https://github.com/jesseduffield/lazydocker)
