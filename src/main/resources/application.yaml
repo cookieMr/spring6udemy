@@ -11,6 +11,13 @@ spring:
       pool-name: cosmere-db-pool
       maximum-pool-size: 5
 
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true
+
   jpa:
     database: mysql
     open-in-view: false

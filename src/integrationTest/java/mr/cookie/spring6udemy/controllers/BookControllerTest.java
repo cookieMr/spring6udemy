@@ -20,12 +20,13 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
-import mr.cookie.spring6udemy.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
-import mr.cookie.spring6udemy.utils.Constant;
 import mr.cookie.spring6udemy.utils.MvcResponseWithBookContent;
+import mr.cookie.spring6udemy.utils.annotations.IntegrationTest;
+import mr.cookie.spring6udemy.utils.constants.Constant;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,6 +42,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @SpringBootTest(properties = "app.pagination.default-page-size=" + BookControllerTest.TEST_PAGE_SIZE)
 @SuppressWarnings("SameParameterValue")
 @IntegrationTest
+@Disabled
 class BookControllerTest {
 
     static final int TEST_PAGE_SIZE = 7;

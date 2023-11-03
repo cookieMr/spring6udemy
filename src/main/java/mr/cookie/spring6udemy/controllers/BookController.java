@@ -2,8 +2,8 @@ package mr.cookie.spring6udemy.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
@@ -11,9 +11,9 @@ import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,24 +39,11 @@ public class BookController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public Page<BookDto> getAllBooks(
-            @Parameter(
-                    description = "A zero-based index of a page (defaulted to 0).",
-                    in = ParameterIn.QUERY,
-                    example = "0"
-            )
-            @RequestParam(required = false) Integer pageNumber,
-            @Parameter(
-                    description = "A page size of elements to be fetched.",
-                    in = ParameterIn.QUERY,
-                    example = "25"
-            )
-            @RequestParam(required = false) Integer pageSize
-    ) {
-        return bookService.findAll(pageNumber, pageSize);
+    public ResponseEntity<List<BookDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.findAll().toList());
     }
 
-    @Operation(description = "Returns all books (or an empty page).")
+    @Operation(description = "Returns all books (or an empty collection).")
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE

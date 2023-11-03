@@ -2,10 +2,6 @@ package mr.cookie.spring6udemy.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -21,18 +17,14 @@ import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapperImpl;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class PublisherServiceImplTest {
@@ -41,62 +33,45 @@ class PublisherServiceImplTest {
     private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder()
             .id(PUBLISHER_ID)
             .build();
-    private static final Supplier<PublisherEntity> PUBLISHER_DTO_SUPPLIER = () -> PublisherEntity.builder()
+    private static final Supplier<PublisherEntity> PUBLISHER_ENTITY_SUPPLIER = () -> PublisherEntity.builder()
             .id(PUBLISHER_ID)
             .build();
 
     @Captor
     private ArgumentCaptor<PublisherEntity> publisherDtoArgumentCaptor;
 
-    private PublisherMapper publisherMapper;
+    @Spy
+    private PublisherMapper publisherMapper = new PublisherMapperImpl();
+
+    @Mock
     private PublisherRepository publisherRepository;
+
+    @InjectMocks
     private PublisherServiceImpl publisherService;
-
-    @BeforeEach
-    void setupBeforeEach() {
-        publisherRepository = mock(PublisherRepository.class);
-        publisherMapper = spy(new PublisherMapperImpl());
-        publisherService = new PublisherServiceImpl(25, publisherMapper, publisherRepository);
-    }
-
-    @AfterEach
-    void cleanUp() {
-        reset(publisherRepository, publisherMapper);
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {0, -1, -42})
-    void shouldFailInitializationWithInvalidPageSize(int invalidPageSize) {
-        assertThatThrownBy(() -> new PublisherServiceImpl(invalidPageSize, publisherMapper, publisherRepository))
-                .isNotNull()
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The default pageSize should be greater than zero.");
-    }
 
     @Test
     void shouldReturnAllPublishers() {
-        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
-        var publisherPage = new PageImpl<>(List.of(publisherDto));
+        var publisherEntity = PUBLISHER_ENTITY_SUPPLIER.get();
 
-        when(publisherRepository.findAll(any(Pageable.class)))
-                .thenReturn(publisherPage);
+        when(publisherRepository.findAll())
+                .thenReturn(List.of(publisherEntity));
 
-        var result = publisherService.findAll(null, null);
+        var result = publisherService.findAll();
 
         assertThat(result)
                 .isNotNull()
                 .hasSize(1);
 
-        verify(publisherRepository).findAll(any(PageRequest.class));
-        verify(publisherMapper).map(publisherDto);
+        verify(publisherRepository).findAll();
+        verify(publisherMapper).map(publisherEntity);
         verifyNoMoreInteractions(publisherRepository, publisherMapper);
     }
 
     @Test
     void shouldReturnPublisherById() {
-        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        var publisherEntity = PUBLISHER_ENTITY_SUPPLIER.get();
 
-        when(publisherRepository.findById(any(UUID.class))).thenReturn(Optional.of(publisherDto));
+        when(publisherRepository.findById(PUBLISHER_ID)).thenReturn(Optional.of(publisherEntity));
 
         var result = publisherService.findById(PUBLISHER_ID);
 
@@ -107,13 +82,13 @@ class PublisherServiceImplTest {
                 .returns(PUBLISHER_ID, PublisherDto::getId);
 
         verify(publisherRepository).findById(PUBLISHER_ID);
-        verify(publisherMapper).map(publisherDto);
+        verify(publisherMapper).map(publisherEntity);
         verifyNoMoreInteractions(publisherRepository, publisherMapper);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindPublisherById() {
-        when(publisherRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(publisherRepository.findById(PUBLISHER_ID)).thenReturn(Optional.empty());
 
         var result = publisherService.findById(PUBLISHER_ID);
 
@@ -128,9 +103,9 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldCreateNewPublisher() {
-        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        var publisherEntity = PUBLISHER_ENTITY_SUPPLIER.get();
 
-        when(publisherRepository.save(any(PublisherEntity.class))).thenReturn(publisherDto);
+        when(publisherRepository.save(publisherEntity)).thenReturn(publisherEntity);
 
         var result = publisherService.create(PUBLISHER_DTO);
 
@@ -138,15 +113,15 @@ class PublisherServiceImplTest {
                 .isNotNull()
                 .returns(PUBLISHER_ID, PublisherDto::getId);
 
-        verify(publisherRepository).save(publisherDto);
-        verify(publisherMapper).map(publisherDto);
+        verify(publisherRepository).save(publisherEntity);
+        verify(publisherMapper).map(publisherEntity);
         verify(publisherMapper).map(PUBLISHER_DTO);
         verifyNoMoreInteractions(publisherRepository, publisherMapper);
     }
 
     @Test
     void shouldUpdateExistingPublisher() {
-        var publisherDto = PUBLISHER_DTO_SUPPLIER.get();
+        var publisherEntity = PUBLISHER_ENTITY_SUPPLIER.get();
         var updatedPublisher = PublisherDto.builder()
                 .name("Penguin Random House")
                 .address("Neumarkter Strasse 28")
@@ -155,8 +130,8 @@ class PublisherServiceImplTest {
                 .zipCode("D-81673")
                 .build();
 
-        when(publisherRepository.findById(any(UUID.class))).thenReturn(Optional.of(publisherDto));
-        when(publisherRepository.save(any(PublisherEntity.class))).thenReturn(publisherDto);
+        when(publisherRepository.findById(PUBLISHER_ID)).thenReturn(Optional.of(publisherEntity));
+        when(publisherRepository.save(publisherEntity)).thenReturn(publisherEntity);
 
         var result = publisherService.update(PUBLISHER_ID, updatedPublisher);
 
@@ -171,7 +146,7 @@ class PublisherServiceImplTest {
 
         verify(publisherRepository).findById(PUBLISHER_ID);
         verify(publisherRepository).save(publisherDtoArgumentCaptor.capture());
-        verify(publisherMapper).map(publisherDto);
+        verify(publisherMapper).map(publisherEntity);
         verifyNoMoreInteractions(publisherRepository, publisherMapper);
 
         assertThat(publisherDtoArgumentCaptor.getValue())
@@ -186,7 +161,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdatePublisherById() {
-        when(publisherRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(publisherRepository.findById(PUBLISHER_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> publisherService.update(PUBLISHER_ID, PUBLISHER_DTO))
                 .isNotNull()
@@ -199,7 +174,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
-        when(publisherRepository.existsById(any(UUID.class))).thenReturn(true);
+        when(publisherRepository.existsById(PUBLISHER_ID)).thenReturn(true);
 
         var result = publisherService.deleteById(PUBLISHER_ID);
 
@@ -213,7 +188,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldNotDeleteNotExistingPublisher() {
-        when(publisherRepository.existsById(any(UUID.class))).thenReturn(false);
+        when(publisherRepository.existsById(PUBLISHER_ID)).thenReturn(false);
 
         var result = publisherService.deleteById(PUBLISHER_ID);
 

@@ -2,10 +2,6 @@ package mr.cookie.spring6udemy.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -21,18 +17,14 @@ import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
 import mr.cookie.spring6udemy.repositories.BookRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
@@ -49,46 +41,29 @@ class BookServiceImplTest {
     @Captor
     private ArgumentCaptor<BookEntity> bookDtoArgumentCaptor;
 
-    private BookMapper bookMapper;
+    @Spy
+    private BookMapper bookMapper = new BookMapperImpl();
+
+    @Mock
     private BookRepository bookRepository;
+
+    @InjectMocks
     private BookServiceImpl bookService;
-
-    @BeforeEach
-    void setupBeforeEach() {
-        bookRepository = mock(BookRepository.class);
-        bookMapper = spy(new BookMapperImpl());
-        bookService = new BookServiceImpl(25, bookMapper, bookRepository);
-    }
-
-    @AfterEach
-    void cleanUp() {
-        reset(bookRepository, bookMapper);
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {0, -1, -42})
-    void shouldFailInitializationWithInvalidPageSize(int invalidPageSize) {
-        assertThatThrownBy(() -> new BookServiceImpl(invalidPageSize, bookMapper, bookRepository))
-                .isNotNull()
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The default pageSize should be greater than zero.");
-    }
 
     @Test
     void shouldReturnAllBooks() {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
-        var bookPage = new PageImpl<>(List.of(bookEntity));
 
-        when(bookRepository.findAll(any(Pageable.class)))
-                .thenReturn(bookPage);
+        when(bookRepository.findAll())
+                .thenReturn(List.of(bookEntity));
 
-        var result = bookService.findAll(null, null);
+        var result = bookService.findAll();
 
         assertThat(result)
                 .isNotNull()
                 .hasSize(1);
 
-        verify(bookRepository).findAll(any(PageRequest.class));
+        verify(bookRepository).findAll();
         verify(bookMapper).map(bookEntity);
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
@@ -97,7 +72,7 @@ class BookServiceImplTest {
     void shouldFindBookById() {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
 
-        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
+        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.of(bookEntity));
 
         var result = bookService.findById(BOOK_ID);
 
@@ -114,7 +89,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
 
         var result = bookService.findById(BOOK_ID);
 
@@ -131,7 +106,7 @@ class BookServiceImplTest {
     void shouldCreateNewBook() {
         var bookEntity = BOOK_ENTITY_SUPPLIER.get();
 
-        when(bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
+        when(bookRepository.save(bookEntity)).thenReturn(bookEntity);
 
         var result = bookService.create(BOOK);
 
@@ -153,8 +128,8 @@ class BookServiceImplTest {
                 .isbn("978-0765350374")
                 .build();
 
-        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.of(bookEntity));
-        when(bookRepository.save(any(BookEntity.class))).thenReturn(bookEntity);
+        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.of(bookEntity));
+        when(bookRepository.save(bookEntity)).thenReturn(bookEntity);
 
         var result = bookService.update(BOOK_ID, updatedBookDto);
 
@@ -178,7 +153,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        when(bookRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookService.update(BOOK_ID, BOOK))
                 .isNotNull()
@@ -191,7 +166,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        when(bookRepository.existsById(any(UUID.class))).thenReturn(true);
+        when(bookRepository.existsById(BOOK_ID)).thenReturn(true);
 
         var result = bookService.deleteById(BOOK_ID);
 
@@ -205,7 +180,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldNotDeleteNotExistingBook() {
-        when(bookRepository.existsById(any(UUID.class))).thenReturn(false);
+        when(bookRepository.existsById(BOOK_ID)).thenReturn(false);
 
         var result = bookService.deleteById(BOOK_ID);
 

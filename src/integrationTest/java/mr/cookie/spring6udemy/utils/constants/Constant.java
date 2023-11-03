@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.utils;
+package mr.cookie.spring6udemy.utils.constants;
 
 public final class Constant {
 
