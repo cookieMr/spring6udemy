@@ -22,37 +22,45 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("book")
+@RequestMapping(path = "/book")
 @RequiredArgsConstructor
 public class BookController {
 
     private static final String PATH_BOOK_ID_DESCRIPTION = "Book's ID";
+    private static final String RESPONSE_400_DESCRIPTION = "Book has invalid values as fields.";
     private static final String RESPONSE_404_DESCRIPTION = "Book was not found by ID.";
     private static final String RESPONSE_409_DESCRIPTION = "Book with provided attributes already exists";
 
     @NotNull
     private final BookService bookService;
 
+    @Operation(description = "Returns all books (or an empty collection).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     public ResponseEntity<List<BookDto>> getAllBooks() {
         return ResponseEntity.ok(bookService.findAll().toList());
     }
 
-    @Operation(description = "Returns all books (or an empty collection).")
+    @Operation(
+            description = "Returns all books (or an empty collection).",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Author was found by ID."),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+            }
+    )
     @GetMapping(
-            path = "{id}",
+            path = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public BookDto getBookById(
+    public ResponseEntity<BookDto> getBookById(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         return bookService.findById(id)
+                .map(ResponseEntity::ok)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
@@ -61,6 +69,7 @@ public class BookController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Book was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -68,10 +77,10 @@ public class BookController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public BookDto createBook(@Validated @RequestBody BookDto book) {
-        return bookService.create(book);
+    public ResponseEntity<BookDto> createBook(@Validated @RequestBody BookDto book) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(bookService.create(book));
         // TODO: conflict status
     }
 
@@ -80,21 +89,21 @@ public class BookController {
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Book was updated and is returned in a response body."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
             }
     )
     @PutMapping(
-            path = "{id}",
+            path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public BookDto updateBook(
+    public ResponseEntity<BookDto> updateBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody BookDto book
     ) {
-        return bookService.update(id, book);
+        return ResponseEntity.ok(bookService.update(id, book));
     }
 
     @Operation(
@@ -104,14 +113,15 @@ public class BookController {
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
             }
     )
-    @DeleteMapping(path = "{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         if (!bookService.deleteById(id)) {
             throw new NotFoundEntityException(id, BookDto.class);
         }
+
+        return ResponseEntity.noContent().build();
     }
 
 }

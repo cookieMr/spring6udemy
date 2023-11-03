@@ -45,6 +45,8 @@ class AuthorServiceImplTest {
     void shouldReturnAllAuthors() {
         var authorEntity = AuthorEntity.builder()
                 .id(UUID.randomUUID())
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
                 .build();
 
         when(authorRepository.findAll())
@@ -65,6 +67,8 @@ class AuthorServiceImplTest {
     void shouldReturnAuthorById() {
         var authorId = UUID.randomUUID();
         var authorEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
 
@@ -104,12 +108,16 @@ class AuthorServiceImplTest {
     void shouldCreateNewAuthor() {
         var authorId = UUID.randomUUID();
         var authorEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
 
         when(authorRepository.save(authorEntity)).thenReturn(authorEntity);
 
         var authorDto = AuthorDto.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
         var result = authorService.create(authorDto);
@@ -128,6 +136,8 @@ class AuthorServiceImplTest {
     void shouldUpdateExistingAuthor() {
         var authorId = UUID.randomUUID();
         var authorEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
         var updatedAuthorDto = AuthorDto.builder()

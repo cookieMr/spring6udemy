@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -82,7 +81,6 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> createAuthor(@Validated @RequestBody AuthorDto author) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authorService.create(author));
-
         // TODO: conflict status
     }
 
@@ -116,13 +114,14 @@ public class AuthorController {
             }
     )
     @DeleteMapping(path = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAuthor(
+    public ResponseEntity<Void> deleteAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         if (!authorService.deleteById(id)) {
             throw new NotFoundEntityException(id, AuthorDto.class);
         }
+
+        return ResponseEntity.noContent().build();
     }
 
 }

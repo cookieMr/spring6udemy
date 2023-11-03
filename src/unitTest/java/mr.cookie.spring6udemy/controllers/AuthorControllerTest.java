@@ -1,5 +1,6 @@
 package mr.cookie.spring6udemy.controllers;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -25,9 +26,6 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class AuthorControllerTest {
 
-    private static final UUID AUTHOR_ID = UUID.randomUUID();
-    private static final AuthorDto AUTHOR_DTO = AuthorDto.builder().id(AUTHOR_ID).build();
-
     @Mock
     @NotNull
     private AuthorService authorService;
@@ -38,13 +36,18 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAllAuthors() {
+        var authorDto = AuthorDto.builder()
+                .id(UUID.randomUUID())
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
         when(authorService.findAll())
-                .thenReturn(Stream.of(AUTHOR_DTO));
+                .thenReturn(Stream.of(authorDto));
 
         var result = authorController.getAllAuthors();
 
         assertThat(result)
-                .isEqualTo(ResponseEntity.ok(List.of(AUTHOR_DTO)));
+                .isEqualTo(ResponseEntity.ok(List.of(authorDto)));
 
         verify(authorService).findAll();
         verifyNoMoreInteractions(authorService);
@@ -52,92 +55,133 @@ class AuthorControllerTest {
 
     @Test
     void shouldGetAuthorById() {
-        when(authorService.findById(AUTHOR_ID)).thenReturn(Optional.of(AUTHOR_DTO));
+        var authorId = UUID.randomUUID();
+        var authorDto = AuthorDto.builder()
+                .id(authorId)
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
 
-        var result = authorController.getAuthorById(AUTHOR_ID);
+        when(authorService.findById(authorId)).thenReturn(Optional.of(authorDto));
+
+        var result = authorController.getAuthorById(authorId);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.ok(AUTHOR_DTO));
+                .isEqualTo(ResponseEntity.ok(authorDto));
 
-        verify(authorService).findById(AUTHOR_ID);
+        verify(authorService).findById(authorId);
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        when(authorService.findById(AUTHOR_ID)).thenReturn(Optional.empty());
+        var authorId = UUID.randomUUID();
+        when(authorService.findById(authorId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> authorController.getAuthorById(AUTHOR_ID))
+        assertThatThrownBy(() -> authorController.getAuthorById(authorId))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(authorService).findById(AUTHOR_ID);
+        verify(authorService).findById(authorId);
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldCreateNewAuthor() {
-        when(authorService.create(AUTHOR_DTO)).thenReturn(AUTHOR_DTO);
+        var authorDto1st = AuthorDto.builder()
+                .id(UUID.randomUUID())
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        var authorDto2nd = AuthorDto.builder()
+                .id(UUID.randomUUID())
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        when(authorService.create(authorDto1st)).thenReturn(authorDto2nd);
 
-        var result = authorController.createAuthor(AUTHOR_DTO);
+        var result = authorController.createAuthor(authorDto1st);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(AUTHOR_DTO));
+                .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(authorDto2nd));
 
-        verify(authorService).create(AUTHOR_DTO);
+        verify(authorService).create(authorDto1st);
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldUpdateExistingAuthor() {
-        when(authorService.update(AUTHOR_ID, AUTHOR_DTO)).thenReturn(AUTHOR_DTO);
+        var authorId = UUID.randomUUID();
+        var authorDto1st = AuthorDto.builder()
+                .id(UUID.randomUUID())
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        var authorDto2nd = AuthorDto.builder()
+                .id(UUID.randomUUID())
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        when(authorService.update(authorId, authorDto1st)).thenReturn(authorDto2nd);
 
-        var result = authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO);
+        var result = authorController.updateAuthor(authorId, authorDto1st);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.ok(AUTHOR_DTO));
+                .isEqualTo(ResponseEntity.ok(authorDto2nd));
 
-        verify(authorService).update(AUTHOR_ID, AUTHOR_DTO);
+        verify(authorService).update(authorId, authorDto1st);
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        when(authorService.update(AUTHOR_ID, AUTHOR_DTO))
-                .thenThrow(new NotFoundEntityException(AUTHOR_ID, AuthorDto.class));
+        var authorId = UUID.randomUUID();
+        var authorDto = AuthorDto.builder()
+                .id(authorId)
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        when(authorService.update(authorId, authorDto))
+                .thenThrow(new NotFoundEntityException(authorId, AuthorDto.class));
 
-        assertThatThrownBy(() -> authorController.updateAuthor(AUTHOR_ID, AUTHOR_DTO))
+        assertThatThrownBy(() -> authorController.updateAuthor(authorId, authorDto))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), authorId);
 
-        verify(authorService).update(AUTHOR_ID, AUTHOR_DTO);
+        verify(authorService).update(authorId, authorDto);
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldDeleteExistingAuthor() {
-        when(authorService.deleteById(AUTHOR_ID)).thenReturn(true);
+        var authorId = UUID.randomUUID();
+        when(authorService.deleteById(authorId)).thenReturn(true);
 
-        authorController.deleteAuthor(AUTHOR_ID);
+        var result = authorController.deleteAuthor(authorId);
 
-        verify(authorService).deleteById(AUTHOR_ID);
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(ResponseEntity.noContent().build());
+
+        verify(authorService).deleteById(authorId);
         verifyNoMoreInteractions(authorService);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        when(authorService.deleteById(AUTHOR_ID)).thenReturn(false);
+        var authorId = UUID.randomUUID();
+        when(authorService.deleteById(authorId)).thenReturn(false);
 
-        assertThatThrownBy(() -> authorController.deleteAuthor(AUTHOR_ID))
+        assertThatThrownBy(() -> authorController.deleteAuthor(authorId))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), AUTHOR_ID);
+                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), authorId);
 
-        verify(authorService).deleteById(AUTHOR_ID);
+        verify(authorService).deleteById(authorId);
         verifyNoMoreInteractions(authorService);
     }
 

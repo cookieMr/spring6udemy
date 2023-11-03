@@ -4,7 +4,6 @@ import static mr.cookie.spring6udemy.utils.rest.HttpEntityUtils.createRequestWit
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -141,7 +140,7 @@ class AuthorControllerIntegrationTest {
                 .isNotNull()
                 .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
                 .returns(authorDto.getLastName(), AuthorDto::getLastName)
-                .matches(dto -> Objects.nonNull(dto.getId()));
+                .doesNotReturn(null, AuthorDto::getId);
     }
 
     @Test
