@@ -12,6 +12,7 @@
             <Class name="mr.cookie.spring6udemy.controllers.AuthorControllerTest"/>
             <Class name="mr.cookie.spring6udemy.controllers.BookControllerIntegrationTest"/>
             <Class name="mr.cookie.spring6udemy.controllers.BookControllerTest"/>
+            <Class name="mr.cookie.spring6udemy.controllers.PublisherControllerIntegrationTest"/>
             <Class name="mr.cookie.spring6udemy.controllers.PublisherControllerTest"/>
         </Or>
         <Or>

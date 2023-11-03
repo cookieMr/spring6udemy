@@ -22,15 +22,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("publisher")
+@RequestMapping("/publisher")
 @RequiredArgsConstructor
 public class PublisherController {
 
     private static final String PATH_PUBLISHER_ID_DESCRIPTION = "Publisher's ID";
+    private static final String RESPONSE_400_DESCRIPTION = "Publisher has invalid values as fields.";
     private static final String RESPONSE_404_DESCRIPTION = "Publisher was not found by ID.";
     private static final String RESPONSE_409_DESCRIPTION = "Publisher with provided attributes already exists";
 
@@ -52,14 +52,15 @@ public class PublisherController {
             }
     )
     @GetMapping(
-            path = "{id}",
+            path = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public PublisherDto getPublisherById(
+    public ResponseEntity<PublisherDto> getPublisherById(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         return publisherService.findById(id)
+                .map(ResponseEntity::ok)
                 .orElseThrow(NotFoundEntityException::new);
     }
 
@@ -68,6 +69,7 @@ public class PublisherController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Publisher was created and is returned in a response body."),
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
                     @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
@@ -75,10 +77,10 @@ public class PublisherController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ResponseStatus(HttpStatus.CREATED)
     @NotNull
-    public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
-        return publisherService.create(publisher);
+    public ResponseEntity<PublisherDto> createPublisher(@Validated @RequestBody PublisherDto publisher) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(publisherService.create(publisher));
         // TODO: conflict status
     }
 
@@ -87,21 +89,21 @@ public class PublisherController {
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Publisher was updated and is returned in a response body."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
             }
     )
     @PutMapping(
-            path = "{id}",
+            path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public PublisherDto updatePublisher(
+    public ResponseEntity<PublisherDto> updatePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody PublisherDto publisher
     ) {
-        return publisherService.update(id, publisher);
+        return ResponseEntity.ok(publisherService.update(id, publisher));
     }
 
     @Operation(
@@ -111,14 +113,15 @@ public class PublisherController {
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
             }
     )
-    @DeleteMapping(path = "{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePublisher(
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void>  deletePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         if (!publisherService.deleteById(id)) {
             throw new NotFoundEntityException(id, PublisherDto.class);
         }
+
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -124,7 +124,7 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldCreateBookWithSuccess() {
-        var bookEntity = BookEntity.builder()
+        var bookDto = BookDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(25))
                 .isbn("%s-%s".formatted(
                         RandomStringUtils.randomNumeric(3),
@@ -135,7 +135,7 @@ class BookControllerIntegrationTest {
                 .buildAndExpand()
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.POST, createRequestWithHeaders(bookEntity), BookDto.class);
+                uri, HttpMethod.POST, createRequestWithHeaders(bookDto), BookDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -144,8 +144,8 @@ class BookControllerIntegrationTest {
 
         assertThat(result.getBody())
                 .isNotNull()
-                .returns(bookEntity.getTitle(), BookDto::getTitle)
-                .returns(bookEntity.getIsbn(), BookDto::getIsbn)
+                .returns(bookDto.getTitle(), BookDto::getTitle)
+                .returns(bookDto.getIsbn(), BookDto::getIsbn)
                 .doesNotReturn(null, BookDto::getId);
     }
 
@@ -155,7 +155,7 @@ class BookControllerIntegrationTest {
         // todo: 409 entity already exists
     }
 
-    static Stream<Consumer<BookDto>> bookMalformModifiers() {
+    static Stream<Consumer<BookDto>> bookModifiers() {
         return Stream.of(
                 book -> book.setTitle(null),
                 book -> book.setTitle(Constant.BLANK_STRING),
@@ -170,7 +170,7 @@ class BookControllerIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("bookMalformModifiers")
+    @MethodSource("bookModifiers")
     void shouldFailToCreateBookWithStatus400(@NotNull Consumer<BookDto> bookModifier) {
         var bookDto = BookDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(25))
@@ -250,8 +250,8 @@ class BookControllerIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("bookMalformModifiers")
-    void shouldFailToUpdateAuthorWith400(@NotNull Consumer<BookDto> bookModifier) {
+    @MethodSource("bookModifiers")
+    void shouldFailToUpdateBookWith400(@NotNull Consumer<BookDto> bookModifier) {
         var bookEntity = BookEntity.builder()
                 .title(RandomStringUtils.randomAlphabetic(25))
                 .isbn("%s-%s".formatted(
