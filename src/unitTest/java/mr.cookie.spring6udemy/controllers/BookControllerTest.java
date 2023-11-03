@@ -28,11 +28,11 @@ class BookControllerTest {
 
     @Mock
     @NotNull
-    private BookService bookService;
+    private BookService service;
 
     @NotNull
     @InjectMocks
-    private BookController bookController;
+    private BookController controller;
 
     @Test
     void shoutGetAllBooks() {
@@ -41,16 +41,16 @@ class BookControllerTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        when(bookService.findAll())
+        when(service.findAll())
                 .thenReturn(Stream.of(bookDto));
 
-        var result = bookController.getAllBooks();
+        var result = controller.getAllBooks();
 
         assertThat(result)
                 .isEqualTo(ResponseEntity.ok(List.of(bookDto)));
 
-        verify(bookService).findAll();
-        verifyNoMoreInteractions(bookService);
+        verify(service).findAll();
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -61,29 +61,29 @@ class BookControllerTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        when(bookService.findById(bookId)).thenReturn(Optional.of(bookDto));
+        when(service.findById(bookId)).thenReturn(Optional.of(bookDto));
 
-        var result = bookController.getBookById(bookId);
+        var result = controller.getBookById(bookId);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.ok(bookDto));
 
-        verify(bookService).findById(bookId);
-        verifyNoMoreInteractions(bookService);
+        verify(service).findById(bookId);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
         var bookId = UUID.randomUUID();
-        when(bookService.findById(bookId)).thenReturn(Optional.empty());
+        when(service.findById(bookId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bookController.getBookById(bookId))
+        assertThatThrownBy(() -> controller.getBookById(bookId))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(bookService).findById(bookId);
-        verifyNoMoreInteractions(bookService);
+        verify(service).findById(bookId);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -98,16 +98,16 @@ class BookControllerTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        when(bookService.create(bookDto1st)).thenReturn(bookDto2nd);
+        when(service.create(bookDto1st)).thenReturn(bookDto2nd);
 
-        var result = bookController.createBook(bookDto1st);
+        var result = controller.createBook(bookDto1st);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(bookDto2nd));
 
-        verify(bookService).create(bookDto1st);
-        verifyNoMoreInteractions(bookService);
+        verify(service).create(bookDto1st);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -123,16 +123,16 @@ class BookControllerTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        when(bookService.update(bookId, bookDto1st)).thenReturn(bookDto2nd);
+        when(service.update(bookId, bookDto1st)).thenReturn(bookDto2nd);
 
-        var result = bookController.updateBook(bookId, bookDto1st);
+        var result = controller.updateBook(bookId, bookDto1st);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.ok(bookDto2nd));
 
-        verify(bookService).update(bookId, bookDto1st);
-        verifyNoMoreInteractions(bookService);
+        verify(service).update(bookId, bookDto1st);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -143,45 +143,45 @@ class BookControllerTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        when(bookService.update(bookId, bookDto))
+        when(service.update(bookId, bookDto))
                 .thenThrow(new NotFoundEntityException(bookId, BookDto.class));
 
-        assertThatThrownBy(() -> bookController.updateBook(bookId, bookDto))
+        assertThatThrownBy(() -> controller.updateBook(bookId, bookDto))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), bookId);
 
-        verify(bookService).update(bookId, bookDto);
-        verifyNoMoreInteractions(bookService);
+        verify(service).update(bookId, bookDto);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
     void shouldDeleteExistingBook() {
         var bookId = UUID.randomUUID();
-        when(bookService.deleteById(bookId)).thenReturn(true);
+        when(service.deleteById(bookId)).thenReturn(true);
 
-        var result = bookController.deleteBook(bookId);
+        var result = controller.deleteBook(bookId);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.noContent().build());
 
-        verify(bookService).deleteById(bookId);
-        verifyNoMoreInteractions(bookService);
+        verify(service).deleteById(bookId);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteBookById() {
         var bookId = UUID.randomUUID();
-        when(bookService.deleteById(bookId)).thenReturn(false);
+        when(service.deleteById(bookId)).thenReturn(false);
 
-        assertThatThrownBy(() -> bookController.deleteBook(bookId))
+        assertThatThrownBy(() -> controller.deleteBook(bookId))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), bookId);
 
-        verify(bookService).deleteById(bookId);
-        verifyNoMoreInteractions(bookService);
+        verify(service).deleteById(bookId);
+        verifyNoMoreInteractions(service);
     }
 
 }

@@ -149,7 +149,7 @@ class AuthorControllerIntegrationTest {
         // todo: 409 entity already exists
     }
 
-    static Stream<Consumer<AuthorDto>> authorMalformModifiers() {
+    static Stream<Consumer<AuthorDto>> authorModifiers() {
         return Stream.of(
                 author -> author.setFirstName(null),
                 author -> author.setFirstName(Constant.BLANK_STRING),
@@ -161,7 +161,7 @@ class AuthorControllerIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("authorMalformModifiers")
+    @MethodSource("authorModifiers")
     void shouldFailToCreateAuthorWithStatus400(@NotNull Consumer<AuthorDto> authorModifier) {
         var authorDto = AuthorDto.builder()
                 .firstName(randomAlphabetic(25))
@@ -233,7 +233,7 @@ class AuthorControllerIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource("authorMalformModifiers")
+    @MethodSource("authorModifiers")
     void shouldFailToUpdateAuthorWith400(@NotNull Consumer<AuthorDto> authorModifier) {
         var authorEntity = AuthorEntity.builder()
                 .firstName(randomAlphabetic(25))

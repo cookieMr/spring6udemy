@@ -28,11 +28,11 @@ class AuthorControllerTest {
 
     @Mock
     @NotNull
-    private AuthorService authorService;
+    private AuthorService service;
 
     @NotNull
     @InjectMocks
-    private AuthorController authorController;
+    private AuthorController controller;
 
     @Test
     void shouldGetAllAuthors() {
@@ -41,16 +41,16 @@ class AuthorControllerTest {
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
-        when(authorService.findAll())
+        when(service.findAll())
                 .thenReturn(Stream.of(authorDto));
 
-        var result = authorController.getAllAuthors();
+        var result = controller.getAllAuthors();
 
         assertThat(result)
                 .isEqualTo(ResponseEntity.ok(List.of(authorDto)));
 
-        verify(authorService).findAll();
-        verifyNoMoreInteractions(authorService);
+        verify(service).findAll();
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -62,29 +62,29 @@ class AuthorControllerTest {
                 .lastName(randomAlphabetic(25))
                 .build();
 
-        when(authorService.findById(authorId)).thenReturn(Optional.of(authorDto));
+        when(service.findById(authorId)).thenReturn(Optional.of(authorDto));
 
-        var result = authorController.getAuthorById(authorId);
+        var result = controller.getAuthorById(authorId);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.ok(authorDto));
 
-        verify(authorService).findById(authorId);
-        verifyNoMoreInteractions(authorService);
+        verify(service).findById(authorId);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
         var authorId = UUID.randomUUID();
-        when(authorService.findById(authorId)).thenReturn(Optional.empty());
+        when(service.findById(authorId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> authorController.getAuthorById(authorId))
+        assertThatThrownBy(() -> controller.getAuthorById(authorId))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class);
 
-        verify(authorService).findById(authorId);
-        verifyNoMoreInteractions(authorService);
+        verify(service).findById(authorId);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -99,16 +99,16 @@ class AuthorControllerTest {
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
-        when(authorService.create(authorDto1st)).thenReturn(authorDto2nd);
+        when(service.create(authorDto1st)).thenReturn(authorDto2nd);
 
-        var result = authorController.createAuthor(authorDto1st);
+        var result = controller.createAuthor(authorDto1st);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(authorDto2nd));
 
-        verify(authorService).create(authorDto1st);
-        verifyNoMoreInteractions(authorService);
+        verify(service).create(authorDto1st);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -124,16 +124,16 @@ class AuthorControllerTest {
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
-        when(authorService.update(authorId, authorDto1st)).thenReturn(authorDto2nd);
+        when(service.update(authorId, authorDto1st)).thenReturn(authorDto2nd);
 
-        var result = authorController.updateAuthor(authorId, authorDto1st);
+        var result = controller.updateAuthor(authorId, authorDto1st);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.ok(authorDto2nd));
 
-        verify(authorService).update(authorId, authorDto1st);
-        verifyNoMoreInteractions(authorService);
+        verify(service).update(authorId, authorDto1st);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
@@ -144,45 +144,45 @@ class AuthorControllerTest {
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
-        when(authorService.update(authorId, authorDto))
+        when(service.update(authorId, authorDto))
                 .thenThrow(new NotFoundEntityException(authorId, AuthorDto.class));
 
-        assertThatThrownBy(() -> authorController.updateAuthor(authorId, authorDto))
+        assertThatThrownBy(() -> controller.updateAuthor(authorId, authorDto))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), authorId);
 
-        verify(authorService).update(authorId, authorDto);
-        verifyNoMoreInteractions(authorService);
+        verify(service).update(authorId, authorDto);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
     void shouldDeleteExistingAuthor() {
         var authorId = UUID.randomUUID();
-        when(authorService.deleteById(authorId)).thenReturn(true);
+        when(service.deleteById(authorId)).thenReturn(true);
 
-        var result = authorController.deleteAuthor(authorId);
+        var result = controller.deleteAuthor(authorId);
 
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(ResponseEntity.noContent().build());
 
-        verify(authorService).deleteById(authorId);
-        verifyNoMoreInteractions(authorService);
+        verify(service).deleteById(authorId);
+        verifyNoMoreInteractions(service);
     }
 
     @Test
     void shouldThrowExceptionWhenCannotDeleteAuthorById() {
         var authorId = UUID.randomUUID();
-        when(authorService.deleteById(authorId)).thenReturn(false);
+        when(service.deleteById(authorId)).thenReturn(false);
 
-        assertThatThrownBy(() -> authorController.deleteAuthor(authorId))
+        assertThatThrownBy(() -> controller.deleteAuthor(authorId))
                 .isNotNull()
                 .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), authorId);
 
-        verify(authorService).deleteById(authorId);
-        verifyNoMoreInteractions(authorService);
+        verify(service).deleteById(authorId);
+        verifyNoMoreInteractions(service);
     }
 
 }
