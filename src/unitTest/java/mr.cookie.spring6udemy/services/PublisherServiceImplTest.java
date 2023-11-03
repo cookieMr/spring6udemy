@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PublisherServiceImplTest {
 
     private static final UUID PUBLISHER_ID = UUID.randomUUID();
+    // todo: refactor to not use it
     private static final PublisherDto PUBLISHER_DTO = PublisherDto.builder()
             .id(PUBLISHER_ID)
             .build();

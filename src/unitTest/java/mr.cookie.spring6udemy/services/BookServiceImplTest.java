@@ -33,6 +33,7 @@ class BookServiceImplTest {
     private static final BookDto BOOK = BookDto.builder()
             .id(BOOK_ID)
             .build();
+    // todo: refactor to not use it
     private static final Supplier<BookEntity> BOOK_ENTITY_SUPPLIER = () -> BookEntity
             .builder()
             .id(BOOK_ID)

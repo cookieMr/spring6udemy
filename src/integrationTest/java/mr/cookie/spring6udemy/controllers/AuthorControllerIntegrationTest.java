@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
@@ -34,14 +33,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @IntegrationTest
 class AuthorControllerIntegrationTest {
 
-    static final int TEST_PAGE_SIZE = 13;
     private static final String AUTHOR_PATH = "/author";
     private static final String AUTHOR_BY_ID_PATH = "/author/{id}";
-
-    private static final Supplier<AuthorDto> AUTHOR_DTO_SUPPLIER = () -> AuthorDto.builder()
-            .firstName("JRR")
-            .lastName("Tolkien")
-            .build();
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -59,7 +52,8 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldGetAllAuthorsWithSuccess() {
-        var createdAuthors = IntStream.range(0, TEST_PAGE_SIZE).mapToObj(ignore -> AuthorEntity.builder()
+        var authorRange = 10;
+        var createdAuthors = IntStream.range(0, authorRange).mapToObj(ignore -> AuthorEntity.builder()
                         .firstName(randomAlphabetic(25))
                         .lastName(randomAlphabetic(25))
                         .build())
@@ -71,8 +65,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand()
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto[].class
-        );
+                uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto[].class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -81,6 +74,7 @@ class AuthorControllerIntegrationTest {
 
         assertThat(result.getBody())
                 .isNotNull()
+                .hasSize(authorRange)
                 .containsExactlyInAnyOrderElementsOf(createdAuthors);
     }
 
@@ -97,8 +91,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(authorId)
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto.class
-        );
+                uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -118,8 +111,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(UUID.randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto.class
-        );
+                uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -129,14 +121,16 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldCreateAuthorWithSuccess() {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var authorDto = AuthorDto.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
 
         var uri = UriComponentsBuilder.fromPath(AUTHOR_PATH)
                 .buildAndExpand()
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.POST, createRequestWithHeaders(authorDto), AuthorDto.class
-        );
+                uri, HttpMethod.POST, createRequestWithHeaders(authorDto), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -170,15 +164,17 @@ class AuthorControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("authorMalformModifiers")
     void shouldFailToCreateAuthorWithStatus400(@NotNull Consumer<AuthorDto> authorModifier) {
-        var authorDto = AUTHOR_DTO_SUPPLIER.get();
+        var authorDto = AuthorDto.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
         authorModifier.accept(authorDto);
 
         var uri = UriComponentsBuilder.fromPath(AUTHOR_PATH)
                 .buildAndExpand()
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.POST, createRequestWithHeaders(authorDto), AuthorDto.class
-        );
+                uri, HttpMethod.POST, createRequestWithHeaders(authorDto), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -203,8 +199,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(authorId)
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class
-        );
+                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -230,8 +225,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(UUID.randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class
-        );
+                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -258,8 +252,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(authorId)
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class
-        );
+                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -288,8 +281,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(authorId)
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.DELETE, new HttpEntity<>(null), Void.class
-        );
+                uri, HttpMethod.DELETE, new HttpEntity<>(null), Void.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
@@ -306,8 +298,7 @@ class AuthorControllerIntegrationTest {
                 .buildAndExpand(UUID.randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
-                uri, HttpMethod.DELETE, new HttpEntity<>(null), Void.class
-        );
+                uri, HttpMethod.DELETE, new HttpEntity<>(null), Void.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
