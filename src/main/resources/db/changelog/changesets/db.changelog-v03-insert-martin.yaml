@@ -1,7 +1,7 @@
 databaseChangeLog:
 
   - changeSet:
-      id: 20231001-1230-insert-author-george-rr-martin
+      id: dcc44b8c-be92-40ca-aff7-b114e28dca73
       author: cookieMr
       comment: Creates an author record for George R.R. Martin
       preConditions:
@@ -28,7 +28,7 @@ databaseChangeLog:
                   value: now()
 
   - changeSet:
-      id: 20231001-1231-insert-publisher-penguin-house
+      id: 00ad3886-a002-4f7b-965b-bf47899436de
       author: cookieMr
       comment: Creates a publisher record for Penguin Random House
       preConditions:
@@ -55,7 +55,7 @@ databaseChangeLog:
                   value: New York
               - column:
                   name: zip_code
-                  value: 10019
+                  value: "10019"
               - column:
                   name: created_date
                   value: now()
@@ -64,7 +64,7 @@ databaseChangeLog:
                   value: now()
 
   - changeSet:
-      id: 20231001-1232-insert-book-game-of-thrones
+      id: fd027d8b-9e72-41cc-8e55-51915d648c0d
       author: cookieMr
       comment: Creates a book record for A Game of Thrones
       preConditions:
@@ -94,7 +94,7 @@ databaseChangeLog:
                   value: now()
 
   - changeSet:
-      id: 20231001-1233-insert-author-book-relationship
+      id: 49229025-8eef-485c-a694-8fa1df81aa38
       author: cookieMr
       comment: Creates an author-book relationship
       preConditions:

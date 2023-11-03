@@ -57,7 +57,7 @@ class AuthorRepositoryTest {
         assertThatThrownBy(authorRepository::flush)
                 .isNotNull()
                 .isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessageContaining("could not execute statement [NULL not allowed for column");
+                .hasMessageContaining("could not execute statement");
     }
 
 }

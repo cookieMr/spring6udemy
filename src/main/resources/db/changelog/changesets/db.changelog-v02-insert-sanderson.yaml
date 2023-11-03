@@ -1,7 +1,7 @@
 databaseChangeLog:
 
   - changeSet:
-      id: 20231001-1118-insert-author-brandon-sanderson
+      id: def1c2e5-5166-440f-9166-ae9dd095f155
       author: cookieMr
       comment: Creates an author record for Brandon Sanderson
       preConditions:
@@ -28,7 +28,7 @@ databaseChangeLog:
                   value: now()
 
   - changeSet:
-      id: 20231001-1123-insert-publisher-dragonsteel
+      id: 2441952c-dc5a-45bc-a18a-51a543785f6c
       author: cookieMr
       comment: Creates a publisher record for DragonSteel
       preConditions:
@@ -55,7 +55,7 @@ databaseChangeLog:
                   value: American Fork
               - column:
                   name: zip_code
-                  value: 84003
+                  value: "84003"
               - column:
                   name: created_date
                   value: now()
@@ -64,7 +64,7 @@ databaseChangeLog:
                   value: now()
 
   - changeSet:
-      id: 20231001-1142-insert-book-the-way-of-kings
+      id: b809a97f-9e08-4125-8c32-3c8253d63f26
       author: cookieMr
       comment: Creates a book record for The Way of Kings
       preConditions:
@@ -94,7 +94,7 @@ databaseChangeLog:
                   value: now()
 
   - changeSet:
-      id: 20231001-1144-insert-author-book-relationship
+      id: b518f72a-f34a-49ba-bdfb-0159bd570727
       author: cookieMr
       comment: Creates an author-book relationship
       preConditions:

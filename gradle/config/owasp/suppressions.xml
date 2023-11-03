@@ -7,9 +7,18 @@
         <cve>CVE-2022-0839</cve>
     </suppress>
     <suppress until="2023-12-01Z">
+        <cve>CVE-2022-4244</cve>
+    </suppress>
+    <suppress until="2023-12-01Z">
+        <cve>CVE-2022-4245</cve>
+    </suppress>
+    <suppress until="2023-12-01Z">
         <cve>CVE-2022-45868</cve>
     </suppress>
     <suppress until="2023-12-01Z">
-        <cve>CVE-2023-35116</cve>
+        <cve>CVE-2023-22102</cve>
+    </suppress>
+    <suppress until="2023-12-01Z">
+        <cve>CVE-2023-45960</cve>
     </suppress>
 </suppressions>

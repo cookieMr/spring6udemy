@@ -7,7 +7,7 @@ plugins {
     id 'java'
     id 'org.owasp.dependencycheck' version '8.4.0'
     id 'org.sonarqube' version '4.3.1.3277'
-    id 'org.springframework.boot' version '3.1.4'
+    id 'org.springframework.boot' version '3.1.5'
 }
 
 group = 'mr.cookie'
@@ -27,7 +27,7 @@ ext {
     apacheCollectionsVersion = "4.4"
     assertjVersion = "3.24.2"
     bcelVersion = "6.6.1"
-    checkstyleVersion = "10.12.3"
+    checkstyleVersion = "10.12.4"
     h2Version = "2.2.224"
     jetBrainsAnnotationVersion = "24.0.1"
     liquibaseVersion = "4.23.2"
@@ -37,8 +37,7 @@ ext {
     preLiquibaseVersion = "1.4.0"
     snakeyamlVersion = "2.2"
     springDocVersion = "2.2.0"
-    springFrameworkVersion = "6.0.12"
-    tomcatVersion = "10.1.13"
+    tomcatVersion = "10.1.14"
 }
 
 configurations.configureEach {
@@ -68,8 +67,6 @@ dependencies {
 
     // transitive dep
     implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
-    implementation "org.springframework:spring-expression:${springFrameworkVersion}"
-    implementation "org.springframework:spring-webmvc:${springFrameworkVersion}"
 
     implementation "org.mapstruct:mapstruct:${mapStructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
