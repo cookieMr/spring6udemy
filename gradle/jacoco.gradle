@@ -1,27 +1,14 @@
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = '0.8.10'
-}
-
-tasks.withType(Test).each { testTask ->
-    testTask.jacoco {
-        enabled = testTask.name != 'test'
-        destinationFile = layout.buildDirectory
-                .file("reports/jacoco/${testTask.name}.exec")
-                .get()
-                .asFile
-    }
+    toolVersion = '0.8.11'
 }
 
 jacocoTestReport {
     group = 'Reporting'
     description = 'Generates a Combined Jacoco Code Coverage Report.'
 
-    executionData.setFrom fileTree(buildDir) {
-        include '**/reports/jacoco/*.exec'
-        exclude '**/jacoco/test.exec'
-    }
+    executionData fileTree(buildDir).include('/jacoco/*.exec')
 
     reports {
         xml.required = true
@@ -34,12 +21,8 @@ jacocoTestReport {
 
 jacocoTestCoverageVerification {
     check.dependsOn it
-    dependsOn jacocoTestReport
 
-    executionData.setFrom fileTree(buildDir) {
-        include '**/reports/jacoco/*.exec'
-        exclude '**/jacoco/test.exec'
-    }
+    executionData fileTree(buildDir).include('/jacoco/*.exec')
 
     violationRules {
         failOnViolation = true
