@@ -1,5 +1,6 @@
 package mr.cookie.spring6udemy.services;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
@@ -44,7 +44,7 @@ class BookServiceImplTest {
     @Test
     void shouldReturnAllBooks() {
         var bookEntity = BookEntity.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
@@ -65,7 +65,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldFindBookById() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         var bookEntity = BookEntity.builder()
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
@@ -87,7 +87,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         when(repository.findById(bookId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.findById(bookId))
@@ -102,7 +102,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldCreateNewBook() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         var bookEntity = BookEntity.builder()
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
@@ -130,7 +130,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldUpdateExistingBook() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         var bookEntity = BookEntity.builder()
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
@@ -168,7 +168,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         when(repository.findById(bookId)).thenReturn(Optional.empty());
 
         var bookDto = BookDto.builder()
@@ -188,29 +188,11 @@ class BookServiceImplTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        var bookId = UUID.randomUUID();
-        when(repository.existsById(bookId)).thenReturn(true);
+        var bookId = randomUUID();
 
-        var result = service.deleteById(bookId);
-
-        assertThat(result).isTrue();
+        service.deleteById(bookId);
 
         verify(repository).deleteById(bookId);
-        verify(repository).existsById(bookId);
-        verifyNoMoreInteractions(repository);
-        verifyNoInteractions(mapper);
-    }
-
-    @Test
-    void shouldNotDeleteNotExistingBook() {
-        var bookId = UUID.randomUUID();
-        when(repository.existsById(bookId)).thenReturn(false);
-
-        var result = service.deleteById(bookId);
-
-        assertThat(result).isFalse();
-
-        verify(repository).existsById(bookId);
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(mapper);
     }

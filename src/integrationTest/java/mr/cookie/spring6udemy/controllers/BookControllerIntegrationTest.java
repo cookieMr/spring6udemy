@@ -1,9 +1,12 @@
 package mr.cookie.spring6udemy.controllers;
 
+import static java.util.UUID.randomUUID;
 import static mr.cookie.spring6udemy.utils.rest.HttpEntityUtils.createRequestWithHeaders;
+import static org.apache.commons.lang3.RandomStringUtils.random;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -14,7 +17,6 @@ import mr.cookie.spring6udemy.repositories.BookRepository;
 import mr.cookie.spring6udemy.utils.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.utils.assertions.ResponseEntityAssertions;
 import mr.cookie.spring6udemy.utils.constants.Constant;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -53,10 +55,8 @@ class BookControllerIntegrationTest {
     void shouldGetAllBooksWithSuccess() {
         var bookRange = 10;
         var createdBooks = IntStream.range(0, bookRange).mapToObj(ignore -> BookEntity.builder()
-                        .title(RandomStringUtils.randomAlphabetic(25))
-                        .isbn("%s-%s".formatted(
-                                RandomStringUtils.randomNumeric(3),
-                                RandomStringUtils.randomNumeric(10)))
+                        .title(randomAlphabetic(25))
+                        .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                         .build())
                 .map(repository::save)
                 .map(mapper::map)
@@ -82,10 +82,8 @@ class BookControllerIntegrationTest {
     @Test
     void shouldGetBookByIdWithSuccess() {
         var bookEntity = BookEntity.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
 
         var bookId = repository.save(bookEntity).getId();
@@ -111,7 +109,7 @@ class BookControllerIntegrationTest {
     @Test
     void shouldFailToGetBookByIdWith404() {
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
-                .buildAndExpand(UUID.randomUUID())
+                .buildAndExpand(randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
                 uri, HttpMethod.GET, createRequestWithHeaders(), BookDto.class);
@@ -125,10 +123,8 @@ class BookControllerIntegrationTest {
     @Test
     void shouldCreateBookWithSuccess() {
         var bookDto = BookDto.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
 
         var uri = UriComponentsBuilder.fromPath(BOOK_PATH)
@@ -159,13 +155,13 @@ class BookControllerIntegrationTest {
         return Stream.of(
                 book -> book.setTitle(null),
                 book -> book.setTitle(Constant.BLANK_STRING),
-                book -> book.setTitle(RandomStringUtils.random(129)),
+                book -> book.setTitle(random(129)),
                 book -> book.setIsbn(null),
                 book -> book.setIsbn(Constant.BLANK_STRING),
-                book -> book.setIsbn(RandomStringUtils.random(12)),
-                book -> book.setIsbn(RandomStringUtils.random(13)),
-                book -> book.setIsbn(RandomStringUtils.random(14)),
-                book -> book.setIsbn(RandomStringUtils.random(15))
+                book -> book.setIsbn(random(12)),
+                book -> book.setIsbn(random(13)),
+                book -> book.setIsbn(random(14)),
+                book -> book.setIsbn(random(15))
         );
     }
 
@@ -173,10 +169,8 @@ class BookControllerIntegrationTest {
     @MethodSource("bookModifiers")
     void shouldFailToCreateBookWithStatus400(@NotNull Consumer<BookDto> bookModifier) {
         var bookDto = BookDto.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
         bookModifier.accept(bookDto);
 
@@ -194,19 +188,15 @@ class BookControllerIntegrationTest {
     @Test
     void shouldUpdateBookWithSuccess() {
         var bookEntity = BookEntity.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
 
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
                 .buildAndExpand(bookId)
@@ -231,13 +221,11 @@ class BookControllerIntegrationTest {
     @Test
     void shouldFailToUpdateBookWith404() {
         var bookDto = BookDto.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
-                .buildAndExpand(UUID.randomUUID())
+                .buildAndExpand(randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
                 uri, HttpMethod.PUT, createRequestWithHeaders(bookDto), BookDto.class);
@@ -252,19 +240,15 @@ class BookControllerIntegrationTest {
     @MethodSource("bookModifiers")
     void shouldFailToUpdateBookWith400(@NotNull Consumer<BookDto> bookModifier) {
         var bookEntity = BookEntity.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
 
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
         bookModifier.accept(bookDto);
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
@@ -290,10 +274,8 @@ class BookControllerIntegrationTest {
     @Test
     void shouldDeleteBookByIdWithSuccess() {
         var bookEntity = BookEntity.builder()
-                .title(RandomStringUtils.randomAlphabetic(25))
-                .isbn("%s-%s".formatted(
-                        RandomStringUtils.randomNumeric(3),
-                        RandomStringUtils.randomNumeric(10)))
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
 
         var bookId = repository.save(bookEntity).getId();
@@ -313,16 +295,21 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    void shouldFailToDeleteBookByIdWith404() {
+    void shouldNotFailWhenDeleteBookDoesNotExist() {
+        var bookId = randomUUID();
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
-                .buildAndExpand(UUID.randomUUID())
+                .buildAndExpand(bookId)
                 .toUri();
         var result = restTemplate.exchange(
                 uri, HttpMethod.DELETE, new HttpEntity<>(null), Void.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.NOT_FOUND);
+                .hasStatus(HttpStatus.NO_CONTENT)
+                .doesNotHaveHeader(HttpHeaders.CONTENT_TYPE);
+
+        assertThat(repository.findById(bookId))
+                .isEmpty();
     }
 
 }

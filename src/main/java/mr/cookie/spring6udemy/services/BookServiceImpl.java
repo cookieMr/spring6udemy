@@ -68,14 +68,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public boolean deleteById(@NotNull UUID id) {
-        var doesBookExist = bookRepository.existsById(id);
-
-        if (doesBookExist) {
-            bookRepository.deleteById(id);
-        }
-
-        return doesBookExist;
+    public void deleteById(@NotNull UUID id) {
+        bookRepository.deleteById(id);
     }
 
 }

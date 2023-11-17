@@ -1,5 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
+import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -7,13 +9,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.services.PublisherService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +37,12 @@ class PublisherControllerTest {
     @Test
     void shouldGetAllPublishers() {
         var publisherDto = PublisherDto.builder()
-                .id(UUID.randomUUID())
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .id(randomUUID())
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
 
         when(service.findAll())
@@ -59,14 +59,14 @@ class PublisherControllerTest {
 
     @Test
     void shouldGetPublisherById() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         var publisherDto = PublisherDto.builder()
                 .id(publisherId)
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
         when(service.findById(publisherId)).thenReturn(publisherDto);
 
@@ -80,7 +80,7 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         when(service.findById(publisherId)).thenThrow(EntityNotFoundException.ofPublisher(publisherId));
 
         assertThatThrownBy(() -> controller.getPublisherById(publisherId))
@@ -95,20 +95,20 @@ class PublisherControllerTest {
     @Test
     void shouldCreateNewPublisher() {
         var publisherDto1st = PublisherDto.builder()
-                .id(UUID.randomUUID())
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .id(randomUUID())
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
         var publisherDto2nd = PublisherDto.builder()
-                .id(UUID.randomUUID())
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .id(randomUUID())
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
         when(service.create(publisherDto1st)).thenReturn(publisherDto2nd);
 
@@ -124,22 +124,22 @@ class PublisherControllerTest {
 
     @Test
     void shouldUpdateExistingPublisher() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         var publisherDto1st = PublisherDto.builder()
-                .id(UUID.randomUUID())
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .id(randomUUID())
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
         var publisherDto2nd = PublisherDto.builder()
-                .id(UUID.randomUUID())
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .id(randomUUID())
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
         when(service.update(publisherId, publisherDto1st)).thenReturn(publisherDto2nd);
 
@@ -155,14 +155,14 @@ class PublisherControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdatePublisherById() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         var publisherDto = PublisherDto.builder()
-                .id(UUID.randomUUID())
-                .name(RandomStringUtils.randomAlphabetic(25))
-                .address(RandomStringUtils.randomAlphabetic(25))
-                .state(RandomStringUtils.randomAlphabetic(25))
-                .city(RandomStringUtils.randomAlphabetic(25))
-                .zipCode(RandomStringUtils.randomAlphabetic(25))
+                .id(publisherId)
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
         when(service.update(publisherId, publisherDto))
                 .thenThrow(EntityNotFoundException.ofPublisher(publisherId));
@@ -178,28 +178,9 @@ class PublisherControllerTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
-        var publisherId = UUID.randomUUID();
-        when(service.deleteById(publisherId)).thenReturn(true);
+        var publisherId = randomUUID();
 
-        var result = controller.deletePublisher(publisherId);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(ResponseEntity.noContent().build());
-
-        verify(service).deleteById(publisherId);
-        verifyNoMoreInteractions(service);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenCannotDeleteAuthorById() {
-        var publisherId = UUID.randomUUID();
-        when(service.deleteById(publisherId)).thenReturn(false);
-
-        assertThatThrownBy(() -> controller.deletePublisher(publisherId))
-                .isNotNull()
-                .isExactlyInstanceOf(EntityNotFoundException.class)
-                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
+        controller.deletePublisher(publisherId);
 
         verify(service).deleteById(publisherId);
         verifyNoMoreInteractions(service);
