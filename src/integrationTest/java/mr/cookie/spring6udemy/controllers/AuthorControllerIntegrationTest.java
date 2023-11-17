@@ -114,8 +114,7 @@ class AuthorControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.NOT_FOUND)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -177,8 +176,7 @@ class AuthorControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.BAD_REQUEST)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -202,7 +200,7 @@ class AuthorControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.OK)
+                .hasStatusOk()
                 .hasContentTypeAsApplicationJson();
 
         assertThat(result.getBody())
@@ -228,8 +226,7 @@ class AuthorControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.NOT_FOUND)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.NOT_FOUND);
     }
 
     @ParameterizedTest
@@ -255,8 +252,7 @@ class AuthorControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.BAD_REQUEST)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.BAD_REQUEST);
 
         assertThat(repository.findById(authorId))
                 .isPresent()

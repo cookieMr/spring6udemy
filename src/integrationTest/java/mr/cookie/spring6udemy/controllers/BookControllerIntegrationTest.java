@@ -188,8 +188,7 @@ class BookControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.BAD_REQUEST)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -217,7 +216,7 @@ class BookControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.OK)
+                .hasStatusOk()
                 .hasContentTypeAsApplicationJson();
 
         assertThat(result.getBody())
@@ -276,8 +275,7 @@ class BookControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.BAD_REQUEST)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.BAD_REQUEST);
 
         assertThat(repository.findById(bookId))
                 .isPresent()

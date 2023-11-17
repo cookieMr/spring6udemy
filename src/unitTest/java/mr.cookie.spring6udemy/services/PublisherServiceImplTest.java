@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
@@ -84,8 +84,6 @@ class PublisherServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .isPresent()
-                .get()
                 .returns(publisherId, PublisherDto::getId);
 
         verify(repository).findById(publisherId);
@@ -98,11 +96,10 @@ class PublisherServiceImplTest {
         var publisherId = UUID.randomUUID();
         when(repository.findById(publisherId)).thenReturn(Optional.empty());
 
-        var result = service.findById(publisherId);
-
-        assertThat(result)
+        assertThatThrownBy(() -> service.findById(publisherId))
                 .isNotNull()
-                .isEmpty();
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
 
         verify(repository).findById(publisherId);
         verifyNoMoreInteractions(repository);
@@ -206,7 +203,8 @@ class PublisherServiceImplTest {
 
         assertThatThrownBy(() -> service.update(publisherId, publisherDto))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
 
         verify(repository).findById(publisherId);
         verifyNoMoreInteractions(repository);

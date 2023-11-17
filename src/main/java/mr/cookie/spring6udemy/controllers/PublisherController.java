@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
@@ -56,12 +56,10 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public ResponseEntity<PublisherDto> getPublisherById(
+    public PublisherDto getPublisherById(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return publisherService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(NotFoundEntityException::new);
+        return publisherService.findById(id);
     }
 
     @Operation(
@@ -118,7 +116,7 @@ public class PublisherController {
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         if (!publisherService.deleteById(id)) {
-            throw new NotFoundEntityException(id, PublisherDto.class);
+            throw EntityNotFoundException.ofPublisher(id);
         }
 
         return ResponseEntity.noContent().build();

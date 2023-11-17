@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.services.AuthorService;
 import org.jetbrains.annotations.NotNull;
@@ -56,12 +56,10 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public ResponseEntity<AuthorDto> getAuthorById(
+    public AuthorDto getAuthorById(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return authorService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(NotFoundEntityException::new);
+        return authorService.findById(id);
     }
 
     @Operation(
@@ -118,7 +116,7 @@ public class AuthorController {
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         if (!authorService.deleteById(id)) {
-            throw new NotFoundEntityException(id, AuthorDto.class);
+            throw EntityNotFoundException.ofAuthor(id);
         }
 
         return ResponseEntity.noContent().build();

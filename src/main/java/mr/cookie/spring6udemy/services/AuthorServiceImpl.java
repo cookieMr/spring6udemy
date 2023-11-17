@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
@@ -33,9 +33,10 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<AuthorDto> findById(@NotNull UUID id) {
+    public AuthorDto findById(@NotNull UUID id) {
         return authorRepository.findById(id)
-                .map(authorMapper::map);
+                .map(authorMapper::map)
+                .orElseThrow(() -> EntityNotFoundException.ofAuthor(id));
     }
 
     @NotNull
@@ -55,7 +56,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public AuthorDto update(@NotNull UUID id, @NotNull AuthorDto author) {
         var existingDto = authorRepository.findById(id)
-                .orElseThrow(NotFoundEntityException::new)
+                .orElseThrow(() -> EntityNotFoundException.ofAuthor(id))
                 .setFirstName(author.getFirstName())
                 .setLastName(author.getLastName());
 

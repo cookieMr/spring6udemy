@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.repositories.BookRepository;
@@ -33,9 +33,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<BookDto> findById(@NotNull UUID id) {
+    public BookDto findById(@NotNull UUID id) {
         return bookRepository.findById(id)
-                .map(bookMapper::map);
+                .map(bookMapper::map)
+                .orElseThrow(() -> EntityNotFoundException.ofBook(id));
     }
 
     @NotNull
@@ -55,7 +56,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookDto update(@NotNull UUID id, @NotNull BookDto book) {
         var existingDto = bookRepository.findById(id)
-                .orElseThrow(NotFoundEntityException::new)
+                .orElseThrow(() -> EntityNotFoundException.ofBook(id))
                 .setTitle(book.getTitle())
                 .setIsbn(book.getIsbn());
 
