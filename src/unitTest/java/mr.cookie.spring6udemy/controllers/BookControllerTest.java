@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
@@ -20,8 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
@@ -42,12 +39,13 @@ class BookControllerTest {
                 .isbn(randomAlphabetic(25))
                 .build();
         when(service.findAll())
-                .thenReturn(Stream.of(bookDto));
+                .thenReturn(List.of(bookDto));
 
         var result = controller.getAllBooks();
 
         assertThat(result)
-                .isEqualTo(ResponseEntity.ok(List.of(bookDto)));
+                .isNotNull()
+                .isEqualTo(List.of(bookDto));
 
         verify(service).findAll();
         verifyNoMoreInteractions(service);
@@ -103,7 +101,7 @@ class BookControllerTest {
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(bookDto2nd));
+                .isSameAs(bookDto2nd);
 
         verify(service).create(bookDto1st);
         verifyNoMoreInteractions(service);
@@ -128,7 +126,7 @@ class BookControllerTest {
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.ok(bookDto2nd));
+                .isSameAs(bookDto2nd);
 
         verify(service).update(bookId, bookDto1st);
         verifyNoMoreInteractions(service);

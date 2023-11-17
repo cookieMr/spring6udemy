@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +39,8 @@ public class PublisherController {
     @Operation(description = "Returns all publishers (or an empty collection).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public ResponseEntity<List<PublisherDto>> getAllPublishers() {
-        return ResponseEntity.ok(publisherService.findAll().toList());
+    public List<PublisherDto> getAllPublishers() {
+        return publisherService.findAll();
     }
 
     @Operation(
@@ -76,9 +75,9 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public ResponseEntity<PublisherDto> createPublisher(@Validated @RequestBody PublisherDto publisher) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(publisherService.create(publisher));
+    @ResponseStatus(HttpStatus.CREATED)
+    public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
+        return publisherService.create(publisher);
         // TODO: conflict status
     }
 
@@ -97,11 +96,11 @@ public class PublisherController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public ResponseEntity<PublisherDto> updatePublisher(
+    public PublisherDto updatePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody PublisherDto publisher
     ) {
-        return ResponseEntity.ok(publisherService.update(id, publisher));
+        return publisherService.update(id, publisher);
     }
 
     @Operation(

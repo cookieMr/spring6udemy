@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.services;
 
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +9,7 @@ public interface CrudService<T> {
 
     @NotNull
     @Transactional(readOnly = true)
-    Stream<T> findAll();
+    List<T> findAll();
 
     @Transactional(readOnly = true)
     T findById(@NotNull UUID id);
