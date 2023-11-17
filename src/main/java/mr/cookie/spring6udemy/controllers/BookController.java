@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -107,19 +107,15 @@ public class BookController {
     @Operation(
             description = "Deletes a book by its ID.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Book was found by ID and removed."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+                    @ApiResponse(responseCode = "204", description = "Book was found by ID and removed.")
             }
     )
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deleteBook(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!bookService.deleteById(id)) {
-            throw EntityNotFoundException.ofBook(id);
-        }
-
-        return ResponseEntity.noContent().build();
+        bookService.deleteById(id);
     }
 
 }

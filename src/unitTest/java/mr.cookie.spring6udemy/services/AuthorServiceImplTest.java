@@ -1,5 +1,6 @@
 package mr.cookie.spring6udemy.services;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
@@ -44,7 +44,7 @@ class AuthorServiceImplTest {
     @Test
     void shouldReturnAllAuthors() {
         var authorEntity = AuthorEntity.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
@@ -65,7 +65,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldReturnAuthorById() {
-        var authorId = UUID.randomUUID();
+        var authorId = randomUUID();
         var authorEntity = AuthorEntity.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
@@ -88,7 +88,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
-        var authorId = UUID.randomUUID();
+        var authorId = randomUUID();
         when(repository.findById(authorId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.findById(authorId))
@@ -103,7 +103,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldCreateNewAuthor() {
-        var authorId = UUID.randomUUID();
+        var authorId = randomUUID();
         var authorEntity = AuthorEntity.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
@@ -131,7 +131,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldUpdateExistingAuthor() {
-        var authorId = UUID.randomUUID();
+        var authorId = randomUUID();
         var authorEntity = AuthorEntity.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
@@ -167,7 +167,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
-        var authorId = UUID.randomUUID();
+        var authorId = randomUUID();
         when(repository.findById(authorId)).thenReturn(Optional.empty());
 
         var authorDto = AuthorDto.builder()
@@ -187,29 +187,11 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldDeleteExistingAuthor() {
-        var authorId = UUID.randomUUID();
-        when(repository.existsById(authorId)).thenReturn(true);
+        var authorId = randomUUID();
 
-        var result = service.deleteById(authorId);
-
-        assertThat(result).isTrue();
+        service.deleteById(authorId);
 
         verify(repository).deleteById(authorId);
-        verify(repository).existsById(authorId);
-        verifyNoMoreInteractions(repository);
-        verifyNoInteractions(mapper);
-    }
-
-    @Test
-    void shouldNotDeleteNotExistingAuthor() {
-        var authorId = UUID.randomUUID();
-        when(repository.existsById(authorId)).thenReturn(false);
-
-        var result = service.deleteById(authorId);
-
-        assertThat(result).isFalse();
-
-        verify(repository).existsById(authorId);
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(mapper);
     }

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +21,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/publisher")
+@RequestMapping(path = "/publisher")
 @RequiredArgsConstructor
 public class PublisherController {
 
@@ -107,19 +107,15 @@ public class PublisherController {
     @Operation(
             description = "Deletes a publisher by its ID.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Publisher was found by ID and removed."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+                    @ApiResponse(responseCode = "204", description = "Publisher was found by ID and removed.")
             }
     )
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void>  deletePublisher(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        if (!publisherService.deleteById(id)) {
-            throw EntityNotFoundException.ofPublisher(id);
-        }
-
-        return ResponseEntity.noContent().build();
+        publisherService.deleteById(id);
     }
 
 }

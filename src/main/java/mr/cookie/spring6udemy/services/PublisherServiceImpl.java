@@ -69,14 +69,8 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     @Transactional
-    public boolean deleteById(@NotNull UUID id) {
-        var doesBeerExist = publisherRepository.existsById(id);
-
-        if (doesBeerExist) {
-            publisherRepository.deleteById(id);
-        }
-
-        return doesBeerExist;
+    public void deleteById(@NotNull UUID id) {
+        publisherRepository.deleteById(id);
     }
 
 }

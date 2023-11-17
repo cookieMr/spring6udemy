@@ -1,5 +1,6 @@
 package mr.cookie.spring6udemy.services;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
@@ -44,7 +44,7 @@ class PublisherServiceImplTest {
     @Test
     void shouldReturnAllPublishers() {
         var publisherEntity = PublisherEntity.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .name(randomAlphabetic(25))
                 .city(randomAlphabetic(25))
                 .address(randomAlphabetic(25))
@@ -68,7 +68,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldReturnPublisherById() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         var publisherEntity = PublisherEntity.builder()
                 .id(publisherId)
                 .name(randomAlphabetic(25))
@@ -93,7 +93,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindPublisherById() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         when(repository.findById(publisherId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.findById(publisherId))
@@ -108,7 +108,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldCreateNewPublisher() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         var publisherEntity = PublisherEntity.builder()
                 .id(publisherId)
                 .name(randomAlphabetic(25))
@@ -142,7 +142,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldUpdateExistingPublisher() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         var publisherEntity = PublisherEntity.builder()
                 .id(publisherId)
                 .name(randomAlphabetic(25))
@@ -190,7 +190,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdatePublisherById() {
-        var publisherId = UUID.randomUUID();
+        var publisherId = randomUUID();
         when(repository.findById(publisherId)).thenReturn(Optional.empty());
 
         var publisherDto = PublisherDto.builder()
@@ -213,29 +213,11 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldDeleteExistingPublisher() {
-        var publisherId = UUID.randomUUID();
-        when(repository.existsById(publisherId)).thenReturn(true);
+        var publisherId = randomUUID();
 
-        var result = service.deleteById(publisherId);
+        service.deleteById(publisherId);
 
-        assertThat(result).isTrue();
-
-        verify(repository).existsById(publisherId);
         verify(repository).deleteById(publisherId);
-        verifyNoMoreInteractions(repository);
-        verifyNoInteractions(mapper);
-    }
-
-    @Test
-    void shouldNotDeleteNotExistingPublisher() {
-        var publisherId = UUID.randomUUID();
-        when(repository.existsById(publisherId)).thenReturn(false);
-
-        var result = service.deleteById(publisherId);
-
-        assertThat(result).isFalse();
-
-        verify(repository).existsById(publisherId);
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(mapper);
     }

@@ -1,10 +1,10 @@
 package mr.cookie.spring6udemy.controllers;
 
+import static java.util.UUID.randomUUID;
 import static mr.cookie.spring6udemy.utils.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -107,7 +107,7 @@ class AuthorControllerIntegrationTest {
     @Test
     void shouldFailToGetAuthorByIdWith404() {
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
-                .buildAndExpand(UUID.randomUUID())
+                .buildAndExpand(randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
                 uri, HttpMethod.GET, createRequestWithHeaders(), AuthorDto.class);
@@ -219,7 +219,7 @@ class AuthorControllerIntegrationTest {
                 .lastName(randomAlphabetic(25))
                 .build();
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
-                .buildAndExpand(UUID.randomUUID())
+                .buildAndExpand(randomUUID())
                 .toUri();
         var result = restTemplate.exchange(
                 uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class);
@@ -288,16 +288,21 @@ class AuthorControllerIntegrationTest {
     }
 
     @Test
-    void shouldFailToDeleteAuthorByIdWith404() {
+    void shouldNotFailWhenDeleteAuthorDoesNotExist() {
+        var authorId = randomUUID();
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
-                .buildAndExpand(UUID.randomUUID())
+                .buildAndExpand(authorId)
                 .toUri();
         var result = restTemplate.exchange(
                 uri, HttpMethod.DELETE, new HttpEntity<>(null), Void.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.NOT_FOUND);
+                .hasStatus(HttpStatus.NO_CONTENT)
+                .doesNotHaveHeader(HttpHeaders.CONTENT_TYPE);
+
+        assertThat(repository.findById(authorId))
+                .isEmpty();
     }
 
 }

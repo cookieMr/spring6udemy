@@ -4,11 +4,21 @@ jacoco {
     toolVersion = '0.8.11'
 }
 
+def filesToExcludeFromCoverage = [
+        "**/*MapperImpl.class"
+]
+
 jacocoTestReport {
     group = 'Reporting'
     description = 'Generates a Combined Jacoco Code Coverage Report.'
 
     executionData fileTree(buildDir).include('/jacoco/*.exec')
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: filesToExcludeFromCoverage)
+        }))
+    }
 
     reports {
         xml.required = true
@@ -23,6 +33,12 @@ jacocoTestCoverageVerification {
     check.dependsOn it
 
     executionData fileTree(buildDir).include('/jacoco/*.exec')
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: filesToExcludeFromCoverage)
+        }))
+    }
 
     violationRules {
         failOnViolation = true

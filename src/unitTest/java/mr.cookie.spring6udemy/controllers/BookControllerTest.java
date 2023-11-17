@@ -1,5 +1,6 @@
 package mr.cookie.spring6udemy.controllers;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,7 +9,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
@@ -37,7 +37,7 @@ class BookControllerTest {
     @Test
     void shoutGetAllBooks() {
         var bookDto = BookDto.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
@@ -55,7 +55,7 @@ class BookControllerTest {
 
     @Test
     void shouldGetBookById() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         var bookDto = BookDto.builder()
                 .id(bookId)
                 .title(randomAlphabetic(25))
@@ -73,7 +73,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         when(service.findById(bookId)).thenThrow(EntityNotFoundException.ofBook(bookId));
 
         assertThatThrownBy(() -> controller.getBookById(bookId))
@@ -88,12 +88,12 @@ class BookControllerTest {
     @Test
     void shouldCreateNewBook() {
         var bookDto1st = BookDto.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
         var bookDto2nd = BookDto.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
@@ -111,14 +111,14 @@ class BookControllerTest {
 
     @Test
     void shouldUpdateExistingBook() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         var bookDto1st = BookDto.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
         var bookDto2nd = BookDto.builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
@@ -136,7 +136,7 @@ class BookControllerTest {
 
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
-        var bookId = UUID.randomUUID();
+        var bookId = randomUUID();
         var bookDto = BookDto.builder()
                 .id(bookId)
                 .title(randomAlphabetic(25))
@@ -156,28 +156,9 @@ class BookControllerTest {
 
     @Test
     void shouldDeleteExistingBook() {
-        var bookId = UUID.randomUUID();
-        when(service.deleteById(bookId)).thenReturn(true);
+        var bookId = randomUUID();
 
-        var result = controller.deleteBook(bookId);
-
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(ResponseEntity.noContent().build());
-
-        verify(service).deleteById(bookId);
-        verifyNoMoreInteractions(service);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenCannotDeleteBookById() {
-        var bookId = UUID.randomUUID();
-        when(service.deleteById(bookId)).thenReturn(false);
-
-        assertThatThrownBy(() -> controller.deleteBook(bookId))
-                .isNotNull()
-                .isExactlyInstanceOf(EntityNotFoundException.class)
-                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, BookEntity.class.getSimpleName(), bookId);
+        controller.deleteBook(bookId);
 
         verify(service).deleteById(bookId);
         verifyNoMoreInteractions(service);

@@ -68,14 +68,8 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     @Transactional
-    public boolean deleteById(@NotNull UUID id) {
-        var doesAuthorExist = authorRepository.existsById(id);
-
-        if (doesAuthorExist) {
-            authorRepository.deleteById(id);
-        }
-
-        return doesAuthorExist;
+    public void deleteById(@NotNull UUID id) {
+        authorRepository.deleteById(id);
     }
 
 }
