@@ -8,11 +8,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
+import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -61,13 +61,11 @@ class BookControllerTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        when(service.findById(bookId)).thenReturn(Optional.of(bookDto));
+        when(service.findById(bookId)).thenReturn(bookDto);
 
         var result = controller.getBookById(bookId);
 
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(ResponseEntity.ok(bookDto));
+        assertThat(result).isSameAs(bookDto);
 
         verify(service).findById(bookId);
         verifyNoMoreInteractions(service);
@@ -76,11 +74,12 @@ class BookControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
         var bookId = UUID.randomUUID();
-        when(service.findById(bookId)).thenReturn(Optional.empty());
+        when(service.findById(bookId)).thenThrow(EntityNotFoundException.ofBook(bookId));
 
         assertThatThrownBy(() -> controller.getBookById(bookId))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, BookEntity.class.getSimpleName(), bookId);
 
         verify(service).findById(bookId);
         verifyNoMoreInteractions(service);
@@ -144,12 +143,12 @@ class BookControllerTest {
                 .isbn(randomAlphabetic(25))
                 .build();
         when(service.update(bookId, bookDto))
-                .thenThrow(new NotFoundEntityException(bookId, BookDto.class));
+                .thenThrow(EntityNotFoundException.ofBook(bookId));
 
         assertThatThrownBy(() -> controller.updateBook(bookId, bookDto))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), bookId);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, BookEntity.class.getSimpleName(), bookId);
 
         verify(service).update(bookId, bookDto);
         verifyNoMoreInteractions(service);
@@ -177,8 +176,8 @@ class BookControllerTest {
 
         assertThatThrownBy(() -> controller.deleteBook(bookId))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, BookDto.class.getSimpleName(), bookId);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, BookEntity.class.getSimpleName(), bookId);
 
         verify(service).deleteById(bookId);
         verifyNoMoreInteractions(service);

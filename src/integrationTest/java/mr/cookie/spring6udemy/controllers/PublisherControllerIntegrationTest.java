@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import mr.cookie.spring6udemy.exceptions.ErrorDto;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
@@ -118,13 +119,11 @@ class PublisherControllerIntegrationTest {
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
                 .buildAndExpand(UUID.randomUUID())
                 .toUri();
-        var result = restTemplate.exchange(
-                uri, HttpMethod.GET, createRequestWithHeaders(), PublisherDto.class);
+        var result = restTemplate.getForEntity(uri, ErrorDto.class);
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.NOT_FOUND)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -204,8 +203,7 @@ class PublisherControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.BAD_REQUEST)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -235,7 +233,7 @@ class PublisherControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.OK)
+                .hasStatusOk()
                 .hasContentTypeAsApplicationJson();
 
         assertThat(result.getBody())
@@ -270,8 +268,7 @@ class PublisherControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.NOT_FOUND)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.NOT_FOUND);
     }
 
     @ParameterizedTest
@@ -303,8 +300,7 @@ class PublisherControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.BAD_REQUEST)
-                .hasContentTypeAsApplicationJson();
+                .hasStatus(HttpStatus.BAD_REQUEST);
 
         assertThat(repository.findById(publisherId))
                 .isPresent()

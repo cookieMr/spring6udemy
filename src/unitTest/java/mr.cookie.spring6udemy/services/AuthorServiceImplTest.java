@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
@@ -79,8 +79,6 @@ class AuthorServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .isPresent()
-                .get()
                 .returns(authorId, AuthorDto::getId);
 
         verify(repository).findById(authorId);
@@ -93,11 +91,10 @@ class AuthorServiceImplTest {
         var authorId = UUID.randomUUID();
         when(repository.findById(authorId)).thenReturn(Optional.empty());
 
-        var result = service.findById(authorId);
-
-        assertThat(result)
+        assertThatThrownBy(() -> service.findById(authorId))
                 .isNotNull()
-                .isEmpty();
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName(), authorId);
 
         verify(repository).findById(authorId);
         verifyNoMoreInteractions(repository);
@@ -180,7 +177,8 @@ class AuthorServiceImplTest {
 
         assertThatThrownBy(() -> service.update(authorId, authorDto))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName(), authorId);
 
         verify(repository).findById(authorId);
         verifyNoMoreInteractions(repository);

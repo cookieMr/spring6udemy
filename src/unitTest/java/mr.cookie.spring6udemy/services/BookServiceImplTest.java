@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
@@ -78,8 +78,6 @@ class BookServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .isPresent()
-                .get()
                 .returns(bookId, BookDto::getId);
 
         verify(repository).findById(bookId);
@@ -92,11 +90,10 @@ class BookServiceImplTest {
         var bookId = UUID.randomUUID();
         when(repository.findById(bookId)).thenReturn(Optional.empty());
 
-        var result = service.findById(bookId);
-
-        assertThat(result)
+        assertThatThrownBy(() -> service.findById(bookId))
                 .isNotNull()
-                .isEmpty();
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, BookEntity.class.getSimpleName(), bookId);
 
         verify(repository).findById(bookId);
         verifyNoMoreInteractions(repository);
@@ -181,7 +178,8 @@ class BookServiceImplTest {
                 .build();
         assertThatThrownBy(() -> service.update(bookId, bookDto))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, BookEntity.class.getSimpleName(), bookId);
 
         verify(repository).findById(bookId);
         verifyNoMoreInteractions(repository);

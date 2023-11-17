@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
@@ -56,12 +56,10 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Nullable
-    public ResponseEntity<BookDto> getBookById(
+    public BookDto getBookById(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
-        return bookService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(NotFoundEntityException::new);
+        return bookService.findById(id);
     }
 
     @Operation(
@@ -118,7 +116,7 @@ public class BookController {
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
     ) {
         if (!bookService.deleteById(id)) {
-            throw new NotFoundEntityException(id, BookDto.class);
+            throw EntityNotFoundException.ofBook(id);
         }
 
         return ResponseEntity.noContent().build();

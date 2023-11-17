@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
@@ -33,9 +33,10 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<PublisherDto> findById(@NotNull UUID id) {
+    public PublisherDto findById(@NotNull UUID id) {
         return publisherRepository.findById(id)
-                .map(publisherMapper::map);
+                .map(publisherMapper::map)
+                .orElseThrow(() -> EntityNotFoundException.ofPublisher(id));
     }
 
     @Override
@@ -53,7 +54,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional
     public @NotNull PublisherDto update(@NotNull UUID id, @NotNull PublisherDto publisher) {
         var existingDto = publisherRepository.findById(id)
-                .orElseThrow(NotFoundEntityException::new)
+                .orElseThrow(() -> EntityNotFoundException.ofPublisher(id))
                 .setName(publisher.getName())
                 .setAddress(publisher.getAddress())
                 .setCity(publisher.getCity())

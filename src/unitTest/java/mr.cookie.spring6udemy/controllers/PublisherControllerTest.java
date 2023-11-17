@@ -7,11 +7,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
+import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import mr.cookie.spring6udemy.services.PublisherService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -68,13 +68,11 @@ class PublisherControllerTest {
                 .city(RandomStringUtils.randomAlphabetic(25))
                 .zipCode(RandomStringUtils.randomAlphabetic(25))
                 .build();
-        when(service.findById(publisherId)).thenReturn(Optional.of(publisherDto));
+        when(service.findById(publisherId)).thenReturn(publisherDto);
 
         var result = controller.getPublisherById(publisherId);
 
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(ResponseEntity.ok(publisherDto));
+        assertThat(result).isSameAs(publisherDto);
 
         verify(service).findById(publisherId);
         verifyNoMoreInteractions(service);
@@ -83,11 +81,12 @@ class PublisherControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
         var publisherId = UUID.randomUUID();
-        when(service.findById(publisherId)).thenReturn(Optional.empty());
+        when(service.findById(publisherId)).thenThrow(EntityNotFoundException.ofPublisher(publisherId));
 
         assertThatThrownBy(() -> controller.getPublisherById(publisherId))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
 
         verify(service).findById(publisherId);
         verifyNoMoreInteractions(service);
@@ -155,7 +154,7 @@ class PublisherControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenCannotUpdateAuthorById() {
+    void shouldThrowExceptionWhenCannotUpdatePublisherById() {
         var publisherId = UUID.randomUUID();
         var publisherDto = PublisherDto.builder()
                 .id(UUID.randomUUID())
@@ -166,12 +165,12 @@ class PublisherControllerTest {
                 .zipCode(RandomStringUtils.randomAlphabetic(25))
                 .build();
         when(service.update(publisherId, publisherDto))
-                .thenThrow(new NotFoundEntityException(publisherId, PublisherDto.class));
+                .thenThrow(EntityNotFoundException.ofPublisher(publisherId));
 
         assertThatThrownBy(() -> controller.updatePublisher(publisherId, publisherDto))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, PublisherDto.class.getSimpleName(), publisherId);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
 
         verify(service).update(publisherId, publisherDto);
         verifyNoMoreInteractions(service);
@@ -199,8 +198,8 @@ class PublisherControllerTest {
 
         assertThatThrownBy(() -> controller.deletePublisher(publisherId))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, PublisherDto.class.getSimpleName(), publisherId);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
 
         verify(service).deleteById(publisherId);
         verifyNoMoreInteractions(service);

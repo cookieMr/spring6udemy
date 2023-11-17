@@ -8,11 +8,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import mr.cookie.spring6udemy.exceptions.NotFoundEntityException;
+import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
+import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.services.AuthorService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -62,13 +62,11 @@ class AuthorControllerTest {
                 .lastName(randomAlphabetic(25))
                 .build();
 
-        when(service.findById(authorId)).thenReturn(Optional.of(authorDto));
+        when(service.findById(authorId)).thenReturn(authorDto);
 
         var result = controller.getAuthorById(authorId);
 
-        assertThat(result)
-                .isNotNull()
-                .isEqualTo(ResponseEntity.ok(authorDto));
+        assertThat(result).isSameAs(authorDto);
 
         verify(service).findById(authorId);
         verifyNoMoreInteractions(service);
@@ -77,11 +75,12 @@ class AuthorControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
         var authorId = UUID.randomUUID();
-        when(service.findById(authorId)).thenReturn(Optional.empty());
+        when(service.findById(authorId)).thenThrow(EntityNotFoundException.ofAuthor(authorId));
 
         assertThatThrownBy(() -> controller.getAuthorById(authorId))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName(), authorId);
 
         verify(service).findById(authorId);
         verifyNoMoreInteractions(service);
@@ -145,12 +144,12 @@ class AuthorControllerTest {
                 .lastName(randomAlphabetic(25))
                 .build();
         when(service.update(authorId, authorDto))
-                .thenThrow(new NotFoundEntityException(authorId, AuthorDto.class));
+                .thenThrow(EntityNotFoundException.ofAuthor(authorId));
 
         assertThatThrownBy(() -> controller.updateAuthor(authorId, authorDto))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), authorId);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName(), authorId);
 
         verify(service).update(authorId, authorDto);
         verifyNoMoreInteractions(service);
@@ -178,8 +177,8 @@ class AuthorControllerTest {
 
         assertThatThrownBy(() -> controller.deleteAuthor(authorId))
                 .isNotNull()
-                .isInstanceOf(NotFoundEntityException.class)
-                .hasMessage(NotFoundEntityException.ERROR_MESSAGE, AuthorDto.class.getSimpleName(), authorId);
+                .isExactlyInstanceOf(EntityNotFoundException.class)
+                .hasMessage(EntityNotFoundException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName(), authorId);
 
         verify(service).deleteById(authorId);
         verifyNoMoreInteractions(service);
