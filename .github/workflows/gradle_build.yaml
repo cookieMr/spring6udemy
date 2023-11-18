@@ -55,6 +55,13 @@ jobs:
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check
+      - name: Upload JaCoCo Report as an Artifact
+        id: upload-jacoco-report-artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ github.ref == 'refs/heads/master' }}
+        with:
+          name: quality-reports-artifacts
+          path: build/reports/jacoco/test/jacocoTestReport.xml
 
   quality-check:
     name: Checks Project's Quality with Gradle
@@ -81,7 +88,7 @@ jobs:
         id: run-gradle-check-cmd
         run: ./gradlew check --exclude-task test
       - name: Upload HTML Reports as Artifacts
-        id: upload-html-reports-as-artifacts
+        id: upload-html-reports-artifacts
         uses: actions/upload-artifact@v3
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
@@ -140,6 +147,12 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Download JaCoCo Report Artifact
+        id: download-jacoco-report-artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: quality-reports-artifacts
+          path: build/reports/jacoco/test/jacocoTestReport.xml
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
