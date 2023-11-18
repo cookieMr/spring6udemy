@@ -55,12 +55,11 @@ jobs:
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check
-      - name: Upload JaCoCo Report as an Artifact
-        id: upload-jacoco-report-artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: jacoco-report-artifacts
-          path: build/reports/jacoco/test/jacocoTestReport.xml
+      - name: Run Gradle Sonar Command
+        id: run-gradle-sonar-cmd
+        run: ./gradlew sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   quality-check:
     name: Checks Project's Quality with Gradle
@@ -122,49 +121,3 @@ jobs:
       - name: Run Gradle CVE Check Command
         id: run-gradle-cve-check-cmd
         run: ./gradlew dependencyCheckAnalyze
-
-  sonar:
-    name: Sends Test Reports to SonarCloud
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Project Sources
-        id: checkout-project-sources
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'corretto'
-      - name: Cache SonarCloud Packages
-        id: cache-sonar-cloud-packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Setup Gradle Build Action
-        id: setup-gradle-build-action
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 7.6.3
-      - name: Download JaCoCo Report Artifact
-        id: download-jacoco-report-artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: jacoco-report-artifacts
-          path: build/reports/jacoco/test/jacocoTestReport.xml
-      - name: Print Working Dir
-        id: pwd-debug
-        run: pwd
-      - name: List Directory (Debug)
-        id: ls-la-test-dir
-        run: ls -la build/reports/jacoco/test/
-      - name: Run Gradle Sonar Command
-        id: run-gradle-sonar-cmd
-        run: ./gradlew sonar
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
