@@ -146,6 +146,11 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.6.3
       - name: Download JaCoCo Report Artifact
         id: download-jacoco-report-artifact
         uses: actions/download-artifact@v3
@@ -158,11 +163,6 @@ jobs:
       - name: List Directory (Debug)
         id: ls-la-test-dir
         run: ls -la build/reports/jacoco/test/
-      - name: Setup Gradle Build Action
-        id: setup-gradle-build-action
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 7.6.3
       - name: Run Gradle Sonar Command
         id: run-gradle-sonar-cmd
         run: ./gradlew sonar
