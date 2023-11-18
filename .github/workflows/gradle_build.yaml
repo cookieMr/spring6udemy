@@ -152,6 +152,12 @@ jobs:
         with:
           name: jacoco-report-artifacts
           path: build/reports/jacoco/test/jacocoTestReport.xml
+      - name: Print Working Dir
+        id: pwd-debug
+        run: pwd
+      - name: List Directory (Debug)
+        id: ls-la-test-dir
+        run: ls -la build/reports/jacoco/test/
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
