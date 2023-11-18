@@ -39,7 +39,7 @@ spotbugsTest.enabled = false
     }
 }
 
-tasks.register('validateCveSuppressions', Task) {
+tasks.register('validateCveSuppression', Task) {
     group = 'verification'
     description = 'Checks if every CVE suppression has an expiration date'
 
@@ -80,8 +80,8 @@ tasks.register('validateCveSuppressions', Task) {
     }
 }
 
-check.dependsOn dependencyCheckAnalyze
-check.dependsOn validateCveSuppressions
+dependencyCheckAnalyze.shouldRunAfter check
+dependencyCheckAnalyze.dependsOn validateCveSuppression
 
 tasks.withType(Checkstyle).configureEach {
     excludes = [

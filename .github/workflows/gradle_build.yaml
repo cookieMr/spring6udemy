@@ -12,19 +12,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project Sources
+        id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Java as Corretto 17
+        id: setup-java-corretto-17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'corretto'
-      - uses: gradle/gradle-build-action@v2
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
+        uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.1
+          gradle-version: 7.6.3
       - name: Run Gradle Build Command
-        run: ./gradlew build -x test -x check
+        id: run-gradle-build-cmd
+        run: ./gradlew build --exclude-task test --exclude-task check
 
   test:
     name: Test Project with Gradle
@@ -32,42 +37,51 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project Sources
+        id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Java as Corretto 17
+        id: setup-java-corretto-17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'corretto'
-      - name: Setup Gradle
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.1
+          gradle-version: 7.6.3
       - name: Run Gradle Test Command
-        run: ./gradlew test -x check
+        id: run-gradle-test-cmd
+        run: ./gradlew test --exclude-task check
 
-  check:
+  quality-check:
     name: Checks Project's Quality with Gradle
     needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project Sources
+        id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Java as Corretto 17
+        id: setup-java-corretto-17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'corretto'
-      - name: Setup Gradle
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.1
+          gradle-version: 7.6.3
       - name: Run Gradle Check Command
-        run: ./gradlew check -x test
+        id: run-gradle-check-cmd
+        run: ./gradlew check --exclude-task test
       - name: Upload HTML Reports as Artifacts
+        id: upload-html-reports-as-artifacts
         uses: actions/upload-artifact@v3
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
@@ -77,31 +91,62 @@ jobs:
             build/reports/spotbugs/*.html
             build/reports/dependency-check-report.html
 
+  vulnerability-check:
+    name: Checks Project's Dependencies for Vulnerabilities
+    needs: quality-check
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - name: Checkout Project Sources
+        id: checkout-project-sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Java as Corretto 17
+        id: setup-java-corretto-17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'corretto'
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.6.3
+      - name: Run Gradle CVE Check Command
+        id: run-gradle-cve-check-cmd
+        run: ./gradlew dependencyCheckAnalyze
+
   sonar:
     name: Sends Test Reports to SonarCloud
     needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project Sources
+        id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Java as Corretto 17
+        id: setup-java-corretto-17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'corretto'
       - name: Cache SonarCloud Packages
+        id: cache-sonar-cloud-packages
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Setup Gradle
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.1
-      - name: Run Gradle Check Command
+          gradle-version: 7.6.3
+      - name: Run Gradle Sonar Command
+        id: run-gradle-sonar-cmd
         run: ./gradlew sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
