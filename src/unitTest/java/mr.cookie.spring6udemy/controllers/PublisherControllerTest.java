@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.stream.Stream;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
@@ -20,8 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class PublisherControllerTest {
@@ -46,12 +43,13 @@ class PublisherControllerTest {
                 .build();
 
         when(service.findAll())
-                .thenReturn(Stream.of(publisherDto));
+                .thenReturn(List.of(publisherDto));
 
         var result = controller.getAllPublishers();
 
         assertThat(result)
-                .isEqualTo(ResponseEntity.ok(List.of(publisherDto)));
+                .isNotNull()
+                .isEqualTo(List.of(publisherDto));
 
         verify(service).findAll();
         verifyNoMoreInteractions(service);
@@ -116,7 +114,7 @@ class PublisherControllerTest {
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.status(HttpStatus.CREATED).body(publisherDto2nd));
+                .isSameAs(publisherDto2nd);
 
         verify(service).create(publisherDto1st);
         verifyNoMoreInteractions(service);
@@ -147,7 +145,7 @@ class PublisherControllerTest {
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(ResponseEntity.ok(publisherDto2nd));
+                .isSameAs(publisherDto2nd);
 
         verify(service).update(publisherId, publisherDto1st);
         verifyNoMoreInteractions(service);

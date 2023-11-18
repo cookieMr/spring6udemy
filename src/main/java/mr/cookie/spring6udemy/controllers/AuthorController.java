@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +39,8 @@ public class AuthorController {
     @Operation(description = "Returns all authors (or an empty collection).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public ResponseEntity<List<AuthorDto>> getAllAuthors() {
-        return ResponseEntity.ok(authorService.findAll().toList());
+    public List<AuthorDto> getAllAuthors() {
+        return authorService.findAll();
     }
 
     @Operation(
@@ -76,9 +75,9 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public ResponseEntity<AuthorDto> createAuthor(@Validated @RequestBody AuthorDto author) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authorService.create(author));
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
+        return authorService.create(author);
         // TODO: conflict status
     }
 
@@ -97,11 +96,11 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public ResponseEntity<AuthorDto> updateAuthor(
+    public AuthorDto updateAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody AuthorDto author
     ) {
-        return ResponseEntity.ok(authorService.update(id, author));
+        return authorService.update(id, author);
     }
 
     @Operation(

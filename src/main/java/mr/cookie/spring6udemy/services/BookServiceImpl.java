@@ -1,8 +1,8 @@
 package mr.cookie.spring6udemy.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
@@ -25,10 +25,11 @@ public class BookServiceImpl implements BookService {
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public Stream<BookDto> findAll() {
+    public List<BookDto> findAll() {
         return bookRepository.findAll()
                 .stream()
-                .map(bookMapper::map);
+                .map(bookMapper::map)
+                .toList();
     }
 
     @Override

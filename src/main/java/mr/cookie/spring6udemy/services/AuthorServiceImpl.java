@@ -1,8 +1,8 @@
 package mr.cookie.spring6udemy.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
@@ -25,10 +25,11 @@ public class AuthorServiceImpl implements AuthorService {
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public Stream<AuthorDto> findAll() {
+    public List<AuthorDto> findAll() {
         return authorRepository.findAll()
                 .stream()
-                .map(authorMapper::map);
+                .map(authorMapper::map)
+                .toList();
     }
 
     @Override
