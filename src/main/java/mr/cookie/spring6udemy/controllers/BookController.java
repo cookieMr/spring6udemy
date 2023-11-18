@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +39,8 @@ public class BookController {
     @Operation(description = "Returns all books (or an empty collection).")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        return ResponseEntity.ok(bookService.findAll().toList());
+    public List<BookDto> getAllBooks() {
+        return bookService.findAll();
     }
 
     @Operation(
@@ -76,9 +75,9 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public ResponseEntity<BookDto> createBook(@Validated @RequestBody BookDto book) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(bookService.create(book));
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookDto createBook(@Validated @RequestBody BookDto book) {
+        return bookService.create(book);
         // TODO: conflict status
     }
 
@@ -97,11 +96,11 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @NotNull
-    public ResponseEntity<BookDto> updateBook(
+    public BookDto updateBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
             @Validated @RequestBody BookDto book
     ) {
-        return ResponseEntity.ok(bookService.update(id, book));
+        return bookService.update(id, book);
     }
 
     @Operation(

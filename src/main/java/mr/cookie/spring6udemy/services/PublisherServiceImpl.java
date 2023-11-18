@@ -1,8 +1,8 @@
 package mr.cookie.spring6udemy.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
@@ -25,10 +25,11 @@ public class PublisherServiceImpl implements PublisherService {
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public Stream<PublisherDto> findAll() {
+    public List<PublisherDto> findAll() {
         return publisherRepository.findAll()
                 .stream()
-                .map(publisherMapper::map);
+                .map(publisherMapper::map)
+                .toList();
     }
 
     @Override
