@@ -18,8 +18,7 @@ import mr.cookie.spring6udemy.utils.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.utils.assertions.ResponseEntityAssertions;
 import mr.cookie.spring6udemy.utils.constants.Constant;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,8 +45,8 @@ class PublisherControllerIntegrationTest {
     @Autowired
     private PublisherMapper mapper;
 
-    @BeforeEach
-    void setup() {
+    @AfterEach
+    void cleanUp() {
         repository.deleteAll();
     }
 
@@ -159,9 +158,46 @@ class PublisherControllerIntegrationTest {
     }
 
     @Test
-    @Disabled
-    void shouldFailCreatePublisherWith409() {
-        // todo: 409 entity already exists
+    void shouldReturnExistingEntityWhenCreatingTheSamePublisher() {
+        var publisherEntity = PublisherEntity.builder()
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var publisherId = repository.save(publisherEntity).getId();
+
+        var publisherDto = PublisherDto.builder()
+                .name(publisherEntity.getName())
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var uri = UriComponentsBuilder.fromPath(PUBLISHER_PATH)
+                .buildAndExpand()
+                .toUri();
+        var result = restTemplate.exchange(
+                uri, HttpMethod.POST, createRequestWithHeaders(publisherDto), PublisherDto.class);
+
+        ResponseEntityAssertions.assertThat(result)
+                .isNotNull()
+                .hasStatus(HttpStatus.CREATED)
+                .hasContentTypeAsApplicationJson();
+
+        assertThat(result.getBody())
+                .isNotNull()
+                .returns(publisherId, PublisherDto::getId)
+                .returns(publisherEntity.getName(), PublisherDto::getName)
+                .returns(publisherEntity.getAddress(), PublisherDto::getAddress)
+                .returns(publisherEntity.getCity(), PublisherDto::getCity)
+                .returns(publisherEntity.getState(), PublisherDto::getState)
+                .returns(publisherEntity.getZipCode(), PublisherDto::getZipCode);
+
+        assertThat(repository.findAll())
+                .isNotNull()
+                .hasSize(1);
     }
 
     static Stream<Consumer<PublisherDto>> publisherModifiers() {
@@ -240,15 +276,10 @@ class PublisherControllerIntegrationTest {
         assertThat(result.getBody())
                 .isNotNull()
                 .returns(publisherDto.getName(), PublisherDto::getName)
-                .doesNotReturn(publisherEntity.getName(), PublisherDto::getName)
                 .returns(publisherDto.getAddress(), PublisherDto::getAddress)
-                .doesNotReturn(publisherEntity.getAddress(), PublisherDto::getAddress)
                 .returns(publisherDto.getState(), PublisherDto::getState)
-                .doesNotReturn(publisherEntity.getState(), PublisherDto::getState)
                 .returns(publisherDto.getCity(), PublisherDto::getCity)
-                .doesNotReturn(publisherEntity.getCity(), PublisherDto::getCity)
                 .returns(publisherDto.getZipCode(), PublisherDto::getZipCode)
-                .doesNotReturn(publisherEntity.getZipCode(), PublisherDto::getZipCode)
                 .returns(publisherId, PublisherDto::getId);
     }
 
@@ -270,6 +301,36 @@ class PublisherControllerIntegrationTest {
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
                 .hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldFailToUpdatePublisherWith409() {
+        var publisherEntity = PublisherEntity.builder()
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var publisherId = repository.save(publisherEntity).getId();
+
+        var publisherDto = PublisherDto.builder()
+                .name(publisherEntity.getName())
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
+                .buildAndExpand(publisherId)
+                .toUri();
+
+        var result = restTemplate.exchange(
+                uri, HttpMethod.PUT, createRequestWithHeaders(publisherDto), PublisherDto.class);
+
+        ResponseEntityAssertions.assertThat(result)
+                .isNotNull()
+                .hasStatus(HttpStatus.CONFLICT);
     }
 
     @ParameterizedTest
@@ -307,15 +368,10 @@ class PublisherControllerIntegrationTest {
                 .isPresent()
                 .get()
                 .returns(publisherEntity.getName(), PublisherEntity::getName)
-                .doesNotReturn(publisherDto.getName(), PublisherEntity::getName)
                 .returns(publisherEntity.getAddress(), PublisherEntity::getAddress)
-                .doesNotReturn(publisherDto.getAddress(), PublisherEntity::getAddress)
                 .returns(publisherEntity.getState(), PublisherEntity::getState)
-                .doesNotReturn(publisherDto.getState(), PublisherEntity::getState)
                 .returns(publisherEntity.getCity(), PublisherEntity::getCity)
-                .doesNotReturn(publisherDto.getCity(), PublisherEntity::getCity)
                 .returns(publisherEntity.getZipCode(), PublisherEntity::getZipCode)
-                .doesNotReturn(publisherDto.getZipCode(), PublisherEntity::getZipCode)
                 .returns(publisherId, PublisherEntity::getId);
     }
 

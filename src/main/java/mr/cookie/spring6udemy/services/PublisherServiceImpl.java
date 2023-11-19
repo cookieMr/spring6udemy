@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import mr.cookie.spring6udemy.exceptions.EntityExistsException;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.mappers.PublisherMapper;
@@ -40,23 +41,36 @@ public class PublisherServiceImpl implements PublisherService {
                 .orElseThrow(() -> EntityNotFoundException.ofPublisher(id));
     }
 
+    @NotNull
     @Override
     @Transactional
-    public @NotNull PublisherDto create(@NotNull PublisherDto publisher) {
+    public PublisherDto create(@NotNull PublisherDto publisher) {
+        var publisherOptional = publisherRepository.findByName(publisher.getName());
+        if (publisherOptional.isPresent()) {
+            return publisherOptional
+                    .map(publisherMapper::map)
+                    .orElseThrow();
+        }
+
         return Optional.of(publisher)
                 .map(publisherMapper::map)
                 .map(publisherRepository::save)
                 .map(publisherMapper::map)
                 .orElseThrow();
-        // TODO: return conflict when publisher exists
     }
 
+    @NotNull
     @Override
     @Transactional
-    public @NotNull PublisherDto update(@NotNull UUID id, @NotNull PublisherDto publisher) {
+    public PublisherDto update(@NotNull UUID id, @NotNull PublisherDto publisher) {
         var existingDto = publisherRepository.findById(id)
-                .orElseThrow(() -> EntityNotFoundException.ofPublisher(id))
-                .setName(publisher.getName())
+                .orElseThrow(() -> EntityNotFoundException.ofPublisher(id));
+
+        if (publisherRepository.findByName(publisher.getName()).isPresent()) {
+            throw EntityExistsException.ofPublisher();
+        }
+
+        existingDto.setName(publisher.getName())
                 .setAddress(publisher.getAddress())
                 .setCity(publisher.getCity())
                 .setState(publisher.getState())

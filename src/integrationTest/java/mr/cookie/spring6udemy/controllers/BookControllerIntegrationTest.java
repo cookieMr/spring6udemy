@@ -153,7 +153,7 @@ class BookControllerIntegrationTest {
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
-                .title(bookEntity.getTitle())
+                .title(randomAlphabetic(25))
                 .isbn(bookEntity.getIsbn())
                 .build();
         var uri = UriComponentsBuilder.fromPath(BOOK_PATH)
@@ -169,8 +169,8 @@ class BookControllerIntegrationTest {
 
         assertThat(result.getBody())
                 .isNotNull()
-                .returns(bookDto.getTitle(), BookDto::getTitle)
-                .returns(bookDto.getIsbn(), BookDto::getIsbn)
+                .returns(bookEntity.getTitle(), BookDto::getTitle)
+                .returns(bookEntity.getIsbn(), BookDto::getIsbn)
                 .returns(bookId, BookDto::getId);
 
         assertThat(repository.findAll())
@@ -238,9 +238,7 @@ class BookControllerIntegrationTest {
         assertThat(result.getBody())
                 .isNotNull()
                 .returns(bookDto.getTitle(), BookDto::getTitle)
-                .doesNotReturn(bookEntity.getTitle(), BookDto::getTitle)
                 .returns(bookDto.getIsbn(), BookDto::getIsbn)
-                .doesNotReturn(bookEntity.getIsbn(), BookDto::getIsbn)
                 .returns(bookId, BookDto::getId);
     }
 
@@ -315,9 +313,7 @@ class BookControllerIntegrationTest {
                 .isPresent()
                 .get()
                 .returns(bookEntity.getTitle(), BookEntity::getTitle)
-                .doesNotReturn(bookDto.getTitle(), BookEntity::getTitle)
                 .returns(bookEntity.getIsbn(), BookEntity::getIsbn)
-                .doesNotReturn(bookDto.getIsbn(), BookEntity::getIsbn)
                 .returns(bookId, BookEntity::getId);
     }
 

@@ -166,8 +166,8 @@ class AuthorControllerIntegrationTest {
 
         assertThat(result.getBody())
                 .isNotNull()
-                .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
-                .returns(authorDto.getLastName(), AuthorDto::getLastName)
+                .returns(authorEntity.getFirstName(), AuthorDto::getFirstName)
+                .returns(authorEntity.getLastName(), AuthorDto::getLastName)
                 .returns(authorId, AuthorDto::getId);
 
         assertThat(repository.findAll())
@@ -233,9 +233,7 @@ class AuthorControllerIntegrationTest {
         assertThat(result.getBody())
                 .isNotNull()
                 .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
-                .doesNotReturn(authorEntity.getFirstName(), AuthorDto::getFirstName)
                 .returns(authorDto.getLastName(), AuthorDto::getLastName)
-                .doesNotReturn(authorEntity.getLastName(), AuthorDto::getLastName)
                 .returns(authorId, AuthorDto::getId);
     }
 
@@ -310,9 +308,7 @@ class AuthorControllerIntegrationTest {
                 .isPresent()
                 .get()
                 .returns(authorEntity.getFirstName(), AuthorEntity::getFirstName)
-                .doesNotReturn(authorDto.getFirstName(), AuthorEntity::getFirstName)
                 .returns(authorEntity.getLastName(), AuthorEntity::getLastName)
-                .doesNotReturn(authorDto.getLastName(), AuthorEntity::getLastName)
                 .returns(authorId, AuthorEntity::getId);
     }
 
