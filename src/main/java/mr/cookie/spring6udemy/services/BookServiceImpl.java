@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import mr.cookie.spring6udemy.exceptions.EntityExistsException;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
@@ -44,12 +45,18 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto create(@NotNull BookDto book) {
+        var bookOptional = bookRepository.findByIsbn(book.getIsbn());
+        if (bookOptional.isPresent()) {
+            return bookOptional
+                    .map(bookMapper::map)
+                    .orElseThrow();
+        }
+
         return Optional.of(book)
                 .map(bookMapper::map)
                 .map(bookRepository::save)
                 .map(bookMapper::map)
                 .orElseThrow();
-        // TODO: return conflict when publisher exists
     }
 
     @NotNull
@@ -57,10 +64,14 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookDto update(@NotNull UUID id, @NotNull BookDto book) {
         var existingDto = bookRepository.findById(id)
-                .orElseThrow(() -> EntityNotFoundException.ofBook(id))
-                .setTitle(book.getTitle())
-                .setIsbn(book.getIsbn());
+                .orElseThrow(() -> EntityNotFoundException.ofBook(id));
 
+        if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
+            throw EntityExistsException.ofBook();
+        }
+
+        existingDto.setTitle(book.getTitle())
+                .setIsbn(book.getIsbn());
         return Optional.of(existingDto)
                 .map(bookRepository::save)
                 .map(bookMapper::map)

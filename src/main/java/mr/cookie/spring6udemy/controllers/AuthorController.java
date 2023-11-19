@@ -66,8 +66,7 @@ public class AuthorController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Author was created and is returned in a response body."),
-                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION)
             }
     )
     @PostMapping(
@@ -78,7 +77,6 @@ public class AuthorController {
     @ResponseStatus(HttpStatus.CREATED)
     public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
         return authorService.create(author);
-        // TODO: conflict status
     }
 
     @Operation(
@@ -87,7 +85,8 @@ public class AuthorController {
                     @ApiResponse(responseCode = "200",
                             description = "Author was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
     @PutMapping(

@@ -16,7 +16,7 @@ import mr.cookie.spring6udemy.utils.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.utils.assertions.ResponseEntityAssertions;
 import mr.cookie.spring6udemy.utils.constants.Constant;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,8 +43,8 @@ class AuthorControllerIntegrationTest {
     @Autowired
     private AuthorMapper mapper;
 
-    @BeforeEach
-    void setup() {
+    @AfterEach
+    void cleanUp() {
         repository.deleteAll();
     }
 
@@ -264,7 +264,6 @@ class AuthorControllerIntegrationTest {
                 .build();
         var authorId = repository.save(authorEntity)
                 .getId();
-        repository.flush();
 
         var authorDto = AuthorDto.builder()
                 .firstName(authorEntity.getFirstName())

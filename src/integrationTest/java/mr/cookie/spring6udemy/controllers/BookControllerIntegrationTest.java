@@ -18,8 +18,7 @@ import mr.cookie.spring6udemy.utils.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.utils.assertions.ResponseEntityAssertions;
 import mr.cookie.spring6udemy.utils.constants.Constant;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,8 +45,8 @@ class BookControllerIntegrationTest {
     @Autowired
     private BookMapper mapper;
 
-    @BeforeEach
-    void setup() {
+    @AfterEach
+    void cleanUp() {
         repository.deleteAll();
     }
 
@@ -146,9 +145,37 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    @Disabled
-    void shouldFailCreateBookWith409() {
-        // todo: 409 entity already exists
+    void shouldReturnExistingEntityWhenCreatingTheSameBook() {
+        var bookEntity = BookEntity.builder()
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
+                .build();
+        var bookId = repository.save(bookEntity).getId();
+
+        var bookDto = BookDto.builder()
+                .title(bookEntity.getTitle())
+                .isbn(bookEntity.getIsbn())
+                .build();
+        var uri = UriComponentsBuilder.fromPath(BOOK_PATH)
+                .buildAndExpand()
+                .toUri();
+        var result = restTemplate.exchange(
+                uri, HttpMethod.POST, createRequestWithHeaders(bookDto), BookDto.class);
+
+        ResponseEntityAssertions.assertThat(result)
+                .isNotNull()
+                .hasStatus(HttpStatus.CREATED)
+                .hasContentTypeAsApplicationJson();
+
+        assertThat(result.getBody())
+                .isNotNull()
+                .returns(bookDto.getTitle(), BookDto::getTitle)
+                .returns(bookDto.getIsbn(), BookDto::getIsbn)
+                .returns(bookId, BookDto::getId);
+
+        assertThat(repository.findAll())
+                .isNotNull()
+                .hasSize(1);
     }
 
     static Stream<Consumer<BookDto>> bookModifiers() {
@@ -191,7 +218,6 @@ class BookControllerIntegrationTest {
                 .title(randomAlphabetic(25))
                 .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
-
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
@@ -234,6 +260,30 @@ class BookControllerIntegrationTest {
                 .isNotNull()
                 .hasStatus(HttpStatus.NOT_FOUND)
                 .hasContentTypeAsApplicationJson();
+    }
+
+    @Test
+    void shouldFailToUpdateBookWith409() {
+        var bookEntity = BookEntity.builder()
+                .title(randomAlphabetic(25))
+                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
+                .build();
+        var bookId = repository.save(bookEntity).getId();
+
+        var bookDto = BookDto.builder()
+                .title(randomAlphabetic(25))
+                .isbn(bookEntity.getIsbn())
+                .build();
+        var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
+                .buildAndExpand(bookId)
+                .toUri();
+
+        var result = restTemplate.exchange(
+                uri, HttpMethod.PUT, createRequestWithHeaders(bookDto), BookDto.class);
+
+        ResponseEntityAssertions.assertThat(result)
+                .isNotNull()
+                .hasStatus(HttpStatus.CONFLICT);
     }
 
     @ParameterizedTest
