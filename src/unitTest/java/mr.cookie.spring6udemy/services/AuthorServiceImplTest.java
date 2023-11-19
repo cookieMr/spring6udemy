@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import mr.cookie.spring6udemy.exceptions.EntityExistsException;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
@@ -19,8 +20,6 @@ import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -28,9 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorServiceImplTest {
-
-    @Captor
-    private ArgumentCaptor<AuthorEntity> captor;
 
     @Spy
     private AuthorMapper mapper = new AuthorMapperImpl();
@@ -109,23 +105,64 @@ class AuthorServiceImplTest {
                 .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
-
-        when(repository.save(authorEntity)).thenReturn(authorEntity);
-
         var authorDto = AuthorDto.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
+
+        when(repository.findByFirstNameAndLastName(
+                authorDto.getFirstName(),
+                authorDto.getLastName()))
+                .thenReturn(Optional.empty());
+        when(repository.save(authorEntity)).thenReturn(authorEntity);
+
         var result = service.create(authorDto);
 
         assertThat(result)
                 .isNotNull()
-                .returns(authorId, AuthorDto::getId);
+                .returns(authorId, AuthorDto::getId)
+                .returns(authorEntity.getFirstName(), AuthorDto::getFirstName)
+                .returns(authorEntity.getLastName(), AuthorDto::getLastName);
 
+        verify(repository).findByFirstNameAndLastName(
+                authorDto.getFirstName(),
+                authorDto.getLastName());
         verify(repository).save(authorEntity);
         verify(mapper).map(authorEntity);
         verify(mapper).map(authorDto);
+        verifyNoMoreInteractions(repository, mapper);
+    }
+
+    @Test
+    void shouldReturnExistingEntityWhenCreatingSameAuthor() {
+        var authorId = randomUUID();
+        var authorEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .id(authorId)
+                .build();
+        var authorDto = AuthorDto.builder()
+                .firstName(authorEntity.getFirstName())
+                .lastName(authorEntity.getLastName())
+                .id(authorId)
+                .build();
+
+        when(repository.findByFirstNameAndLastName(
+                authorDto.getFirstName(),
+                authorDto.getLastName()))
+                .thenReturn(Optional.of(authorEntity));
+
+        var result = service.create(authorDto);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(authorDto);
+
+        verify(repository).findByFirstNameAndLastName(
+                authorDto.getFirstName(),
+                authorDto.getLastName());
+        verify(mapper).map(authorEntity);
         verifyNoMoreInteractions(repository, mapper);
     }
 
@@ -140,8 +177,18 @@ class AuthorServiceImplTest {
         var updatedAuthorDto = AuthorDto.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
+                .id(authorId)
+                .build();
+        var updatedEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .id(authorId)
                 .build();
 
+        when(repository.findByFirstNameAndLastName(
+                updatedAuthorDto.getFirstName(),
+                updatedAuthorDto.getLastName()))
+                .thenReturn(Optional.empty());
         when(repository.findById(authorId)).thenReturn(Optional.of(authorEntity));
         when(repository.save(authorEntity)).thenReturn(authorEntity);
 
@@ -149,20 +196,15 @@ class AuthorServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(authorId, AuthorDto::getId)
-                .returns(updatedAuthorDto.getFirstName(), AuthorDto::getFirstName)
-                .returns(updatedAuthorDto.getLastName(), AuthorDto::getLastName);
+                .isEqualTo(updatedAuthorDto);
 
+        verify(repository).findByFirstNameAndLastName(
+                updatedAuthorDto.getFirstName(),
+                updatedAuthorDto.getLastName());
         verify(repository).findById(authorId);
-        verify(repository).save(captor.capture());
+        verify(repository).save(updatedEntity);
         verify(mapper).map(authorEntity);
         verifyNoMoreInteractions(repository, mapper);
-
-        assertThat(captor.getValue())
-                .isNotNull()
-                .returns(authorId, AuthorEntity::getId)
-                .returns(updatedAuthorDto.getFirstName(), AuthorEntity::getFirstName)
-                .returns(updatedAuthorDto.getLastName(), AuthorEntity::getLastName);
     }
 
     @Test
@@ -181,6 +223,38 @@ class AuthorServiceImplTest {
                 .hasMessage(EntityNotFoundException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName(), authorId);
 
         verify(repository).findById(authorId);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSameAuthorAlreadyExists() {
+        var authorId = randomUUID();
+        var authorDto = AuthorDto.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        var authorEntity = AuthorEntity.builder()
+                .firstName(authorDto.getFirstName())
+                .lastName(authorDto.getLastName())
+                .build();
+
+        when(repository.findById(authorId))
+                .thenReturn(Optional.of(authorEntity));
+        when(repository.findByFirstNameAndLastName(
+                authorDto.getFirstName(),
+                authorDto.getLastName()))
+                .thenReturn(Optional.of(authorEntity));
+
+        assertThatThrownBy(() -> service.update(authorId, authorDto))
+                .isNotNull()
+                .isExactlyInstanceOf(EntityExistsException.class)
+                .hasMessage(EntityExistsException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName());
+
+        verify(repository).findById(authorId);
+        verify(repository).findByFirstNameAndLastName(
+                authorDto.getFirstName(),
+                authorDto.getLastName());
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(mapper);
     }
