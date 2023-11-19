@@ -158,7 +158,7 @@ class PublisherControllerIntegrationTest {
     }
 
     @Test
-    void shouldReturnExistingEntityWhenCreatingTheSamePublisher() {
+    void shouldFailWhenCreatingTheSamePublisher409() {
         var publisherEntity = PublisherEntity.builder()
                 .name(randomAlphabetic(25))
                 .address(randomAlphabetic(25))
@@ -166,7 +166,7 @@ class PublisherControllerIntegrationTest {
                 .city(randomAlphabetic(25))
                 .zipCode(randomAlphabetic(25))
                 .build();
-        var publisherId = repository.save(publisherEntity).getId();
+        repository.save(publisherEntity);
 
         var publisherDto = PublisherDto.builder()
                 .name(publisherEntity.getName())
@@ -183,21 +183,7 @@ class PublisherControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.CREATED)
-                .hasContentTypeAsApplicationJson();
-
-        assertThat(result.getBody())
-                .isNotNull()
-                .returns(publisherId, PublisherDto::getId)
-                .returns(publisherEntity.getName(), PublisherDto::getName)
-                .returns(publisherEntity.getAddress(), PublisherDto::getAddress)
-                .returns(publisherEntity.getCity(), PublisherDto::getCity)
-                .returns(publisherEntity.getState(), PublisherDto::getState)
-                .returns(publisherEntity.getZipCode(), PublisherDto::getZipCode);
-
-        assertThat(repository.findAll())
-                .isNotNull()
-                .hasSize(1);
+                .hasStatus(HttpStatus.CONFLICT);
     }
 
     static Stream<Consumer<PublisherDto>> publisherModifiers() {

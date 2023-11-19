@@ -45,11 +45,10 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     @Transactional
     public PublisherDto create(@NotNull PublisherDto publisher) {
-        var publisherOptional = publisherRepository.findByName(publisher.getName());
-        if (publisherOptional.isPresent()) {
-            return publisherOptional
-                    .map(publisherMapper::map)
-                    .orElseThrow();
+        var doesPublisherExist = publisherRepository.findByName(publisher.getName())
+                .isPresent();
+        if (doesPublisherExist) {
+            throw EntityExistsException.ofPublisher();
         }
 
         return Optional.of(publisher)

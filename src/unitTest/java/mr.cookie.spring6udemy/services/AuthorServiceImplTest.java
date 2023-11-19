@@ -135,7 +135,7 @@ class AuthorServiceImplTest {
     }
 
     @Test
-    void shouldReturnExistingEntityWhenCreatingSameAuthor() {
+    void shouldThrowExceptionWhenAuthorAlreadyExists() {
         var authorId = randomUUID();
         var authorEntity = AuthorEntity.builder()
                 .firstName(randomAlphabetic(25))
@@ -145,7 +145,6 @@ class AuthorServiceImplTest {
         var authorDto = AuthorDto.builder()
                 .firstName(authorEntity.getFirstName())
                 .lastName(authorEntity.getLastName())
-                .id(authorId)
                 .build();
 
         when(repository.findByFirstNameAndLastName(
@@ -153,17 +152,16 @@ class AuthorServiceImplTest {
                 authorDto.getLastName()))
                 .thenReturn(Optional.of(authorEntity));
 
-        var result = service.create(authorDto);
-
-        assertThat(result)
+        assertThatThrownBy(() -> service.create(authorDto))
                 .isNotNull()
-                .isEqualTo(authorDto);
+                .isExactlyInstanceOf(EntityExistsException.class)
+                .hasMessage(EntityExistsException.ERROR_MESSAGE, AuthorEntity.class.getSimpleName());
 
         verify(repository).findByFirstNameAndLastName(
                 authorDto.getFirstName(),
                 authorDto.getLastName());
-        verify(mapper).map(authorEntity);
-        verifyNoMoreInteractions(repository, mapper);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper);
     }
 
     @Test

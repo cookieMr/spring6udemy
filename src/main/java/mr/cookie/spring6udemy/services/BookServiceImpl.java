@@ -45,11 +45,10 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto create(@NotNull BookDto book) {
-        var bookOptional = bookRepository.findByIsbn(book.getIsbn());
-        if (bookOptional.isPresent()) {
-            return bookOptional
-                    .map(bookMapper::map)
-                    .orElseThrow();
+        var doesBookExist = bookRepository.findByIsbn(book.getIsbn())
+                .isPresent();
+        if (doesBookExist) {
+            throw EntityExistsException.ofBook();
         }
 
         return Optional.of(book)

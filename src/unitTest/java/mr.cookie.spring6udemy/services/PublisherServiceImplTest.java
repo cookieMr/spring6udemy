@@ -147,7 +147,7 @@ class PublisherServiceImplTest {
     }
 
     @Test
-    void shouldReturnExistingEntityWhenCreatingSamePublisher() {
+    void shouldThrowExceptionWhenPublisherAlreadyExists() {
         var publisherId = randomUUID();
         var publisherEntity = PublisherEntity.builder()
                 .id(publisherId)
@@ -160,24 +160,23 @@ class PublisherServiceImplTest {
         var publisherDto = PublisherDto.builder()
                 .id(publisherId)
                 .name(publisherEntity.getName())
-                .city(publisherEntity.getCity())
-                .address(publisherEntity.getAddress())
-                .state(publisherEntity.getState())
-                .zipCode(publisherEntity.getZipCode())
+                .city(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
 
-        when(repository.findByName(publisherDto.getName()))
+        when(repository.findByName(publisherEntity.getName()))
                 .thenReturn(Optional.of(publisherEntity));
 
-        var result = service.create(publisherDto);
-
-        assertThat(result)
+        assertThatThrownBy(() -> service.create(publisherDto))
                 .isNotNull()
-                .isEqualTo(publisherDto);
+                .isExactlyInstanceOf(EntityExistsException.class)
+                .hasMessage(EntityExistsException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName());
 
         verify(repository).findByName(publisherDto.getName());
-        verify(mapper).map(publisherEntity);
-        verifyNoMoreInteractions(repository, mapper);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper);
     }
 
     @Test
