@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.domain;
+package mr.cookie.spring6udemy.exceptions.domain;
 
 import java.util.UUID;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
