@@ -66,8 +66,7 @@ public class PublisherController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Publisher was created and is returned in a response body."),
-                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION)
             }
     )
     @PostMapping(
@@ -78,7 +77,6 @@ public class PublisherController {
     @ResponseStatus(HttpStatus.CREATED)
     public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
         return publisherService.create(publisher);
-        // TODO: conflict status
     }
 
     @Operation(
@@ -87,7 +85,8 @@ public class PublisherController {
                     @ApiResponse(responseCode = "200",
                             description = "Publisher was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
     @PutMapping(

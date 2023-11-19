@@ -77,7 +77,6 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookDto createBook(@Validated @RequestBody BookDto book) {
         return bookService.create(book);
-        // TODO: conflict status
     }
 
     @Operation(

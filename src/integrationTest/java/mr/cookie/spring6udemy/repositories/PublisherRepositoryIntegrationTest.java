@@ -3,7 +3,7 @@ package mr.cookie.spring6udemy.repositories;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import mr.cookie.spring6udemy.model.entities.AuthorEntity;
+import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles(profiles = {"test"})
-class AuthorRepositoryIntegrationTest {
+class PublisherRepositoryIntegrationTest {
 
     @Autowired
-    private AuthorRepository repository;
+    private PublisherRepository repository;
 
     @AfterEach
     void cleanUp() {
@@ -23,27 +23,26 @@ class AuthorRepositoryIntegrationTest {
     }
 
     @Test
-    void shouldFindByFirstNameAndLastName() {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
+    void shouldFindByName() {
+        var publisherEntity = PublisherEntity.builder()
+                .name(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
                 .build();
-        repository.save(authorEntity);
+        repository.save(publisherEntity);
 
-        var result = repository.findByFirstNameAndLastName(
-                authorEntity.getFirstName(),
-                authorEntity.getLastName());
+        var result = repository.findByName(publisherEntity.getName());
 
         assertThat(result)
                 .isNotEmpty()
-                .contains(authorEntity);
+                .contains(publisherEntity);
     }
 
     @Test
-    void shouldNotFindByFirstNameAndLastName() {
-        var result = repository.findByFirstNameAndLastName(
-                randomAlphabetic(25),
-                randomAlphabetic(25));
+    void shouldNotFindByName() {
+        var result = repository.findByName(randomAlphabetic(25));
 
         assertThat(result)
                 .isEmpty();

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import mr.cookie.spring6udemy.exceptions.EntityExistsException;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.PublisherDto;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
@@ -19,8 +20,6 @@ import mr.cookie.spring6udemy.model.mappers.PublisherMapperImpl;
 import mr.cookie.spring6udemy.repositories.PublisherRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -28,9 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class PublisherServiceImplTest {
-
-    @Captor
-    private ArgumentCaptor<PublisherEntity> captor;
 
     @Spy
     private PublisherMapper mapper = new PublisherMapperImpl();
@@ -67,7 +63,7 @@ class PublisherServiceImplTest {
     }
 
     @Test
-    void shouldReturnPublisherById() {
+    void shouldFindPublisherById() {
         var publisherId = randomUUID();
         var publisherEntity = PublisherEntity.builder()
                 .id(publisherId)
@@ -78,7 +74,8 @@ class PublisherServiceImplTest {
                 .zipCode(randomAlphabetic(25))
                 .build();
 
-        when(repository.findById(publisherId)).thenReturn(Optional.of(publisherEntity));
+        when(repository.findById(publisherId))
+                .thenReturn(Optional.of(publisherEntity));
 
         var result = service.findById(publisherId);
 
@@ -118,8 +115,6 @@ class PublisherServiceImplTest {
                 .zipCode(randomAlphabetic(25))
                 .build();
 
-        when(repository.save(publisherEntity)).thenReturn(publisherEntity);
-
         var publisherDto = PublisherDto.builder()
                 .id(publisherId)
                 .name(randomAlphabetic(25))
@@ -128,15 +123,60 @@ class PublisherServiceImplTest {
                 .state(randomAlphabetic(25))
                 .zipCode(randomAlphabetic(25))
                 .build();
+
+        when(repository.findByName(publisherDto.getName()))
+                .thenReturn(Optional.empty());
+        when(repository.save(publisherEntity)).thenReturn(publisherEntity);
+
         var result = service.create(publisherDto);
 
         assertThat(result)
                 .isNotNull()
-                .returns(publisherId, PublisherDto::getId);
+                .returns(publisherId, PublisherDto::getId)
+                .returns(publisherEntity.getName(), PublisherDto::getName)
+                .returns(publisherEntity.getAddress(), PublisherDto::getAddress)
+                .returns(publisherEntity.getCity(), PublisherDto::getCity)
+                .returns(publisherEntity.getState(), PublisherDto::getState)
+                .returns(publisherEntity.getZipCode(), PublisherDto::getZipCode);
 
+        verify(repository).findByName(publisherDto.getName());
         verify(repository).save(publisherEntity);
         verify(mapper).map(publisherEntity);
         verify(mapper).map(publisherDto);
+        verifyNoMoreInteractions(repository, mapper);
+    }
+
+    @Test
+    void shouldReturnExistingEntityWhenCreatingSamePublisher() {
+        var publisherId = randomUUID();
+        var publisherEntity = PublisherEntity.builder()
+                .id(publisherId)
+                .name(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var publisherDto = PublisherDto.builder()
+                .id(publisherId)
+                .name(publisherEntity.getName())
+                .city(publisherEntity.getCity())
+                .address(publisherEntity.getAddress())
+                .state(publisherEntity.getState())
+                .zipCode(publisherEntity.getZipCode())
+                .build();
+
+        when(repository.findByName(publisherDto.getName()))
+                .thenReturn(Optional.of(publisherEntity));
+
+        var result = service.create(publisherDto);
+
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo(publisherDto);
+
+        verify(repository).findByName(publisherDto.getName());
+        verify(mapper).map(publisherEntity);
         verifyNoMoreInteractions(repository, mapper);
     }
 
@@ -152,6 +192,15 @@ class PublisherServiceImplTest {
                 .zipCode(randomAlphabetic(25))
                 .build();
         var updatedPublisherDto = PublisherDto.builder()
+                .id(publisherId)
+                .name(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var updatedEntity = PublisherEntity.builder()
+                .id(publisherId)
                 .name(randomAlphabetic(25))
                 .city(randomAlphabetic(25))
                 .address(randomAlphabetic(25))
@@ -159,6 +208,8 @@ class PublisherServiceImplTest {
                 .zipCode(randomAlphabetic(25))
                 .build();
 
+        when(repository.findByName(updatedPublisherDto.getName()))
+                .thenReturn(Optional.empty());
         when(repository.findById(publisherId)).thenReturn(Optional.of(publisherEntity));
         when(repository.save(publisherEntity)).thenReturn(publisherEntity);
 
@@ -166,26 +217,13 @@ class PublisherServiceImplTest {
 
         assertThat(result)
                 .isNotNull()
-                .returns(publisherId, PublisherDto::getId)
-                .returns(updatedPublisherDto.getName(), PublisherDto::getName)
-                .returns(updatedPublisherDto.getAddress(), PublisherDto::getAddress)
-                .returns(updatedPublisherDto.getState(), PublisherDto::getState)
-                .returns(updatedPublisherDto.getCity(), PublisherDto::getCity)
-                .returns(updatedPublisherDto.getZipCode(), PublisherDto::getZipCode);
+                .isEqualTo(updatedPublisherDto);
 
+        verify(repository).findByName(updatedPublisherDto.getName());
         verify(repository).findById(publisherId);
-        verify(repository).save(captor.capture());
+        verify(repository).save(updatedEntity);
         verify(mapper).map(publisherEntity);
         verifyNoMoreInteractions(repository, mapper);
-
-        assertThat(captor.getValue())
-                .isNotNull()
-                .returns(publisherId, PublisherEntity::getId)
-                .returns(updatedPublisherDto.getName(), PublisherEntity::getName)
-                .returns(updatedPublisherDto.getAddress(), PublisherEntity::getAddress)
-                .returns(updatedPublisherDto.getState(), PublisherEntity::getState)
-                .returns(updatedPublisherDto.getCity(), PublisherEntity::getCity)
-                .returns(updatedPublisherDto.getZipCode(), PublisherEntity::getZipCode);
     }
 
     @Test
@@ -207,6 +245,40 @@ class PublisherServiceImplTest {
                 .hasMessage(EntityNotFoundException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName(), publisherId);
 
         verify(repository).findById(publisherId);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSamePublisherAlreadyExists() {
+        var publisherId = randomUUID();
+        var publisherDto = PublisherDto.builder()
+                .name(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+        var publisherEntity = PublisherEntity.builder()
+                .name(randomAlphabetic(25))
+                .city(randomAlphabetic(25))
+                .address(randomAlphabetic(25))
+                .state(randomAlphabetic(25))
+                .zipCode(randomAlphabetic(25))
+                .build();
+
+        when(repository.findById(publisherId))
+                .thenReturn(Optional.of(publisherEntity));
+        when(repository.findByName(publisherDto.getName()))
+                .thenReturn(Optional.of(publisherEntity));
+
+        assertThatThrownBy(() -> service.update(publisherId, publisherDto))
+                .isNotNull()
+                .isExactlyInstanceOf(EntityExistsException.class)
+                .hasMessage(EntityExistsException.ERROR_MESSAGE, PublisherEntity.class.getSimpleName());
+
+        verify(repository).findById(publisherId);
+        verify(repository).findByName(publisherDto.getName());
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(mapper);
     }
