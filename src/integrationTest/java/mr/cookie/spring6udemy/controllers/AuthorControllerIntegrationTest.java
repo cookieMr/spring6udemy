@@ -142,12 +142,12 @@ class AuthorControllerIntegrationTest {
     }
 
     @Test
-    void shouldReturnExistingEntityWhenCreatingTheSameAuthor() {
+    void shouldFailWhenCreatingTheSameAuthor409() {
         var authorEntity = AuthorEntity.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
-        var authorId = repository.save(authorEntity).getId();
+        repository.save(authorEntity);
 
         var authorDto = AuthorDto.builder()
                 .firstName(authorEntity.getFirstName())
@@ -161,18 +161,7 @@ class AuthorControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.CREATED)
-                .hasContentTypeAsApplicationJson();
-
-        assertThat(result.getBody())
-                .isNotNull()
-                .returns(authorEntity.getFirstName(), AuthorDto::getFirstName)
-                .returns(authorEntity.getLastName(), AuthorDto::getLastName)
-                .returns(authorId, AuthorDto::getId);
-
-        assertThat(repository.findAll())
-                .isNotNull()
-                .hasSize(1);
+                .hasStatus(HttpStatus.CONFLICT);
     }
 
     static Stream<Consumer<AuthorDto>> authorModifiers() {

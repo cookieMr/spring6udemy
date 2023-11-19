@@ -66,7 +66,8 @@ public class BookController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Book was created and is returned in a response body."),
-                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
     @PostMapping(

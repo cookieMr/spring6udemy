@@ -66,7 +66,8 @@ public class AuthorController {
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Author was created and is returned in a response body."),
-                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION)
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
             }
     )
     @PostMapping(

@@ -45,13 +45,12 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     @Transactional
     public AuthorDto create(@NotNull AuthorDto author) {
-        var authorOptional = authorRepository.findByFirstNameAndLastName(
+        var doesAuthorExist = authorRepository.findByFirstNameAndLastName(
                 author.getFirstName(),
-                author.getLastName());
-        if (authorOptional.isPresent()) {
-            return authorOptional
-                    .map(authorMapper::map)
-                    .orElseThrow();
+                author.getLastName())
+                .isPresent();
+        if (doesAuthorExist) {
+            throw EntityExistsException.ofAuthor();
         }
 
         return Optional.of(author)

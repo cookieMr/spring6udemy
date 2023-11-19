@@ -145,12 +145,12 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    void shouldReturnExistingEntityWhenCreatingTheSameBook() {
+    void shouldFailWhenCreatingTheSameBook409() {
         var bookEntity = BookEntity.builder()
                 .title(randomAlphabetic(25))
                 .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
                 .build();
-        var bookId = repository.save(bookEntity).getId();
+        repository.save(bookEntity);
 
         var bookDto = BookDto.builder()
                 .title(randomAlphabetic(25))
@@ -164,18 +164,7 @@ class BookControllerIntegrationTest {
 
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
-                .hasStatus(HttpStatus.CREATED)
-                .hasContentTypeAsApplicationJson();
-
-        assertThat(result.getBody())
-                .isNotNull()
-                .returns(bookEntity.getTitle(), BookDto::getTitle)
-                .returns(bookEntity.getIsbn(), BookDto::getIsbn)
-                .returns(bookId, BookDto::getId);
-
-        assertThat(repository.findAll())
-                .isNotNull()
-                .hasSize(1);
+                .hasStatus(HttpStatus.CONFLICT);
     }
 
     static Stream<Consumer<BookDto>> bookModifiers() {

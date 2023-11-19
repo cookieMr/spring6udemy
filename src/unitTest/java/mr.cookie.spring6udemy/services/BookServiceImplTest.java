@@ -131,7 +131,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void shouldReturnExistingEntityWhenCreatingSameBook() {
+    void shouldThrowExceptionWhenBookAlreadyExists() {
         var bookId = randomUUID();
         var bookEntity = BookEntity.builder()
                 .title(randomAlphabetic(25))
@@ -139,7 +139,7 @@ class BookServiceImplTest {
                 .id(bookId)
                 .build();
         var bookDto = BookDto.builder()
-                .title(bookEntity.getTitle())
+                .title(randomAlphabetic(25))
                 .isbn(bookEntity.getIsbn())
                 .id(bookId)
                 .build();
@@ -147,15 +147,14 @@ class BookServiceImplTest {
         when(repository.findByIsbn(bookDto.getIsbn()))
                 .thenReturn(Optional.of(bookEntity));
 
-        var result = service.create(bookDto);
-
-        assertThat(result)
+        assertThatThrownBy(() -> service.create(bookDto))
                 .isNotNull()
-                .isEqualTo(bookDto);
+                .isExactlyInstanceOf(EntityExistsException.class)
+                .hasMessage(EntityExistsException.ERROR_MESSAGE, BookEntity.class.getSimpleName());
 
         verify(repository).findByIsbn(bookDto.getIsbn());
-        verify(mapper).map(bookEntity);
-        verifyNoMoreInteractions(repository, mapper);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper);
     }
 
     @Test
