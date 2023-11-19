@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import mr.cookie.spring6udemy.exceptions.EntityExistsException;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
@@ -44,12 +45,20 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     @Transactional
     public AuthorDto create(@NotNull AuthorDto author) {
+        var authorOptional = authorRepository.findByFirstNameAndLastName(
+                author.getFirstName(),
+                author.getLastName());
+        if (authorOptional.isPresent()) {
+            return authorOptional
+                    .map(authorMapper::map)
+                    .orElseThrow();
+        }
+
         return Optional.of(author)
                 .map(authorMapper::map)
                 .map(authorRepository::save)
                 .map(authorMapper::map)
                 .orElseThrow();
-        // TODO: return conflict when publisher exists
     }
 
     @NotNull
@@ -57,10 +66,17 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public AuthorDto update(@NotNull UUID id, @NotNull AuthorDto author) {
         var existingDto = authorRepository.findById(id)
-                .orElseThrow(() -> EntityNotFoundException.ofAuthor(id))
-                .setFirstName(author.getFirstName())
-                .setLastName(author.getLastName());
+                .orElseThrow(() -> EntityNotFoundException.ofAuthor(id));
 
+        var authorOptional = authorRepository.findByFirstNameAndLastName(
+                author.getFirstName(),
+                author.getLastName());
+        if (authorOptional.isPresent()) {
+            throw EntityExistsException.ofAuthor();
+        }
+
+        existingDto.setFirstName(author.getFirstName())
+                .setLastName(author.getLastName());
         return Optional.of(existingDto)
                 .map(authorRepository::save)
                 .map(authorMapper::map)

@@ -19,10 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -34,7 +32,6 @@ import org.hibernate.type.SqlTypes;
 public class BookEntity {
 
     @Id
-    @JdbcTypeCode(SqlTypes.VARCHAR)
     @UuidGenerator
     @Column(
             columnDefinition = "varchar", length = 36,
@@ -42,11 +39,9 @@ public class BookEntity {
     )
     private UUID id;
 
-    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(columnDefinition = "varchar", length = 128, nullable = false)
     private String title;
 
-    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(columnDefinition = "varchar", length = 14, unique = true, nullable = false)
     private String isbn;
 

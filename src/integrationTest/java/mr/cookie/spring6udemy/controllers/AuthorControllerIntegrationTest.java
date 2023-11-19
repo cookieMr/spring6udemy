@@ -17,7 +17,6 @@ import mr.cookie.spring6udemy.utils.assertions.ResponseEntityAssertions;
 import mr.cookie.spring6udemy.utils.constants.Constant;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -143,9 +142,37 @@ class AuthorControllerIntegrationTest {
     }
 
     @Test
-    @Disabled
-    void shouldFailCreateAuthorWith409() {
-        // todo: 409 entity already exists
+    void shouldReturnExistingEntityWhenCreatingTheSameAuthor() {
+        var authorEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        var authorId = repository.save(authorEntity).getId();
+
+        var authorDto = AuthorDto.builder()
+                .firstName(authorEntity.getFirstName())
+                .lastName(authorEntity.getLastName())
+                .build();
+        var uri = UriComponentsBuilder.fromPath(AUTHOR_PATH)
+                .buildAndExpand()
+                .toUri();
+        var result = restTemplate.exchange(
+                uri, HttpMethod.POST, createRequestWithHeaders(authorDto), AuthorDto.class);
+
+        ResponseEntityAssertions.assertThat(result)
+                .isNotNull()
+                .hasStatus(HttpStatus.CREATED)
+                .hasContentTypeAsApplicationJson();
+
+        assertThat(result.getBody())
+                .isNotNull()
+                .returns(authorDto.getFirstName(), AuthorDto::getFirstName)
+                .returns(authorDto.getLastName(), AuthorDto::getLastName)
+                .returns(authorId, AuthorDto::getId);
+
+        assertThat(repository.findAll())
+                .isNotNull()
+                .hasSize(1);
     }
 
     static Stream<Consumer<AuthorDto>> authorModifiers() {
@@ -227,6 +254,32 @@ class AuthorControllerIntegrationTest {
         ResponseEntityAssertions.assertThat(result)
                 .isNotNull()
                 .hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldFailToUpdateAuthorWith409() {
+        var authorEntity = AuthorEntity.builder()
+                .firstName(randomAlphabetic(25))
+                .lastName(randomAlphabetic(25))
+                .build();
+        var authorId = repository.save(authorEntity)
+                .getId();
+        repository.flush();
+
+        var authorDto = AuthorDto.builder()
+                .firstName(authorEntity.getFirstName())
+                .lastName(authorEntity.getLastName())
+                .build();
+        var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
+                .buildAndExpand(authorId)
+                .toUri();
+
+        var result = restTemplate.exchange(
+                uri, HttpMethod.PUT, createRequestWithHeaders(authorDto), AuthorDto.class);
+
+        ResponseEntityAssertions.assertThat(result)
+                .isNotNull()
+                .hasStatus(HttpStatus.CONFLICT);
     }
 
     @ParameterizedTest
