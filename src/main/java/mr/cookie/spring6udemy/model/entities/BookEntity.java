@@ -33,10 +33,8 @@ public class BookEntity {
 
     @Id
     @UuidGenerator
-    @Column(
-            columnDefinition = "varchar", length = 36,
-            unique = true, nullable = false, insertable = false, updatable = false
-    )
+    @Column(columnDefinition = "varchar", length = 36,
+            unique = true, nullable = false, insertable = false, updatable = false)
     private UUID id;
 
     @Column(columnDefinition = "varchar", length = 128, nullable = false)
@@ -46,11 +44,9 @@ public class BookEntity {
     private String isbn;
 
     @ManyToMany
-    @JoinTable(
-            name = "author_book",
+    @JoinTable(name = "author_book",
             joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     @Builder.Default
     private Set<AuthorEntity> authors = new HashSet<>();
 

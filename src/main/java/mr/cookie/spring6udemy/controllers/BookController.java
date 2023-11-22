@@ -43,58 +43,41 @@ public class BookController {
         return bookService.findAll();
     }
 
-    @Operation(
-            description = "Returns all books (or an empty collection).",
+    @Operation(description = "Returns all books (or an empty collection).",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Author was found by ID."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
-            }
-    )
-    @GetMapping(
-            path = "/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)})
+    @GetMapping(path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @Nullable
-    public BookDto getBookById(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
-    ) {
+    public BookDto getBookById(@Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id) {
         return bookService.findById(id);
     }
 
-    @Operation(
-            description = "Creates a new book and persists it.",
+    @Operation(description = "Creates a new book and persists it.",
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Book was created and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
-            }
-    )
-    @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)})
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     @ResponseStatus(HttpStatus.CREATED)
     public BookDto createBook(@Validated @RequestBody BookDto book) {
         return bookService.create(book);
     }
 
-    @Operation(
-            description = "Updates a book by ID.",
+    @Operation(description = "Updates a book by ID.",
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Book was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
-            }
-    )
-    @PutMapping(
-            path = "/{id}",
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)})
+    @PutMapping(path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     public BookDto updateBook(
             @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id,
@@ -103,17 +86,11 @@ public class BookController {
         return bookService.update(id, book);
     }
 
-    @Operation(
-            description = "Deletes a book by its ID.",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Book was found by ID and removed.")
-            }
-    )
+    @Operation(description = "Deletes a book by its ID.",
+            responses = {@ApiResponse(responseCode = "204", description = "Book was found by ID and removed.")})
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(
-            @Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id
-    ) {
+    public void deleteBook(@Parameter(description = PATH_BOOK_ID_DESCRIPTION) @PathVariable UUID id) {
         bookService.deleteById(id);
     }
 
