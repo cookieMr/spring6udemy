@@ -33,10 +33,8 @@ public class PublisherEntity {
     @Id
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @UuidGenerator
-    @Column(
-            columnDefinition = "varchar", length = 36,
-            unique = true, nullable = false, insertable = false, updatable = false
-    )
+    @Column(columnDefinition = "varchar", length = 36,
+            unique = true, nullable = false, insertable = false, updatable = false)
     private UUID id;
 
     @JdbcTypeCode(SqlTypes.VARCHAR)

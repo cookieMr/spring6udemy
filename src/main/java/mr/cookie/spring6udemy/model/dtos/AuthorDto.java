@@ -16,27 +16,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthorDto {
 
-    @Schema(
-            example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
-    )
+    @Schema(example = "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
     private UUID id;
 
-    @Schema(
-            requiredMode = Schema.RequiredMode.REQUIRED,
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
             minLength = 1,
             maxLength = 64,
-            example = "Brandon"
-    )
+            example = "Brandon")
     @NotNull
     @Size(min = 1, max = 64)
     private String firstName;
 
-    @Schema(
-            requiredMode = Schema.RequiredMode.REQUIRED,
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED,
             minLength = 1,
             maxLength = 64,
-            example = "Sanderson"
-    )
+            example = "Sanderson")
     @NotNull
     @Size(min = 1, max = 64)
     private String lastName;

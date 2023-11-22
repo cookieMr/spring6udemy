@@ -43,17 +43,12 @@ public class PublisherController {
         return publisherService.findAll();
     }
 
-    @Operation(
-            description = "Returns a publisher by its ID.",
+    @Operation(description = "Returns a publisher by its ID.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Publisher was found by ID."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
-            }
-    )
-    @GetMapping(
-            path = "/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)})
+    @GetMapping(path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @Nullable
     public PublisherDto getPublisherById(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
@@ -61,40 +56,30 @@ public class PublisherController {
         return publisherService.findById(id);
     }
 
-    @Operation(
-            description = "Creates a new publisher and persists it.",
+    @Operation(description = "Creates a new publisher and persists it.",
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Publisher was created and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
-            }
-    )
-    @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)})
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     @ResponseStatus(HttpStatus.CREATED)
     public PublisherDto createPublisher(@Validated @RequestBody PublisherDto publisher) {
         return publisherService.create(publisher);
     }
 
-    @Operation(
-            description = "Updates a publisher by ID.",
+    @Operation(description = "Updates a publisher by ID.",
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Publisher was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
-            }
-    )
-    @PutMapping(
-            path = "/{id}",
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)})
+    @PutMapping(path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     public PublisherDto updatePublisher(
             @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id,
@@ -103,17 +88,11 @@ public class PublisherController {
         return publisherService.update(id, publisher);
     }
 
-    @Operation(
-            description = "Deletes a publisher by its ID.",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Publisher was found by ID and removed.")
-            }
-    )
+    @Operation(description = "Deletes a publisher by its ID.",
+            responses = {@ApiResponse(responseCode = "204", description = "Publisher was found by ID and removed.")})
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePublisher(
-            @Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id
-    ) {
+    public void deletePublisher(@Parameter(description = PATH_PUBLISHER_ID_DESCRIPTION) @PathVariable UUID id) {
         publisherService.deleteById(id);
     }
 

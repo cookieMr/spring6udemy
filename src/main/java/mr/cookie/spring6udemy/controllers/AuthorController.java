@@ -43,58 +43,41 @@ public class AuthorController {
         return authorService.findAll();
     }
 
-    @Operation(
-            description = "Returns an author by its ID.",
+    @Operation(description = "Returns an author by its ID.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Author was found by ID."),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)
-            }
-    )
-    @GetMapping(
-            path = "/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION)})
+    @GetMapping(path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @Nullable
-    public AuthorDto getAuthorById(
-            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
-    ) {
+    public AuthorDto getAuthorById(@Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id) {
         return authorService.findById(id);
     }
 
-    @Operation(
-            description = "Creates a new author and persists it.",
+    @Operation(description = "Creates a new author and persists it.",
             responses = {
                     @ApiResponse(responseCode = "201",
                             description = "Author was created and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
-            }
-    )
-    @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)})
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     @ResponseStatus(HttpStatus.CREATED)
     public AuthorDto createAuthor(@Validated @RequestBody AuthorDto author) {
         return authorService.create(author);
     }
 
-    @Operation(
-            description = "Updates an author by ID.",
+    @Operation(description = "Updates an author by ID.",
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Author was updated and is returned in a response body."),
                     @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION),
-                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)
-            }
-    )
-    @PutMapping(
-            path = "/{id}",
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION)})
+    @PutMapping(path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @NotNull
     public AuthorDto updateAuthor(
             @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id,
@@ -103,17 +86,11 @@ public class AuthorController {
         return authorService.update(id, author);
     }
 
-    @Operation(
-            description = "Deletes an author by its ID.",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Author was found by ID and removed.")
-            }
-    )
+    @Operation(description = "Deletes an author by its ID.",
+            responses = {@ApiResponse(responseCode = "204", description = "Author was found by ID and removed.")})
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAuthor(
-            @Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id
-    ) {
+    public void deleteAuthor(@Parameter(description = PATH_AUTHOR_ID_DESCRIPTION) @PathVariable UUID id) {
         authorService.deleteById(id);
     }
 

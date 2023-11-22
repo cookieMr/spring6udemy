@@ -30,10 +30,8 @@ public class AuthorEntity {
 
     @Id
     @UuidGenerator
-    @Column(
-            columnDefinition = "varchar", length = 36,
-            unique = true, nullable = false, insertable = false, updatable = false
-    )
+    @Column(columnDefinition = "varchar", length = 36,
+            unique = true, nullable = false, insertable = false, updatable = false)
     private UUID id;
 
     @Column(columnDefinition = "varchar", length = 64, nullable = false)
