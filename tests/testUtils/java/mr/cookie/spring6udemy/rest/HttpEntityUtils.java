@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.utils.rest;
+package mr.cookie.spring6udemy.rest;
 
 import java.util.Collections;
 import lombok.AccessLevel;

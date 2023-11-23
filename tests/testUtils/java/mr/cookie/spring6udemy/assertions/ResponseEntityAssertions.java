@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.utils.assertions;
+package mr.cookie.spring6udemy.assertions;
 
 import java.util.List;
 import java.util.Objects;

@@ -11,14 +11,15 @@ plugins {
     id 'org.springframework.boot' version '3.1.5'
 }
 
-group = 'mr.cookie'
-version = '0.0.3'
-sourceCompatibility = '17'
-
+apply from: "$rootDir/gradle/testUtils.gradle"
 apply from: "$rootDir/gradle/unitTest.gradle"
 apply from: "$rootDir/gradle/integrationTest.gradle"
 apply from: "$rootDir/gradle/quality.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
+
+group = 'mr.cookie'
+version = '0.0.3'
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()

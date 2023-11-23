@@ -10,7 +10,7 @@ checkstyle {
 }
 
 dependencyCheck {
-    suppressionFile = file("$rootDir/gradle/config/owasp/suppressions.xml")
+    suppressionFile = "$rootDir/gradle/config/owasp/suppressions.xml"
     failBuildOnCVSS = 0
     skipTestGroups = false
     analyzers.assemblyEnabled = false
@@ -24,7 +24,7 @@ spotbugs {
 }
 
 spotbugsTest.enabled = false
-['spotbugsMain', 'spotbugsUnitTest', 'spotbugsIntegrationTest'].each { taskName ->
+['spotbugsMain', 'spotbugsTestUtils', 'spotbugsUnitTest', 'spotbugsIntegrationTest'].each { taskName ->
     tasks.named(taskName) {
         group = 'verification'
         reports {

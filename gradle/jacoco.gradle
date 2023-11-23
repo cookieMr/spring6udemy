@@ -10,7 +10,7 @@ def filesToExcludeFromCoverage = [
 
 jacocoTestReport {
     group = 'Reporting'
-    description = 'Generates a Combined Jacoco Code Coverage Report.'
+    description = 'Generates a Combined Java Code Coverage Report.'
 
     executionData fileTree(buildDir).include('/jacoco/*.exec')
 

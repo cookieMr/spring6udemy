@@ -1,0 +1,15 @@
+sourceSets {
+    testUtils {
+        java.srcDir "$projectDir/tests/testUtils/java"
+
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
+configurations {
+    testUtilsImplementation.extendsFrom testImplementation
+    testUtilsCompileOnly.extendsFrom testCompileOnly
+    testUtilsRuntimeOnly.extendsFrom testRuntimeOnly
+    testUtilsAnnotationProcessor.extendsFrom testAnnotationProcessor
+}
