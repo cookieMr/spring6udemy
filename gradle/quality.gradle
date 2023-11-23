@@ -100,7 +100,7 @@ sonar {
         property "sonar.organization", "cookiemr-github"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.sources", "src/main"
-        property "sonar.tests", "src/unitTest,src/integrationTest"
+        property "sonar.tests", "tests/unitTest,tests/integrationTest"
         property "sonar.sourceEncoding", "UTF-8"
     }
 }
