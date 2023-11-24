@@ -1,20 +1,20 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
-import static mr.cookie.spring6udemy.utils.rest.HttpEntityUtils.createRequestWithHeaders;
+import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import mr.cookie.spring6udemy.annotations.IntegrationTest;
+import mr.cookie.spring6udemy.assertions.ResponseEntityAssertions;
+import mr.cookie.spring6udemy.constants.Constant;
 import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
-import mr.cookie.spring6udemy.utils.annotations.IntegrationTest;
-import mr.cookie.spring6udemy.utils.assertions.ResponseEntityAssertions;
-import mr.cookie.spring6udemy.utils.constants.Constant;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.utils.annotations;
+package mr.cookie.spring6udemy.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

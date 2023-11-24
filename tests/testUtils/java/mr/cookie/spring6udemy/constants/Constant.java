@@ -1,4 +1,4 @@
-package mr.cookie.spring6udemy.utils.constants;
+package mr.cookie.spring6udemy.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

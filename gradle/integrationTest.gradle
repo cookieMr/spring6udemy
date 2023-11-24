@@ -1,10 +1,10 @@
 sourceSets {
     integrationTest {
-        java.srcDir file("$rootDir/integrationTest/java")
-        resources.srcDir file("$rootDir/integrationTest/resources")
+        java.srcDir "$projectDir/tests/integrationTest/java"
+        resources.srcDir "$projectDir/tests/integrationTest/resources"
 
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+        compileClasspath += main.output + test.output + testUtils.output
+        runtimeClasspath += main.output + test.output + testUtils.output
     }
 }
 
@@ -23,6 +23,7 @@ tasks.register('integrationTest', Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 
     useJUnitPlatform()
+    shouldRunAfter unitTest
 
     testLogging {
         events "skipped", "failed"

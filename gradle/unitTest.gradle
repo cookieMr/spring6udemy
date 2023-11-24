@@ -1,9 +1,9 @@
 sourceSets {
     unitTest {
-        java.srcDir file("$rootDir/unitTest/java")
+        java.srcDir "$projectDir/tests/unitTest/java"
 
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+        compileClasspath += main.output + test.output + testUtils.output
+        runtimeClasspath += main.output + test.output + testUtils.output
     }
 }
 
