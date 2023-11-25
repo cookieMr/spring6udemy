@@ -1,11 +1,11 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.dtos.BookDtoProvider.provideBookDto;
+import static mr.cookie.spring6udemy.providers.dtos.BookDtoProvider.provideBookDtoWithIsbn;
 import static mr.cookie.spring6udemy.providers.entities.BookEntityProvider.provideBookEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.random;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Consumer;
@@ -116,10 +116,7 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldCreateBookWithSuccess() {
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookDto = provideBookDto();
 
         var uri = UriComponentsBuilder.fromPath(BOOK_PATH)
                 .buildAndExpand()
@@ -143,11 +140,8 @@ class BookControllerIntegrationTest {
     void shouldFailWhenCreatingTheSameBook409() {
         var bookEntity = provideBookEntity();
         repository.save(bookEntity);
+        var bookDto = provideBookDtoWithIsbn(bookEntity.getIsbn());
 
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(bookEntity.getIsbn())
-                .build();
         var uri = UriComponentsBuilder.fromPath(BOOK_PATH)
                 .buildAndExpand()
                 .toUri();
@@ -176,10 +170,7 @@ class BookControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("bookModifiers")
     void shouldFailToCreateBookWithStatus400(@NotNull Consumer<BookDto> bookModifier) {
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookDto = provideBookDto();
         bookModifier.accept(bookDto);
 
         var uri = UriComponentsBuilder.fromPath(BOOK_PATH)
@@ -197,11 +188,8 @@ class BookControllerIntegrationTest {
     void shouldUpdateBookWithSuccess() {
         var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
+        var bookDto = provideBookDto();
 
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
                 .buildAndExpand(bookId)
                 .toUri();
@@ -222,10 +210,8 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldFailToUpdateBookWith404() {
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookDto = provideBookDto();
+
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
                 .buildAndExpand(randomUUID())
                 .toUri();
@@ -242,11 +228,8 @@ class BookControllerIntegrationTest {
     void shouldFailToUpdateBookWith409() {
         var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
+        var bookDto = provideBookDtoWithIsbn(bookEntity.getIsbn());
 
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(bookEntity.getIsbn())
-                .build();
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
                 .buildAndExpand(bookId)
                 .toUri();
@@ -265,11 +248,9 @@ class BookControllerIntegrationTest {
         var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
 
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookDto = provideBookDto();
         bookModifier.accept(bookDto);
+
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
                 .buildAndExpand(bookId)
                 .toUri();

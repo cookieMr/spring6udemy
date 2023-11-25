@@ -1,8 +1,9 @@
 package mr.cookie.spring6udemy.services;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.dtos.AuthorDtoProvider.provideAuthorDto;
+import static mr.cookie.spring6udemy.providers.dtos.AuthorDtoProvider.provideAuthorDtoWithNames;
 import static mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider.provideAuthorEntity;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
-import mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,7 +79,9 @@ class AuthorServiceImplTest {
     @Test
     void shouldThrowExceptionWhenCannotFindAuthorById() {
         var authorId = randomUUID();
-        when(repository.findById(authorId)).thenReturn(Optional.empty());
+
+        when(repository.findById(authorId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.findById(authorId))
                 .isNotNull()
@@ -95,17 +97,14 @@ class AuthorServiceImplTest {
     void shouldCreateNewAuthor() {
         var authorId = randomUUID();
         var authorEntity = provideAuthorEntity(authorId);
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
+        var authorDto = provideAuthorDto(authorId);
 
         when(repository.findByFirstNameAndLastName(
                 authorDto.getFirstName(),
                 authorDto.getLastName()))
                 .thenReturn(Optional.empty());
-        when(repository.save(authorEntity)).thenReturn(authorEntity);
+        when(repository.save(authorEntity))
+                .thenReturn(authorEntity);
 
         var result = service.create(authorDto);
 
@@ -128,10 +127,8 @@ class AuthorServiceImplTest {
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         var authorId = randomUUID();
         var authorEntity = provideAuthorEntity(authorId);
-        var authorDto = AuthorDto.builder()
-                .firstName(authorEntity.getFirstName())
-                .lastName(authorEntity.getLastName())
-                .build();
+        var authorDto = provideAuthorDtoWithNames(
+                authorEntity.getFirstName(), authorEntity.getLastName());
 
         when(repository.findByFirstNameAndLastName(
                 authorDto.getFirstName(),
@@ -154,19 +151,17 @@ class AuthorServiceImplTest {
     void shouldUpdateExistingAuthor() {
         var authorId = randomUUID();
         var authorEntity = provideAuthorEntity(authorId);
-        var updatedAuthorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
-        var updatedEntity = AuthorEntityProvider.provideAuthorEntity(authorId);
+        var updatedAuthorDto = provideAuthorDto(authorId);
+        var updatedEntity = provideAuthorEntity(authorId);
 
         when(repository.findByFirstNameAndLastName(
                 updatedAuthorDto.getFirstName(),
                 updatedAuthorDto.getLastName()))
                 .thenReturn(Optional.empty());
-        when(repository.findById(authorId)).thenReturn(Optional.of(authorEntity));
-        when(repository.save(authorEntity)).thenReturn(authorEntity);
+        when(repository.findById(authorId))
+                .thenReturn(Optional.of(authorEntity));
+        when(repository.save(authorEntity))
+                .thenReturn(authorEntity);
 
         var result = service.update(authorId, updatedAuthorDto);
 
@@ -186,12 +181,10 @@ class AuthorServiceImplTest {
     @Test
     void shouldThrowExceptionWhenCannotUpdateAuthorById() {
         var authorId = randomUUID();
-        when(repository.findById(authorId)).thenReturn(Optional.empty());
+        var authorDto = provideAuthorDto();
 
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        when(repository.findById(authorId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.update(authorId, authorDto))
                 .isNotNull()
@@ -206,11 +199,8 @@ class AuthorServiceImplTest {
     @Test
     void shouldThrowExceptionWhenSameAuthorAlreadyExists() {
         var authorId = randomUUID();
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
-        var authorEntity = AuthorEntityProvider.provideAuthorEntity();
+        var authorDto = provideAuthorDto();
+        var authorEntity = provideAuthorEntity(authorId);
 
         when(repository.findById(authorId))
                 .thenReturn(Optional.of(authorEntity));
