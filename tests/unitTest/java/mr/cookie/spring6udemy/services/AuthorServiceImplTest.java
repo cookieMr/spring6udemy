@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.services;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider.provideAuthorEntity;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,6 +18,7 @@ import mr.cookie.spring6udemy.model.dtos.AuthorDto;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapper;
 import mr.cookie.spring6udemy.model.mappers.AuthorMapperImpl;
+import mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider;
 import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,11 +41,7 @@ class AuthorServiceImplTest {
 
     @Test
     void shouldReturnAllAuthors() {
-        var authorEntity = AuthorEntity.builder()
-                .id(randomUUID())
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorEntity = provideAuthorEntity(randomUUID());
 
         when(repository.findAll())
                 .thenReturn(List.of(authorEntity));
@@ -62,11 +60,7 @@ class AuthorServiceImplTest {
     @Test
     void shouldReturnAuthorById() {
         var authorId = randomUUID();
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
+        var authorEntity = provideAuthorEntity(authorId);
 
         when(repository.findById(authorId))
                 .thenReturn(Optional.of(authorEntity));
@@ -100,11 +94,7 @@ class AuthorServiceImplTest {
     @Test
     void shouldCreateNewAuthor() {
         var authorId = randomUUID();
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
+        var authorEntity = provideAuthorEntity(authorId);
         var authorDto = AuthorDto.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
@@ -137,11 +127,7 @@ class AuthorServiceImplTest {
     @Test
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         var authorId = randomUUID();
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
+        var authorEntity = provideAuthorEntity(authorId);
         var authorDto = AuthorDto.builder()
                 .firstName(authorEntity.getFirstName())
                 .lastName(authorEntity.getLastName())
@@ -167,21 +153,13 @@ class AuthorServiceImplTest {
     @Test
     void shouldUpdateExistingAuthor() {
         var authorId = randomUUID();
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
+        var authorEntity = provideAuthorEntity(authorId);
         var updatedAuthorDto = AuthorDto.builder()
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .id(authorId)
                 .build();
-        var updatedEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .id(authorId)
-                .build();
+        var updatedEntity = AuthorEntityProvider.provideAuthorEntity(authorId);
 
         when(repository.findByFirstNameAndLastName(
                 updatedAuthorDto.getFirstName(),
@@ -232,10 +210,7 @@ class AuthorServiceImplTest {
                 .firstName(randomAlphabetic(25))
                 .lastName(randomAlphabetic(25))
                 .build();
-        var authorEntity = AuthorEntity.builder()
-                .firstName(authorDto.getFirstName())
-                .lastName(authorDto.getLastName())
-                .build();
+        var authorEntity = AuthorEntityProvider.provideAuthorEntity();
 
         when(repository.findById(authorId))
                 .thenReturn(Optional.of(authorEntity));
