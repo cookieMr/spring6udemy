@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static mr.cookie.spring6udemy.providers.dtos.BookDtoProvider.provideBookDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
-import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.services.BookService;
 import org.jetbrains.annotations.NotNull;
@@ -33,11 +32,8 @@ class BookControllerTest {
 
     @Test
     void shoutGetAllBooks() {
-        var bookDto = BookDto.builder()
-                .id(randomUUID())
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
+        var bookDto = provideBookDto(randomUUID());
+
         when(service.findAll())
                 .thenReturn(List.of(bookDto));
 
@@ -54,12 +50,10 @@ class BookControllerTest {
     @Test
     void shouldGetBookById() {
         var bookId = randomUUID();
-        var bookDto = BookDto.builder()
-                .id(bookId)
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
-        when(service.findById(bookId)).thenReturn(bookDto);
+        var bookDto = provideBookDto(bookId);
+
+        when(service.findById(bookId))
+                .thenReturn(bookDto);
 
         var result = controller.getBookById(bookId);
 
@@ -72,7 +66,9 @@ class BookControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotFindBookById() {
         var bookId = randomUUID();
-        when(service.findById(bookId)).thenThrow(EntityNotFoundException.ofBook(bookId));
+
+        when(service.findById(bookId))
+                .thenThrow(EntityNotFoundException.ofBook(bookId));
 
         assertThatThrownBy(() -> controller.getBookById(bookId))
                 .isNotNull()
@@ -85,17 +81,11 @@ class BookControllerTest {
 
     @Test
     void shouldCreateNewBook() {
-        var bookDto1st = BookDto.builder()
-                .id(randomUUID())
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
-        var bookDto2nd = BookDto.builder()
-                .id(randomUUID())
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
-        when(service.create(bookDto1st)).thenReturn(bookDto2nd);
+        var bookDto1st = provideBookDto(randomUUID());
+        var bookDto2nd = provideBookDto(randomUUID());
+
+        when(service.create(bookDto1st))
+                .thenReturn(bookDto2nd);
 
         var result = controller.createBook(bookDto1st);
 
@@ -110,17 +100,11 @@ class BookControllerTest {
     @Test
     void shouldUpdateExistingBook() {
         var bookId = randomUUID();
-        var bookDto1st = BookDto.builder()
-                .id(randomUUID())
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
-        var bookDto2nd = BookDto.builder()
-                .id(randomUUID())
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
-        when(service.update(bookId, bookDto1st)).thenReturn(bookDto2nd);
+        var bookDto1st = provideBookDto(randomUUID());
+        var bookDto2nd = provideBookDto(bookId);
+
+        when(service.update(bookId, bookDto1st))
+                .thenReturn(bookDto2nd);
 
         var result = controller.updateBook(bookId, bookDto1st);
 
@@ -135,11 +119,8 @@ class BookControllerTest {
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
         var bookId = randomUUID();
-        var bookDto = BookDto.builder()
-                .id(bookId)
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
+        var bookDto = provideBookDto(bookId);
+
         when(service.update(bookId, bookDto))
                 .thenThrow(EntityNotFoundException.ofBook(bookId));
 

@@ -1,7 +1,8 @@
 package mr.cookie.spring6udemy.services;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static mr.cookie.spring6udemy.providers.dtos.BookDtoProvider.provideBookDto;
+import static mr.cookie.spring6udemy.providers.entities.BookEntityProvider.provideBookEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -17,7 +18,6 @@ import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
-import mr.cookie.spring6udemy.providers.entities.BookEntityProvider;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldReturnAllBooks() {
-        var bookEntity = BookEntityProvider.provideBookEntity(randomUUID());
+        var bookEntity = provideBookEntity(randomUUID());
 
         when(repository.findAll())
                 .thenReturn(List.of(bookEntity));
@@ -59,7 +59,7 @@ class BookServiceImplTest {
     @Test
     void shouldFindBookById() {
         var bookId = randomUUID();
-        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
+        var bookEntity = provideBookEntity(bookId);
 
         when(repository.findById(bookId))
                 .thenReturn(Optional.of(bookEntity));
@@ -93,16 +93,13 @@ class BookServiceImplTest {
     @Test
     void shouldCreateNewBook() {
         var bookId = randomUUID();
-        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        var bookEntity = provideBookEntity(bookId);
+        var bookDto = provideBookDto(bookId);
 
         when(repository.findByIsbn(bookDto.getIsbn()))
                 .thenReturn(Optional.empty());
-        when(repository.save(bookEntity)).thenReturn(bookEntity);
+        when(repository.save(bookEntity))
+                .thenReturn(bookEntity);
 
         var result = service.create(bookDto);
 
@@ -122,12 +119,8 @@ class BookServiceImplTest {
     @Test
     void shouldThrowExceptionWhenBookAlreadyExists() {
         var bookId = randomUUID();
-        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(bookEntity.getIsbn())
-                .id(bookId)
-                .build();
+        var bookEntity = provideBookEntity(bookId);
+        var bookDto = provideBookDto(bookId, bookEntity.getIsbn());
 
         when(repository.findByIsbn(bookDto.getIsbn()))
                 .thenReturn(Optional.of(bookEntity));
@@ -145,18 +138,16 @@ class BookServiceImplTest {
     @Test
     void shouldUpdateExistingBook() {
         var bookId = randomUUID();
-        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
-        var updatedBookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
-        var updatedEntity = BookEntityProvider.provideBookEntity(bookId);
+        var bookEntity = provideBookEntity(bookId);
+        var updatedBookDto = provideBookDto(bookId);
+        var updatedEntity = provideBookEntity(bookId);
 
         when(repository.findByIsbn(updatedBookDto.getIsbn()))
                 .thenReturn(Optional.empty());
-        when(repository.findById(bookId)).thenReturn(Optional.of(bookEntity));
-        when(repository.save(bookEntity)).thenReturn(bookEntity);
+        when(repository.findById(bookId))
+                .thenReturn(Optional.of(bookEntity));
+        when(repository.save(bookEntity))
+                .thenReturn(bookEntity);
 
         var result = service.update(bookId, updatedBookDto);
 
@@ -174,13 +165,11 @@ class BookServiceImplTest {
     @Test
     void shouldThrowExceptionWhenCannotUpdateBookById() {
         var bookId = randomUUID();
-        when(repository.findById(bookId)).thenReturn(Optional.empty());
+        var bookDto = provideBookDto(bookId);
 
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        when(repository.findById(bookId))
+                .thenReturn(Optional.empty());
+
         assertThatThrownBy(() -> service.update(bookId, bookDto))
                 .isNotNull()
                 .isExactlyInstanceOf(EntityNotFoundException.class)
@@ -194,11 +183,8 @@ class BookServiceImplTest {
     @Test
     void shouldThrowExceptionWhenSameBookAlreadyExists() {
         var bookId = randomUUID();
-        var bookDto = BookDto.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
-        var bookEntity = BookEntityProvider.provideBookEntity();
+        var bookDto = provideBookDto(bookId);
+        var bookEntity = provideBookEntity(bookId);
 
         when(repository.findById(bookId))
                 .thenReturn(Optional.of(bookEntity));

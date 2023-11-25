@@ -1,6 +1,8 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.dtos.AuthorDtoProvider.provideAuthorDto;
+import static mr.cookie.spring6udemy.providers.dtos.AuthorDtoProvider.provideAuthorDtoWithNames;
 import static mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider.provideAuthorEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -137,11 +139,9 @@ class AuthorControllerIntegrationTest {
     void shouldFailWhenCreatingTheSameAuthor409() {
         var authorEntity = provideAuthorEntity();
         repository.save(authorEntity);
+        var authorDto = provideAuthorDtoWithNames(
+                authorEntity.getFirstName(), authorEntity.getLastName());
 
-        var authorDto = AuthorDto.builder()
-                .firstName(authorEntity.getFirstName())
-                .lastName(authorEntity.getLastName())
-                .build();
         var uri = UriComponentsBuilder.fromPath(AUTHOR_PATH)
                 .buildAndExpand()
                 .toUri();
@@ -167,10 +167,7 @@ class AuthorControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("authorModifiers")
     void shouldFailToCreateAuthorWithStatus400(@NotNull Consumer<AuthorDto> authorModifier) {
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorDto = provideAuthorDto();
         authorModifier.accept(authorDto);
 
         var uri = UriComponentsBuilder.fromPath(AUTHOR_PATH)
@@ -188,11 +185,8 @@ class AuthorControllerIntegrationTest {
     void shouldUpdateAuthorWithSuccess() {
         var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity).getId();
+        var authorDto = provideAuthorDto();
 
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
                 .buildAndExpand(authorId)
                 .toUri();
@@ -213,10 +207,8 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldFailToUpdateAuthorWith404() {
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorDto = provideAuthorDto();
+
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
                 .buildAndExpand(randomUUID())
                 .toUri();
@@ -231,13 +223,10 @@ class AuthorControllerIntegrationTest {
     @Test
     void shouldFailToUpdateAuthorWith409() {
         var authorEntity = provideAuthorEntity();
-        var authorId = repository.save(authorEntity)
-                .getId();
+        var authorId = repository.save(authorEntity).getId();
+        var authorDto = provideAuthorDtoWithNames(
+                authorEntity.getFirstName(), authorEntity.getLastName());
 
-        var authorDto = AuthorDto.builder()
-                .firstName(authorEntity.getFirstName())
-                .lastName(authorEntity.getLastName())
-                .build();
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
                 .buildAndExpand(authorId)
                 .toUri();
@@ -256,11 +245,9 @@ class AuthorControllerIntegrationTest {
         var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity).getId();
 
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorDto = provideAuthorDto();
         authorModifier.accept(authorDto);
+
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
                 .buildAndExpand(authorId)
                 .toUri();

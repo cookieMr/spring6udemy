@@ -1,10 +1,11 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.dtos.PublisherDtoProvider.providePublisherDto;
+import static mr.cookie.spring6udemy.providers.dtos.PublisherDtoProvider.providePublisherDtoWithName;
 import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.random;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Consumer;
@@ -116,13 +117,7 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldCreatePublisherWithSuccess() {
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto();
 
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_PATH)
                 .buildAndExpand()
@@ -149,14 +144,8 @@ class PublisherControllerIntegrationTest {
     void shouldFailWhenCreatingTheSamePublisher409() {
         var publisherEntity = providePublisherEntity();
         repository.save(publisherEntity);
+        var publisherDto = providePublisherDtoWithName(publisherEntity.getName());
 
-        var publisherDto = PublisherDto.builder()
-                .name(publisherEntity.getName())
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_PATH)
                 .buildAndExpand()
                 .toUri();
@@ -191,13 +180,7 @@ class PublisherControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("publisherModifiers")
     void shouldFailToCreatePublisherWithStatus400(@NotNull Consumer<PublisherDto> publisherModifier) {
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto();
         publisherModifier.accept(publisherDto);
 
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_PATH)
@@ -214,15 +197,9 @@ class PublisherControllerIntegrationTest {
     @Test
     void shouldUpdatePublisherWithSuccess() {
         var publisherEntity = providePublisherEntity();
+        var publisherDto = providePublisherDto();
         var publisherId = repository.save(publisherEntity).getId();
 
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
                 .buildAndExpand(publisherId)
                 .toUri();
@@ -246,13 +223,8 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldFailToUpdatePublisherWith404() {
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto();
+
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
                 .buildAndExpand(randomUUID())
                 .toUri();
@@ -268,14 +240,8 @@ class PublisherControllerIntegrationTest {
     void shouldFailToUpdatePublisherWith409() {
         var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
+        var publisherDto = providePublisherDtoWithName(publisherEntity.getName());
 
-        var publisherDto = PublisherDto.builder()
-                .name(publisherEntity.getName())
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
                 .buildAndExpand(publisherId)
                 .toUri();
@@ -294,14 +260,9 @@ class PublisherControllerIntegrationTest {
         var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
 
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto();
         publisherModifier.accept(publisherDto);
+
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
                 .buildAndExpand(publisherId)
                 .toUri();

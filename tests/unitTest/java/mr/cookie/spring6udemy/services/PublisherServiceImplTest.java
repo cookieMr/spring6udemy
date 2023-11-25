@@ -1,8 +1,8 @@
 package mr.cookie.spring6udemy.services;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.dtos.PublisherDtoProvider.providePublisherDto;
 import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -78,7 +78,9 @@ class PublisherServiceImplTest {
     @Test
     void shouldThrowExceptionWhenCannotFindPublisherById() {
         var publisherId = randomUUID();
-        when(repository.findById(publisherId)).thenReturn(Optional.empty());
+
+        when(repository.findById(publisherId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.findById(publisherId))
                 .isNotNull()
@@ -94,19 +96,12 @@ class PublisherServiceImplTest {
     void shouldCreateNewPublisher() {
         var publisherId = randomUUID();
         var publisherEntity = providePublisherEntity(publisherId);
-
-        var publisherDto = PublisherDto.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto(publisherId);
 
         when(repository.findByName(publisherDto.getName()))
                 .thenReturn(Optional.empty());
-        when(repository.save(publisherEntity)).thenReturn(publisherEntity);
+        when(repository.save(publisherEntity))
+                .thenReturn(publisherEntity);
 
         var result = service.create(publisherDto);
 
@@ -130,14 +125,7 @@ class PublisherServiceImplTest {
     void shouldThrowExceptionWhenPublisherAlreadyExists() {
         var publisherId = randomUUID();
         var publisherEntity = providePublisherEntity(publisherId);
-        var publisherDto = PublisherDto.builder()
-                .id(publisherId)
-                .name(publisherEntity.getName())
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto(publisherId, publisherEntity.getName());
 
         when(repository.findByName(publisherEntity.getName()))
                 .thenReturn(Optional.of(publisherEntity));
@@ -156,20 +144,15 @@ class PublisherServiceImplTest {
     void shouldUpdateExistingPublisher() {
         var publisherId = randomUUID();
         var publisherEntity = providePublisherEntity(publisherId);
-        var updatedPublisherDto = PublisherDto.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var updatedPublisherDto = providePublisherDto(publisherId);
         var updatedEntity = providePublisherEntity(publisherId);
 
         when(repository.findByName(updatedPublisherDto.getName()))
                 .thenReturn(Optional.empty());
-        when(repository.findById(publisherId)).thenReturn(Optional.of(publisherEntity));
-        when(repository.save(publisherEntity)).thenReturn(publisherEntity);
+        when(repository.findById(publisherId))
+                .thenReturn(Optional.of(publisherEntity));
+        when(repository.save(publisherEntity))
+                .thenReturn(publisherEntity);
 
         var result = service.update(publisherId, updatedPublisherDto);
 
@@ -187,15 +170,10 @@ class PublisherServiceImplTest {
     @Test
     void shouldThrowExceptionWhenCannotUpdatePublisherById() {
         var publisherId = randomUUID();
-        when(repository.findById(publisherId)).thenReturn(Optional.empty());
+        var publisherDto = providePublisherDto();
 
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        when(repository.findById(publisherId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.update(publisherId, publisherDto))
                 .isNotNull()
@@ -210,13 +188,7 @@ class PublisherServiceImplTest {
     @Test
     void shouldThrowExceptionWhenSamePublisherAlreadyExists() {
         var publisherId = randomUUID();
-        var publisherDto = PublisherDto.builder()
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherDto = providePublisherDto();
         var publisherEntity = providePublisherEntity();
 
         when(repository.findById(publisherId))
