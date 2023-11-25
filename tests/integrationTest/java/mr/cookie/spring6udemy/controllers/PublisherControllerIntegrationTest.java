@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -53,13 +54,7 @@ class PublisherControllerIntegrationTest {
     @Test
     void shouldGetAllPublishersWithSuccess() {
         var publisherRange = 10;
-        var createdPublishers = IntStream.range(0, publisherRange).mapToObj(ignore -> PublisherEntity.builder()
-                        .name(randomAlphabetic(25))
-                        .address(randomAlphabetic(25))
-                        .state(randomAlphabetic(25))
-                        .city(randomAlphabetic(25))
-                        .zipCode(randomAlphabetic(25))
-                        .build())
+        var createdPublishers = IntStream.range(0, publisherRange).mapToObj(ignore -> providePublisherEntity())
                 .map(repository::save)
                 .map(mapper::map)
                 .toList();
@@ -83,14 +78,7 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldGetPublisherByIdWithSuccess() {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
-
+        var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
 
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
@@ -159,13 +147,7 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldFailWhenCreatingTheSamePublisher409() {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity();
         repository.save(publisherEntity);
 
         var publisherDto = PublisherDto.builder()
@@ -231,14 +213,7 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldUpdatePublisherWithSuccess() {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
-
+        var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
 
         var publisherDto = PublisherDto.builder()
@@ -291,13 +266,7 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldFailToUpdatePublisherWith409() {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
 
         var publisherDto = PublisherDto.builder()
@@ -322,14 +291,7 @@ class PublisherControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("publisherModifiers")
     void shouldFailToUpdatePublisherWith400(@NotNull Consumer<PublisherDto> publisherModifier) {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
-
+        var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
 
         var publisherDto = PublisherDto.builder()
@@ -363,15 +325,9 @@ class PublisherControllerIntegrationTest {
 
     @Test
     void shouldDeletePublisherByIdWithSuccess() {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
-
+        var publisherEntity = providePublisherEntity();
         var publisherId = repository.save(publisherEntity).getId();
+
         var uri = UriComponentsBuilder.fromPath(PUBLISHER_BY_ID_PATH)
                 .buildAndExpand(publisherId)
                 .toUri();

@@ -1,9 +1,9 @@
 package mr.cookie.spring6udemy.repositories;
 
+import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,7 @@ class PublisherRepositoryIntegrationTest {
 
     @Test
     void shouldFindByName() {
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity();
         repository.save(publisherEntity);
 
         var result = repository.findByName(publisherEntity.getName());

@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.entities.BookEntityProvider.provideBookEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -53,10 +54,8 @@ class BookControllerIntegrationTest {
     @Test
     void shouldGetAllBooksWithSuccess() {
         var bookRange = 10;
-        var createdBooks = IntStream.range(0, bookRange).mapToObj(ignore -> BookEntity.builder()
-                        .title(randomAlphabetic(25))
-                        .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                        .build())
+        var createdBooks = IntStream.range(0, bookRange)
+                .mapToObj(ignore -> provideBookEntity())
                 .map(repository::save)
                 .map(mapper::map)
                 .toList();
@@ -80,11 +79,7 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldGetBookByIdWithSuccess() {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
-
+        var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
 
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
@@ -146,10 +141,7 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldFailWhenCreatingTheSameBook409() {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookEntity = provideBookEntity();
         repository.save(bookEntity);
 
         var bookDto = BookDto.builder()
@@ -203,10 +195,7 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldUpdateBookWithSuccess() {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
@@ -251,10 +240,7 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldFailToUpdateBookWith409() {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
+        var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
@@ -276,11 +262,7 @@ class BookControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("bookModifiers")
     void shouldFailToUpdateBookWith400(@NotNull Consumer<BookDto> bookModifier) {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
-
+        var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
 
         var bookDto = BookDto.builder()
@@ -308,12 +290,9 @@ class BookControllerIntegrationTest {
 
     @Test
     void shouldDeleteBookByIdWithSuccess() {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
-                .build();
-
+        var bookEntity = provideBookEntity();
         var bookId = repository.save(bookEntity).getId();
+
         var uri = UriComponentsBuilder.fromPath(BOOK_BY_ID_PATH)
                 .buildAndExpand(bookId)
                 .toUri();

@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.services;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,14 +40,7 @@ class PublisherServiceImplTest {
 
     @Test
     void shouldReturnAllPublishers() {
-        var publisherEntity = PublisherEntity.builder()
-                .id(randomUUID())
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity(randomUUID());
 
         when(repository.findAll())
                 .thenReturn(List.of(publisherEntity));
@@ -65,14 +59,7 @@ class PublisherServiceImplTest {
     @Test
     void shouldFindPublisherById() {
         var publisherId = randomUUID();
-        var publisherEntity = PublisherEntity.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity(publisherId);
 
         when(repository.findById(publisherId))
                 .thenReturn(Optional.of(publisherEntity));
@@ -106,14 +93,7 @@ class PublisherServiceImplTest {
     @Test
     void shouldCreateNewPublisher() {
         var publisherId = randomUUID();
-        var publisherEntity = PublisherEntity.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity(publisherId);
 
         var publisherDto = PublisherDto.builder()
                 .id(publisherId)
@@ -149,14 +129,7 @@ class PublisherServiceImplTest {
     @Test
     void shouldThrowExceptionWhenPublisherAlreadyExists() {
         var publisherId = randomUUID();
-        var publisherEntity = PublisherEntity.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity(publisherId);
         var publisherDto = PublisherDto.builder()
                 .id(publisherId)
                 .name(publisherEntity.getName())
@@ -182,14 +155,7 @@ class PublisherServiceImplTest {
     @Test
     void shouldUpdateExistingPublisher() {
         var publisherId = randomUUID();
-        var publisherEntity = PublisherEntity.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity(publisherId);
         var updatedPublisherDto = PublisherDto.builder()
                 .id(publisherId)
                 .name(randomAlphabetic(25))
@@ -198,14 +164,7 @@ class PublisherServiceImplTest {
                 .state(randomAlphabetic(25))
                 .zipCode(randomAlphabetic(25))
                 .build();
-        var updatedEntity = PublisherEntity.builder()
-                .id(publisherId)
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var updatedEntity = providePublisherEntity(publisherId);
 
         when(repository.findByName(updatedPublisherDto.getName()))
                 .thenReturn(Optional.empty());
@@ -258,13 +217,7 @@ class PublisherServiceImplTest {
                 .state(randomAlphabetic(25))
                 .zipCode(randomAlphabetic(25))
                 .build();
-        var publisherEntity = PublisherEntity.builder()
-                .name(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
-                .build();
+        var publisherEntity = providePublisherEntity();
 
         when(repository.findById(publisherId))
                 .thenReturn(Optional.of(publisherEntity));

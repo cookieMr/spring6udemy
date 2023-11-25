@@ -1,9 +1,9 @@
 package mr.cookie.spring6udemy.repositories;
 
+import static mr.cookie.spring6udemy.providers.entities.BookEntityProvider.provideBookEntity;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import mr.cookie.spring6udemy.model.entities.BookEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,7 @@ class BookRepositoryIntegrationTest {
 
     @Test
     void shouldFindByIsbn() {
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
+        var bookEntity = provideBookEntity();
         repository.save(bookEntity);
 
         var result = repository.findByIsbn(bookEntity.getIsbn());

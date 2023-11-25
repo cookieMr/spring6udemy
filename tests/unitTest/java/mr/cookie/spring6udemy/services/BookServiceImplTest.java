@@ -17,6 +17,7 @@ import mr.cookie.spring6udemy.model.dtos.BookDto;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.mappers.BookMapper;
 import mr.cookie.spring6udemy.model.mappers.BookMapperImpl;
+import mr.cookie.spring6udemy.providers.entities.BookEntityProvider;
 import mr.cookie.spring6udemy.repositories.BookRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,11 +40,7 @@ class BookServiceImplTest {
 
     @Test
     void shouldReturnAllBooks() {
-        var bookEntity = BookEntity.builder()
-                .id(randomUUID())
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
+        var bookEntity = BookEntityProvider.provideBookEntity(randomUUID());
 
         when(repository.findAll())
                 .thenReturn(List.of(bookEntity));
@@ -62,11 +59,7 @@ class BookServiceImplTest {
     @Test
     void shouldFindBookById() {
         var bookId = randomUUID();
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
 
         when(repository.findById(bookId))
                 .thenReturn(Optional.of(bookEntity));
@@ -100,11 +93,7 @@ class BookServiceImplTest {
     @Test
     void shouldCreateNewBook() {
         var bookId = randomUUID();
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
         var bookDto = BookDto.builder()
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
@@ -133,11 +122,7 @@ class BookServiceImplTest {
     @Test
     void shouldThrowExceptionWhenBookAlreadyExists() {
         var bookId = randomUUID();
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
         var bookDto = BookDto.builder()
                 .title(randomAlphabetic(25))
                 .isbn(bookEntity.getIsbn())
@@ -160,21 +145,13 @@ class BookServiceImplTest {
     @Test
     void shouldUpdateExistingBook() {
         var bookId = randomUUID();
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        var bookEntity = BookEntityProvider.provideBookEntity(bookId);
         var updatedBookDto = BookDto.builder()
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .id(bookId)
                 .build();
-        var updatedEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .id(bookId)
-                .build();
+        var updatedEntity = BookEntityProvider.provideBookEntity(bookId);
 
         when(repository.findByIsbn(updatedBookDto.getIsbn()))
                 .thenReturn(Optional.empty());
@@ -221,10 +198,7 @@ class BookServiceImplTest {
                 .title(randomAlphabetic(25))
                 .isbn(randomAlphabetic(25))
                 .build();
-        var bookEntity = BookEntity.builder()
-                .title(randomAlphabetic(25))
-                .isbn(randomAlphabetic(25))
-                .build();
+        var bookEntity = BookEntityProvider.provideBookEntity();
 
         when(repository.findById(bookId))
                 .thenReturn(Optional.of(bookEntity));

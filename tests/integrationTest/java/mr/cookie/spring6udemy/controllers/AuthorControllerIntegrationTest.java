@@ -1,6 +1,7 @@
 package mr.cookie.spring6udemy.controllers;
 
 import static java.util.UUID.randomUUID;
+import static mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider.provideAuthorEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,10 +52,8 @@ class AuthorControllerIntegrationTest {
     @Test
     void shouldGetAllAuthorsWithSuccess() {
         var authorRange = 10;
-        var createdAuthors = IntStream.range(0, authorRange).mapToObj(ignore -> AuthorEntity.builder()
-                        .firstName(randomAlphabetic(25))
-                        .lastName(randomAlphabetic(25))
-                        .build())
+        var createdAuthors = IntStream.range(0, authorRange)
+                .mapToObj(ignore -> provideAuthorEntity())
                 .map(repository::save)
                 .map(mapper::map)
                 .toList();
@@ -78,11 +77,7 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldGetAuthorByIdWithSuccess() {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
-
+        var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity).getId();
 
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
@@ -118,10 +113,7 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldCreateAuthorWithSuccess() {
-        var authorDto = AuthorDto.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorDto = provideAuthorEntity();
 
         var uri = UriComponentsBuilder.fromPath(AUTHOR_PATH)
                 .buildAndExpand()
@@ -143,10 +135,7 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldFailWhenCreatingTheSameAuthor409() {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorEntity = provideAuthorEntity();
         repository.save(authorEntity);
 
         var authorDto = AuthorDto.builder()
@@ -197,11 +186,7 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldUpdateAuthorWithSuccess() {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
-
+        var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity).getId();
 
         var authorDto = AuthorDto.builder()
@@ -245,10 +230,7 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldFailToUpdateAuthorWith409() {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
+        var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity)
                 .getId();
 
@@ -271,11 +253,7 @@ class AuthorControllerIntegrationTest {
     @ParameterizedTest
     @MethodSource("authorModifiers")
     void shouldFailToUpdateAuthorWith400(@NotNull Consumer<AuthorDto> authorModifier) {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
-
+        var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity).getId();
 
         var authorDto = AuthorDto.builder()
@@ -303,12 +281,9 @@ class AuthorControllerIntegrationTest {
 
     @Test
     void shouldDeleteAuthorByIdWithSuccess() {
-        var authorEntity = AuthorEntity.builder()
-                .firstName(randomAlphabetic(25))
-                .lastName(randomAlphabetic(25))
-                .build();
-
+        var authorEntity = provideAuthorEntity();
         var authorId = repository.save(authorEntity).getId();
+
         var uri = UriComponentsBuilder.fromPath(AUTHOR_BY_ID_PATH)
                 .buildAndExpand(authorId)
                 .toUri();
