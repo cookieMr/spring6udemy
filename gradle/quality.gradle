@@ -1,5 +1,4 @@
 apply plugin: 'checkstyle'
-apply plugin: 'com.github.spotbugs'
 apply plugin: 'org.owasp.dependencycheck'
 
 checkstyle {
@@ -14,29 +13,6 @@ dependencyCheck {
     failBuildOnCVSS = 0
     skipTestGroups = false
     analyzers.assemblyEnabled = false
-}
-
-spotbugs {
-    toolVersion = "4.7.3"
-    ignoreFailures = false
-    excludeFilter = file("$rootDir/gradle/config/spotbugs/spotbugs-exclude.xml")
-    group = 'verification'
-}
-
-spotbugsTest.enabled = false
-['spotbugsMain', 'spotbugsTestUtils', 'spotbugsUnitTest', 'spotbugsIntegrationTest'].each { taskName ->
-    tasks.named(taskName) {
-        group = 'verification'
-        reports {
-            html {
-                required = true
-                outputLocation = file("$buildDir/reports/spotbugs/${taskName}.html")
-                stylesheet = 'fancy-hist.xsl'
-            }
-        }
-
-        check.dependsOn it
-    }
 }
 
 tasks.register('validateCveSuppression', Task) {

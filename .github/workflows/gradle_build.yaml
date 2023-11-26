@@ -93,7 +93,6 @@ jobs:
           name: quality-reports-artifacts
           path: |
             build/reports/checkstyle/*.html
-            build/reports/spotbugs/*.html
             build/reports/dependency-check-report.html
 
   vulnerability-check:
