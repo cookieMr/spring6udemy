@@ -1,11 +1,12 @@
 package mr.cookie.spring6udemy.rest;
 
-import java.util.Collections;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
+import java.util.Collections;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HttpEntityUtils {

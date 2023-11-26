@@ -8,9 +8,6 @@ import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeade
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import mr.cookie.spring6udemy.annotations.IntegrationTest;
 import mr.cookie.spring6udemy.assertions.ResponseEntityAssertions;
 import mr.cookie.spring6udemy.constants.Constant;
@@ -31,6 +28,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @IntegrationTest
 class PublisherControllerIntegrationTest {

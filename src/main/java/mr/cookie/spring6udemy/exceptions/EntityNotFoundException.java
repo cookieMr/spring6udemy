@@ -1,10 +1,11 @@
 package mr.cookie.spring6udemy.exceptions;
 
-import java.util.UUID;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 public final class EntityNotFoundException extends RuntimeException {
 
