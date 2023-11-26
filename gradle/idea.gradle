@@ -1,0 +1,12 @@
+apply plugin: 'idea'
+
+idea {
+    module {
+        testSources.from(
+                sourceSets.unitTest.java.srcDirs,
+                sourceSets.integrationTest.java.srcDirs)
+        testResources.from sourceSets.integrationTest.resources.srcDirs
+    }
+}
+
+build.dependsOn cleanIdea, ideaModule
