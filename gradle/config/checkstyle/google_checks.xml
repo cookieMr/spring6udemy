@@ -272,7 +272,8 @@
     <module name="CustomImportOrder">
       <property name="sortImportsInGroupAlphabetically" value="true"/>
       <property name="separateLineBetweenGroups" value="true"/>
-      <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
+      <property name="customImportOrderRules"
+               value="STATIC###THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE"/>
       <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
     </module>
     <module name="MethodParamPad">
@@ -364,5 +365,11 @@
       <!-- The check is suppressed in the next line of code after the comment -->
       <property name="influenceFormat" value="1"/>
     </module>
+  </module>
+
+  <module name="RegexpMultiline">
+    <property name="message" value="Multiple empty lines after this line."/>
+    <property name="format" value="[\r]?\n\s*[\r]?\n\s*[\r]?\n"/>
+    <property name="fileExtensions" value="java"/>
   </module>
 </module>

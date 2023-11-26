@@ -1,7 +1,5 @@
 package mr.cookie.spring6udemy.assertions;
 
-import java.util.List;
-import java.util.Objects;
 import org.assertj.core.api.AbstractAssert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +9,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("UnusedReturnValue")
 public final class ResponseEntityAssertions<T> extends AbstractAssert<ResponseEntityAssertions<T>, ResponseEntity<T>> {

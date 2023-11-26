@@ -1,9 +1,10 @@
 package mr.cookie.spring6udemy.services;
 
-import java.util.List;
-import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface CrudService<T> {
 

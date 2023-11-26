@@ -1,8 +1,5 @@
 package mr.cookie.spring6udemy.services;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import mr.cookie.spring6udemy.exceptions.EntityExistsException;
 import mr.cookie.spring6udemy.exceptions.EntityNotFoundException;
@@ -12,6 +9,10 @@ import mr.cookie.spring6udemy.repositories.AuthorRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

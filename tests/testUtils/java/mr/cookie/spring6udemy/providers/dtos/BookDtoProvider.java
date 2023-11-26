@@ -3,9 +3,10 @@ package mr.cookie.spring6udemy.providers.dtos;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
-import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import mr.cookie.spring6udemy.model.dtos.BookDto;
+
+import java.util.UUID;
 
 @UtilityClass
 public class BookDtoProvider {

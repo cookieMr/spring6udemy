@@ -3,12 +3,13 @@ package mr.cookie.spring6udemy.exceptions;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.stream.Stream;
 
 class CosmereResponseEntityExceptionHandlerTest {
 
@@ -38,7 +39,6 @@ class CosmereResponseEntityExceptionHandlerTest {
     @MethodSource
     void shouldHandleEntityExistsException(EntityExistsException exception) {
         var result = exceptionHandler.handleEntityExistsException(exception);
-
 
         assertThat(result)
                 .isNotNull()

@@ -2,9 +2,10 @@ package mr.cookie.spring6udemy.providers.entities;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
-import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import mr.cookie.spring6udemy.model.entities.PublisherEntity;
+
+import java.util.UUID;
 
 @UtilityClass
 public class PublisherEntityProvider {
