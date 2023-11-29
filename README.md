@@ -14,6 +14,19 @@
 
 This is a follow along for a [Udemy course](https://www.udemy.com/course/spring-framework-6-beginner-to-guru/).
 
+## Reproducing Snyk Issue
+```bash
+./gradlew snykResolvedDepsJson -q \
+  --build-file spring6udemy/build.gradle \
+  -PonlySubProject=. \
+  -I /var/folders/94/9kpdzysj3f53fpxq41f0l9d40000gq/T/tmp-32034-fKjko8xrsZmb--init.gradle \
+  --no-onfiguration-cache
+```
+or simply run `snyk` cmd:
+```bash
+SNYK_TOKEN=XXX snyk test
+```
+
 ## Running the App
 
 ### Run local MySQL as a Docker Container
