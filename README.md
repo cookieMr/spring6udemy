@@ -15,6 +15,8 @@
 This is a follow along for a [Udemy course](https://www.udemy.com/course/spring-framework-6-beginner-to-guru/).
 
 ## Reproducing Snyk Issue
+This isse was reported to Snyk Team: [See the isseu #270](https://github.com/snyk/snyk-gradle-plugin/issues/270).
+
 ```bash
 ./gradlew snykResolvedDepsJson -q \
   --build-file spring6udemy/build.gradle \
