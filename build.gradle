@@ -67,4 +67,5 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
     testImplementation "com.h2database:h2:${h2Version}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
