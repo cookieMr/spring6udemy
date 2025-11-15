@@ -2,19 +2,20 @@ package mr.cookie.spring6udemy.providers.entities;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import mr.cookie.spring6udemy.model.entities.AuthorEntity;
 
 import java.util.UUID;
 
-@UtilityClass
-public class AuthorEntityProvider {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AuthorEntityProvider {
 
-    public AuthorEntity provideAuthorEntity() {
+    public static AuthorEntity provideAuthorEntity() {
         return provideAuthorEntity(null);
     }
 
-    public AuthorEntity provideAuthorEntity(UUID id) {
+    public static AuthorEntity provideAuthorEntity(UUID id) {
         return AuthorEntity.builder()
                 .id(id)
                 .firstName(randomAlphabetic(25))
