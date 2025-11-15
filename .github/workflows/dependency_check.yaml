@@ -14,7 +14,6 @@ jobs:
   vulnerability-check:
     name: Checks Project's Dependencies for Vulnerabilities
     runs-on: [self-hosted, Linux, X64, docker]
-    if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - name: Checkout Project Sources
         id: checkout-project-sources
