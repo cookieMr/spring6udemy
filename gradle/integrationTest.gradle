@@ -23,7 +23,6 @@ tasks.register('integrationTest', Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 
     useJUnitPlatform()
-    shouldRunAfter unitTest
 
     testLogging {
         events "skipped", "failed"

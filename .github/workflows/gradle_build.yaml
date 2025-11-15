@@ -16,17 +16,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle Build Command
         id: run-gradle-build-cmd
         run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -41,17 +41,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -71,17 +71,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle Check Command
         id: run-gradle-check-cmd
         run: ./gradlew check --exclude-task test --exclude-task cleanIdea --exclude-task ideaModule
@@ -106,17 +106,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle CVE Check Command
         id: run-gradle-cve-check-cmd
         run: ./gradlew dependencyCheckAnalyze --exclude-task cleanIdea --exclude-task ideaModule
