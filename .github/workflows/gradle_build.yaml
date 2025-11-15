@@ -87,7 +87,7 @@ jobs:
         run: ./gradlew check --exclude-task test --exclude-task cleanIdea --exclude-task ideaModule
       - name: Upload HTML Reports as Artifacts
         id: upload-html-reports-artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
           name: quality-reports-artifacts
