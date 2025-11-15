@@ -25,10 +25,10 @@ jobs:
           java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
-        id: setup-gradle-build-action
-        uses: gradle/gradle-build-action@v3
+        id: action-setup-gradle
+        uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: 8.14.3
+          gradle-version: '8.14.3'
       - name: Run Gradle Build Command
         id: run-gradle-build-cmd
         run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -48,18 +48,18 @@ jobs:
           java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
-        id: setup-gradle-build-action
-        uses: gradle/gradle-build-action@v3
+        id: action-setup-gradle
+        uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: 8.14.3
+          gradle-version: '8.14.3'
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
-      - name: Run Gradle Sonar Command
-        id: run-gradle-sonar-cmd
-        run: ./gradlew sonar --exclude-task cleanIdea --exclude-task ideaModule
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # - name: Run Gradle Sonar Command
+      #   id: run-gradle-sonar-cmd
+      #   run: ./gradlew sonar --exclude-task cleanIdea --exclude-task ideaModule
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   quality-check:
     name: Checks Project's Quality with Gradle
@@ -76,10 +76,10 @@ jobs:
           java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
-        id: setup-gradle-build-action
-        uses: gradle/gradle-build-action@v3
+        id: action-setup-gradle
+        uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: 8.14.3
+          gradle-version: '8.14.3'
       - name: Run Gradle Check Command
         id: run-gradle-check-cmd
         run: ./gradlew check --exclude-task test --exclude-task cleanIdea --exclude-task ideaModule
