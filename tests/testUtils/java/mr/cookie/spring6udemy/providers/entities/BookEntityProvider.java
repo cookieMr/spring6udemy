@@ -3,19 +3,20 @@ package mr.cookie.spring6udemy.providers.entities;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import mr.cookie.spring6udemy.model.entities.BookEntity;
 
 import java.util.UUID;
 
-@UtilityClass
-public class BookEntityProvider {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BookEntityProvider {
 
-    public BookEntity provideBookEntity() {
+    public static BookEntity provideBookEntity() {
         return provideBookEntity(null);
     }
 
-    public BookEntity provideBookEntity(UUID id) {
+    public static BookEntity provideBookEntity(UUID id) {
         return BookEntity.builder()
                 .id(id)
                 .title(randomAlphabetic(25))

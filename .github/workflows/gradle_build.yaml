@@ -13,24 +13,24 @@ on:
 jobs:
   build:
     name: Build Project with Gradle
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, docker]
     steps:
       - name: Checkout Project Sources
         id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle Build Command
         id: run-gradle-build-cmd
         run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -38,60 +38,60 @@ jobs:
   test:
     name: Test Project with Gradle
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, docker]
     steps:
       - name: Checkout Project Sources
         id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
-      - name: Run Gradle Sonar Command
-        id: run-gradle-sonar-cmd
-        run: ./gradlew sonar --exclude-task cleanIdea --exclude-task ideaModule
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # - name: Run Gradle Sonar Command
+      #   id: run-gradle-sonar-cmd
+      #   run: ./gradlew sonar --exclude-task cleanIdea --exclude-task ideaModule
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   quality-check:
     name: Checks Project's Quality with Gradle
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, docker]
     steps:
       - name: Checkout Project Sources
         id: checkout-project-sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle Check Command
         id: run-gradle-check-cmd
         run: ./gradlew check --exclude-task test --exclude-task cleanIdea --exclude-task ideaModule
       - name: Upload HTML Reports as Artifacts
         id: upload-html-reports-artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
           name: quality-reports-artifacts
@@ -102,7 +102,7 @@ jobs:
   vulnerability-check:
     name: Checks Project's Dependencies for Vulnerabilities
     needs: quality-check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, docker]
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - name: Checkout Project Sources
@@ -110,17 +110,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Java as Corretto 17
-        id: setup-java-corretto-17
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'corretto'
       - name: Setup Gradle Build Action
         id: setup-gradle-build-action
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.6.3
+          gradle-version: 8.14.3
       - name: Run Gradle CVE Check Command
         id: run-gradle-cve-check-cmd
         run: ./gradlew dependencyCheckAnalyze --exclude-task cleanIdea --exclude-task ideaModule

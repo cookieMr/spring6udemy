@@ -1,7 +1,7 @@
 #########################################################
 ## Build Stage
 #########################################################
-FROM amazoncorretto:17 as build
+FROM amazoncorretto:21 as build
 WORKDIR /workspace
 COPY . ./
 RUN ./gradlew clean build --exclude-task test --no-build-cache
@@ -15,7 +15,7 @@ RUN ./gradlew test
 #########################################################
 ## Build Application Stage
 #########################################################
-FROM amazoncorretto:17
+FROM amazoncorretto:21
 WORKDIR /app
 COPY ./entrypoint.sh ./
 RUN chmod u+x entrypoint.sh
