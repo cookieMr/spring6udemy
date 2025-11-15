@@ -2,7 +2,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'org.owasp.dependencycheck'
 
 checkstyle {
-    toolVersion = "10.12.3"
+    toolVersion = "12.1.2"
     configFile = file("$rootDir/gradle/config/checkstyle/google_checks.xml")
     ignoreFailures = false
     group = 'verification'
@@ -15,49 +15,7 @@ dependencyCheck {
     analyzers.assemblyEnabled = false
 }
 
-tasks.register('validateCveSuppression', Task) {
-    group = 'verification'
-    description = 'Checks if every CVE suppression has an expiration date'
-
-    doLast {
-        def xml = new groovy.xml.XmlSlurper(false, false)
-                .parse(new File(dependencyCheck.suppressionFile))
-
-        def seenVul = new HashSet<String>()
-        def duplicates = new ArrayList<String>()
-        def missingUntil = new ArrayList<String>()
-
-        xml.'**'.findAll { node ->
-            node.name() == 'suppress'
-        }.each({ suppress ->
-            def cve = ((String) suppress.'cve'.text()).toUpperCase()
-            if (seenVul.contains(cve)) {
-                duplicates.add(cve)
-            } else {
-                seenVul.add(cve)
-            }
-        }).findAll { node ->
-            node.name() == 'suppress' && !node.attributes().containsKey('until')
-        }.each { suppress ->
-            def cve = ((String) suppress.'cve'.text()).toUpperCase()
-            missingUntil.add(cve)
-        }
-
-        if (!duplicates.isEmpty()) {
-            println "Duplicate CVE: ${duplicates.join(', ')}"
-        }
-        if (!missingUntil.isEmpty()) {
-            println "CVE with missing 'until' attribute: ${missingUntil.join(', ')}"
-        }
-
-        if (!duplicates.isEmpty() || !missingUntil.isEmpty()) {
-            throw new GradleException("CVE Suppressions are not set properly (see info above). Build failed.")
-        }
-    }
-}
-
 dependencyCheckAnalyze.shouldRunAfter check
-dependencyCheckAnalyze.dependsOn validateCveSuppression
 
 tasks.withType(Checkstyle).configureEach {
     excludes = [

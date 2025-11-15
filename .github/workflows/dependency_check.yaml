@@ -1,0 +1,38 @@
+name: OWASP Dependency Check
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  vulnerability-check:
+    name: Checks Project's Dependencies for Vulnerabilities
+    runs-on: [self-hosted, Linux, X64, docker]
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - name: Checkout Project Sources
+        id: checkout-project-sources
+        uses: actions/checkout@v4
+      - name: Setup Java as Corretto 21
+        id: setup-java-corretto-21
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'corretto'
+      - name: Setup Gradle Build Action
+        id: setup-gradle-build-action
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.14.3
+      - name: Run Gradle Build Command
+        id: run-gradle-build-cmd
+        run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
+      - name: Run Gradle CVE Check Command
+        id: run-gradle-cve-check-cmd
+        run: ./gradlew dependencyCheckAnalyze --exclude-task cleanIdea --exclude-task ideaModule
