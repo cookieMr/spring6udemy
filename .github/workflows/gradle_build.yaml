@@ -1,5 +1,9 @@
 name: Build, Test & Check
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 on:
   pull_request:
   workflow_dispatch:
