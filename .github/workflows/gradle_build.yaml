@@ -55,11 +55,11 @@ jobs:
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
-      - name: Run Gradle Sonar Command
-        id: run-gradle-sonar-cmd
-        run: ./gradlew sonar --exclude-task cleanIdea --exclude-task ideaModule
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # - name: Run Gradle Sonar Command
+      #   id: run-gradle-sonar-cmd
+      #   run: ./gradlew sonar --exclude-task cleanIdea --exclude-task ideaModule
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   quality-check:
     name: Checks Project's Quality with Gradle
