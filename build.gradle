@@ -19,7 +19,10 @@ apply from: "$rootDir/gradle/jacoco.gradle"
 
 group = 'mr.cookie'
 version = '0.0.4'
-sourceCompatibility = '21'
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+}
 
 repositories {
     mavenCentral()
