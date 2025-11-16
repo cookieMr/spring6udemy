@@ -30,6 +30,9 @@ spring:
 
   liquibase:
     default-schema: cosmere
+  threads:
+    virtual:
+      enabled: true
 
 server:
   servlet:
