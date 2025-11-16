@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.providers.entities;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -18,11 +18,11 @@ public final class PublisherEntityProvider {
     public static PublisherEntity providePublisherEntity(UUID id) {
         return PublisherEntity.builder()
                 .id(id)
-                .name(randomAlphabetic(25))
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
+                .name(secure().nextAlphabetic(25))
+                .address(secure().nextAlphabetic(25))
+                .state(secure().nextAlphabetic(25))
+                .city(secure().nextAlphabetic(25))
+                .zipCode(secure().nextAlphabetic(25))
                 .build();
     }
 

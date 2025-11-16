@@ -5,7 +5,7 @@ import static mr.cookie.spring6udemy.providers.dtos.AuthorDtoProvider.provideAut
 import static mr.cookie.spring6udemy.providers.dtos.AuthorDtoProvider.provideAuthorDtoWithNames;
 import static mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider.provideAuthorEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import mr.cookie.spring6udemy.annotations.IntegrationTest;
@@ -158,11 +158,10 @@ class AuthorControllerIntegrationTest {
         return Stream.of(
                 author -> author.setFirstName(null),
                 author -> author.setFirstName(Constant.BLANK_STRING),
-                author -> author.setFirstName(randomAlphabetic(65)),
+                author -> author.setFirstName(secure().nextAlphabetic(65)),
                 author -> author.setLastName(null),
                 author -> author.setLastName(Constant.BLANK_STRING),
-                author -> author.setLastName(randomAlphabetic(65))
-        );
+                author -> author.setLastName(secure().nextAlphabetic(65)));
     }
 
     @ParameterizedTest

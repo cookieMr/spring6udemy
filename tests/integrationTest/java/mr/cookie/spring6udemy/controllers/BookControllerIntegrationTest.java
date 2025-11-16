@@ -5,7 +5,7 @@ import static mr.cookie.spring6udemy.providers.dtos.BookDtoProvider.provideBookD
 import static mr.cookie.spring6udemy.providers.dtos.BookDtoProvider.provideBookDtoWithIsbn;
 import static mr.cookie.spring6udemy.providers.entities.BookEntityProvider.provideBookEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
-import static org.apache.commons.lang3.RandomStringUtils.random;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import mr.cookie.spring6udemy.annotations.IntegrationTest;
@@ -158,14 +158,13 @@ class BookControllerIntegrationTest {
         return Stream.of(
                 book -> book.setTitle(null),
                 book -> book.setTitle(Constant.BLANK_STRING),
-                book -> book.setTitle(random(129)),
+                book -> book.setTitle(secure().nextAlphabetic(129)),
                 book -> book.setIsbn(null),
                 book -> book.setIsbn(Constant.BLANK_STRING),
-                book -> book.setIsbn(random(12)),
-                book -> book.setIsbn(random(13)),
-                book -> book.setIsbn(random(14)),
-                book -> book.setIsbn(random(15))
-        );
+                book -> book.setIsbn(secure().nextAlphabetic(12)),
+                book -> book.setIsbn(secure().nextAlphabetic(13)),
+                book -> book.setIsbn(secure().nextAlphabetic(14)),
+                book -> book.setIsbn(secure().nextAlphabetic(15)));
     }
 
     @ParameterizedTest

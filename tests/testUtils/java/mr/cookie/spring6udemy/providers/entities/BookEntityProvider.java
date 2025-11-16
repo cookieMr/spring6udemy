@@ -1,7 +1,6 @@
 package mr.cookie.spring6udemy.providers.entities;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -19,8 +18,8 @@ public final class BookEntityProvider {
     public static BookEntity provideBookEntity(UUID id) {
         return BookEntity.builder()
                 .id(id)
-                .title(randomAlphabetic(25))
-                .isbn("%s-%s".formatted(randomNumeric(3), randomNumeric(10)))
+                .title(secure().nextAlphabetic(25))
+                .isbn("%s-%s".formatted(secure().nextNumeric(3), secure().nextNumeric(10)))
                 .build();
     }
 

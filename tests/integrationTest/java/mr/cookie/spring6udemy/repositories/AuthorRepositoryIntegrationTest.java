@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.repositories;
 
 import static mr.cookie.spring6udemy.providers.entities.AuthorEntityProvider.provideAuthorEntity;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.AfterEach;
@@ -39,8 +39,8 @@ class AuthorRepositoryIntegrationTest {
     @Test
     void shouldNotFindByFirstNameAndLastName() {
         var result = repository.findByFirstNameAndLastName(
-                randomAlphabetic(25),
-                randomAlphabetic(25));
+                secure().nextAlphabetic(25),
+                secure().nextAlphabetic(25));
 
         assertThat(result)
                 .isEmpty();

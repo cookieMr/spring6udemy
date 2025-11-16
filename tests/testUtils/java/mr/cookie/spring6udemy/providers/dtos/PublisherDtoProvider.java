@@ -1,6 +1,6 @@
 package mr.cookie.spring6udemy.providers.dtos;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,21 +16,21 @@ public final class PublisherDtoProvider {
     }
 
     public static PublisherDto providePublisherDto() {
-        return providePublisherDto(null, randomAlphabetic(25));
+        return providePublisherDto(null, secure().nextAlphabetic(25));
     }
 
     public static PublisherDto providePublisherDto(UUID id) {
-        return providePublisherDto(id, randomAlphabetic(25));
+        return providePublisherDto(id, secure().nextAlphabetic(25));
     }
 
     public static PublisherDto providePublisherDto(UUID id, String name) {
         return PublisherDto.builder()
                 .id(id)
                 .name(name)
-                .address(randomAlphabetic(25))
-                .state(randomAlphabetic(25))
-                .city(randomAlphabetic(25))
-                .zipCode(randomAlphabetic(25))
+                .address(secure().nextAlphabetic(25))
+                .state(secure().nextAlphabetic(25))
+                .city(secure().nextAlphabetic(25))
+                .zipCode(secure().nextAlphabetic(25))
                 .build();
     }
 
