@@ -13,6 +13,7 @@ jobs:
   vulnerability-check:
     name: Checks Project's Dependencies for Vulnerabilities
     runs-on: [self-hosted, Linux, X64, docker]
+    timeout-minutes: 45
     steps:
       - name: Checkout Project Sources
         id: checkout-project-sources
