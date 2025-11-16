@@ -30,8 +30,7 @@ public final class ResponseEntityAssertions<T> extends AbstractAssert<ResponseEn
             failWithMessage(
                     "Expected status code to be <%s> but was <%s>!",
                     statusCode.value(),
-                    actualStatusCode.value()
-            );
+                    actualStatusCode.value());
         }
 
         return this;

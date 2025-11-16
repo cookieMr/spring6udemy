@@ -31,8 +31,7 @@ class CosmereResponseEntityExceptionHandlerTest {
         return Stream.of(
                 EntityNotFoundException.ofAuthor(randomUUID()),
                 EntityNotFoundException.ofBook(randomUUID()),
-                EntityNotFoundException.ofPublisher(randomUUID())
-        );
+                EntityNotFoundException.ofPublisher(randomUUID()));
     }
 
     @ParameterizedTest
@@ -51,8 +50,7 @@ class CosmereResponseEntityExceptionHandlerTest {
         return Stream.of(
                 EntityExistsException.ofAuthor(),
                 EntityExistsException.ofBook(),
-                EntityExistsException.ofPublisher()
-        );
+                EntityExistsException.ofPublisher());
     }
 
 }

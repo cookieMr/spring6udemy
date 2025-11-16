@@ -1,7 +1,7 @@
 package mr.cookie.spring6udemy.repositories;
 
 import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +36,7 @@ class PublisherRepositoryIntegrationTest {
 
     @Test
     void shouldNotFindByName() {
-        var result = repository.findByName(randomAlphabetic(25));
+        var result = repository.findByName(secure().nextAlphabetic(25));
 
         assertThat(result)
                 .isEmpty();

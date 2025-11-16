@@ -5,7 +5,7 @@ import static mr.cookie.spring6udemy.providers.dtos.PublisherDtoProvider.provide
 import static mr.cookie.spring6udemy.providers.dtos.PublisherDtoProvider.providePublisherDtoWithName;
 import static mr.cookie.spring6udemy.providers.entities.PublisherEntityProvider.providePublisherEntity;
 import static mr.cookie.spring6udemy.rest.HttpEntityUtils.createRequestWithHeaders;
-import static org.apache.commons.lang3.RandomStringUtils.random;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import mr.cookie.spring6udemy.annotations.IntegrationTest;
@@ -162,20 +162,19 @@ class PublisherControllerIntegrationTest {
         return Stream.of(
                 publisher -> publisher.setName(null),
                 publisher -> publisher.setName(Constant.BLANK_STRING),
-                publisher -> publisher.setName(random(129)),
+                publisher -> publisher.setName(secure().nextAlphabetic(129)),
                 publisher -> publisher.setAddress(null),
                 publisher -> publisher.setAddress(Constant.BLANK_STRING),
-                publisher -> publisher.setAddress(random(129)),
+                publisher -> publisher.setAddress(secure().nextAlphabetic(129)),
                 publisher -> publisher.setCity(null),
                 publisher -> publisher.setCity(Constant.BLANK_STRING),
-                publisher -> publisher.setCity(random(65)),
+                publisher -> publisher.setCity(secure().nextAlphabetic(65)),
                 publisher -> publisher.setState(null),
                 publisher -> publisher.setState(Constant.BLANK_STRING),
-                publisher -> publisher.setState(random(65)),
+                publisher -> publisher.setState(secure().nextAlphabetic(65)),
                 publisher -> publisher.setZipCode(null),
                 publisher -> publisher.setZipCode(Constant.BLANK_STRING),
-                publisher -> publisher.setZipCode(random(65))
-        );
+                publisher -> publisher.setZipCode(secure().nextAlphabetic(65)));
     }
 
     @ParameterizedTest
