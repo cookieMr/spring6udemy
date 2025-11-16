@@ -13,7 +13,7 @@ on:
 jobs:
   build:
     name: Build Project with Gradle
-    runs-on: [self-hosted, Linux, X64, docker]
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 5
     steps:
       - name: Checkout Project Sources
@@ -37,7 +37,7 @@ jobs:
   test:
     name: Test Project with Gradle
     needs: build
-    runs-on: [self-hosted, Linux, X64, docker]
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 5
     steps:
       - name: Checkout Project Sources
@@ -66,7 +66,7 @@ jobs:
   quality-check:
     name: Checks Project's Quality with Gradle
     needs: test
-    runs-on: [self-hosted, Linux, X64, docker]
+    runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 5
     steps:
       - name: Checkout Project Sources
