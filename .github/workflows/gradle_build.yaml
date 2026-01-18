@@ -8,12 +8,15 @@ on:
   pull_request:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches:
+      - master
+  schedule:
+    - cron: '0 1 * * 0'
 
 jobs:
   build:
     name: Build Project with Gradle
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout Project Sources
@@ -29,7 +32,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.2.0'
+          gradle-version: '9.3.0'
       - name: Run Gradle Build Command
         id: run-gradle-build-cmd
         run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -37,7 +40,7 @@ jobs:
   test:
     name: Test Project with Gradle
     needs: build
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout Project Sources
@@ -53,7 +56,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.2.0'
+          gradle-version: '9.3.0'
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -66,7 +69,7 @@ jobs:
   quality-check:
     name: Checks Project's Quality with Gradle
     needs: test
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout Project Sources
@@ -82,7 +85,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.2.0'
+          gradle-version: '9.3.0'
       - name: Run Gradle Check Command
         id: run-gradle-check-cmd
         run: ./gradlew check --exclude-task test --exclude-task cleanIdea --exclude-task ideaModule

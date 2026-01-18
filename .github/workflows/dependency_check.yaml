@@ -12,7 +12,7 @@ on:
 jobs:
   vulnerability-check:
     name: Checks Project's Dependencies for Vulnerabilities
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Checkout Project Sources
@@ -28,7 +28,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.2.0'
+          gradle-version: '9.3.0'
       - name: Run Gradle Build Command
         id: run-gradle-build-cmd
         run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
