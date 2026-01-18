@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout Project Sources
         id: checkout-project-sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Java as Corretto 25
         id: setup-java-corretto-25
         uses: actions/setup-java@v5
