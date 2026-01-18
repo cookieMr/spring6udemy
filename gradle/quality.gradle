@@ -2,7 +2,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'org.owasp.dependencycheck'
 
 checkstyle {
-    toolVersion = "12.1.2"
+    toolVersion = "13.0.0"
     configFile = file("$rootDir/gradle/config/checkstyle/google_checks.xml")
     ignoreFailures = false
     group = 'verification'

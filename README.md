@@ -36,7 +36,7 @@ First of all run the local MySQL as a Docker Container.
 
 And then run the Gradle task:
 ```bash
-./gradlew clean build test check
+./gradlew clean build test check --no-build-cache --rerun-tasks
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 
