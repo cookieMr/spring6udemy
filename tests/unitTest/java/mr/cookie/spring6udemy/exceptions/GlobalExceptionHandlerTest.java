@@ -11,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.stream.Stream;
 
-class CosmereResponseEntityExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
-    private final CosmereResponseEntityExceptionHandler exceptionHandler = new CosmereResponseEntityExceptionHandler();
+    private final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
     @ParameterizedTest
     @MethodSource

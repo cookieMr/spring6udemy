@@ -12,7 +12,7 @@ jacocoTestReport {
     group = 'reporting'
     description = 'Generates a Combined Java Code Coverage Report.'
 
-    executionData fileTree(buildDir).include('/jacoco/*.exec')
+    executionData fileTree(layout.buildDirectory).include('/jacoco/*.exec')
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
@@ -33,9 +33,7 @@ jacocoTestCoverageVerification {
     group = 'verification'
     description = 'Verifies Java Code Coverage Report.'
 
-    check.dependsOn it
-
-    executionData fileTree(buildDir).include('/jacoco/*.exec')
+    executionData fileTree(layout.buildDirectory).include('/jacoco/*.exec')
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
@@ -77,6 +75,7 @@ jacocoTestCoverageVerification {
         }
     }
 }
+check.dependsOn jacocoTestCoverageVerification
 
 [unitTest, integrationTest].each {
     test.dependsOn it
