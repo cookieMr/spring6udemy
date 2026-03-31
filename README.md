@@ -17,7 +17,9 @@ This is a follow along for a [Udemy course](https://www.udemy.com/course/spring-
 ## Running the App
 
 ### Run local MySQL as a Docker Container
+
 Run MySQL docker image:
+
 ```bash
 docker run --publish 3306:3306 \
   --name local-mysql \
@@ -32,9 +34,11 @@ docker run --publish 3306:3306 \
 ```
 
 ### Run Local App (with necessary dockers)
+
 First of all run the local MySQL as a Docker Container.
 
 And then run the Gradle task:
+
 ```bash
 ./gradlew clean build test check --no-build-cache --rerun-tasks
 ./gradlew bootRun --args='--spring.profiles.active=local'
@@ -42,19 +46,23 @@ And then run the Gradle task:
 
 To build the same Docker image and to run it as a docker composed app
 (along with all necessary dockers e.g. MySQL) just run the following command:
+
 ```bash
 docker-compose down --volumes --remove-orphans && \
-docker-compose up --build
+docker-compose up --build --detach
 ```
 
 To check if a Spring Boot App is healthy run:
+
 ```bash
 curl -f http://localhost:8080/api/actuator/health && echo -e
 ```
 
 ## Useful Internal Links
+
 * [H2 Console](http://[::1]:8080/h2-console) (available only with H2, by default config points to MySQL)
 * [Swagger - OpenAPI v3](http://[::1]:8080/api/swagger-ui/index.html)
 
 ## Useful External Links
+
 * [LazyDocker](https://github.com/jesseduffield/lazydocker)

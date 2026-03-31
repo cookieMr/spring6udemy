@@ -44,7 +44,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.3.0'
+          gradle-version: '9.4.1'
       - name: Run Gradle Build Command
         id: run-gradle-build-cmd
         run: ./gradlew build --exclude-task test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -80,7 +80,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.3.0'
+          gradle-version: '9.4.1'
       - name: Run Gradle Test Command
         id: run-gradle-test-cmd
         run: ./gradlew test --exclude-task check --exclude-task cleanIdea --exclude-task ideaModule
@@ -121,7 +121,7 @@ jobs:
         id: action-setup-gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '9.3.0'
+          gradle-version: '9.4.1'
       - name: Run Gradle Check Command
         id: run-gradle-check-cmd
         run: ./gradlew check --exclude-task test --exclude-task cleanIdea --exclude-task ideaModule
