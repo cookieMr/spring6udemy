@@ -3,6 +3,7 @@
 #########################################################
 FROM amazoncorretto:25 as build
 WORKDIR /workspace
+RUN dnf install -y findutils
 COPY . ./
 RUN ./gradlew clean build --exclude-task test --no-build-cache
 

@@ -49,7 +49,7 @@ To build the same Docker image and to run it as a docker composed app
 
 ```bash
 docker-compose down --volumes --remove-orphans && \
-docker-compose up --build
+docker-compose up --build --detach
 ```
 
 To check if a Spring Boot App is healthy run:
